@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suppléants 2D BFC – J3 Construire son enseignement</title>
+<style>
+:root{
+  --encre:#1d2a44; --texte:#2c3445; --doux:#5d6678; --fond:#f6f4ef; --carte:#ffffff;
+  --bleu:#2f5d8a; --bleu-clair:#e6eef6; --accent:#c8692c; --accent-clair:#fbeee4;
+  --vert:#3f7d58; --vert-clair:#e5f1e9; --trait:#e2ded5; --rayon:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--texte);background:var(--fond);line-height:1.55;font-size:17px}
+a{color:var(--bleu)}
+header.hero{background:var(--encre);color:#fff;padding:48px 20px 40px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.hero .sur{font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin:0 0 8px}
+.hero h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.15;margin:0 0 12px}
+.hero p.chapo{max-width:640px;margin:0;opacity:.9;font-size:1.05rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pill{display:inline-block;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.9rem}
+nav.menu{position:sticky;top:0;z-index:10;background:rgba(246,244,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--trait)}
+nav.menu .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+nav.menu a{flex:0 0 auto;text-decoration:none;color:var(--encre);padding:7px 12px;border-radius:999px;font-size:.92rem;font-weight:500}
+nav.menu a:hover{background:var(--bleu-clair)}
+section{padding:44px 0 8px}
+h2{font-family:Georgia,"Times New Roman",serif;font-weight:600;color:var(--encre);font-size:1.7rem;margin:0 0 6px}
+h2 + .sous{color:var(--doux);margin:0 0 22px}
+h3{color:var(--encre);margin:0 0 6px;font-size:1.2rem}
+.carte{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:22px 24px;margin-bottom:18px}
+.filrouge{background:var(--accent-clair);border-color:#efd3bf}
+.filrouge strong{color:#8a4317}
+/* Programme */
+.prog{list-style:none;margin:0;padding:0}
+.prog li{display:grid;grid-template-columns:118px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--trait)}
+.prog li:last-child{border-bottom:0}
+.prog .h{font-variant-numeric:tabular-nums;color:var(--doux);font-size:.95rem;padding-top:1px}
+.prog .t{font-weight:600;color:var(--encre)}
+.prog .d{color:var(--doux);font-size:.95rem}
+.prog li.atelier .t{color:var(--accent)}
+.prog li.pause .t{color:var(--doux);font-weight:500;font-style:italic}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;margin-right:6px;vertical-align:2px}
+.tag.apport{background:var(--bleu-clair);color:var(--bleu)}
+.tag.travail{background:var(--accent-clair);color:var(--accent)}
+.tag.collectif{background:var(--vert-clair);color:var(--vert)}
+/* Ateliers */
+.atelier-carte{border-left:5px solid var(--accent)}
+.atelier-entete{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px}
+.atelier-entete .num{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.infos{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.infos span{background:var(--fond);border:1px solid var(--trait);border-radius:8px;padding:3px 10px;font-size:.88rem;color:var(--doux)}
+.etapes{margin:8px 0 14px;padding-left:22px}
+.etapes li{margin-bottom:6px}
+.prod{background:var(--vert-clair);border-radius:10px;padding:10px 14px;margin:12px 0 16px;font-size:.96rem}
+.prod b{color:var(--vert)}
+.boutons{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.95rem;padding:10px 16px;border-radius:10px;border:1.5px solid var(--bleu);color:var(--bleu);background:#fff}
+.btn.plein{background:var(--bleu);color:#fff}
+.btn:hover{filter:brightness(.95)}
+.btn.inactif{border-color:var(--trait);color:var(--doux);background:var(--fond);cursor:not-allowed;font-weight:500}
+details{border:1px solid var(--trait);border-radius:10px;padding:10px 14px;margin:10px 0;background:#fcfbf8}
+details summary{cursor:pointer;font-weight:600;color:var(--encre)}
+details[open] summary{margin-bottom:8px}
+table.grille{border-collapse:collapse;width:100%;font-size:.94rem;margin:8px 0}
+table.grille th,table.grille td{border:1px solid var(--trait);padding:7px 10px;text-align:left;vertical-align:top}
+table.grille th{background:var(--fond)}
+.choix{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px}
+.choix .carte{margin:0;border-top:4px solid var(--accent);display:flex;flex-direction:column}
+.choix .carte .boutons{margin-top:auto;padding-top:10px}
+.lettre{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.9rem;margin-right:8px}
+pre.prompt{white-space:pre-wrap;background:var(--encre);color:#f3f1ea;border-radius:10px;padding:14px;font-size:.88rem;line-height:1.5;margin:8px 0}
+.copier{font-size:.85rem;padding:6px 12px}
+/* Quiz */
+.q{margin-bottom:18px}
+.q p{font-weight:600;margin:0 0 8px;color:var(--encre)}
+.q .opts{display:flex;flex-wrap:wrap;gap:8px}
+.q button{font:inherit;font-size:.95rem;border:1.5px solid var(--trait);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer}
+.q button.ok{border-color:var(--vert);background:var(--vert-clair)}
+.q button.ko{border-color:#c0392b;background:#fbe9e7}
+.q .explic{display:none;margin-top:8px;font-size:.94rem;color:var(--doux)}
+.q.repondu .explic{display:block}
+.ressources{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ressources .carte{margin:0}
+.ressources ul{margin:6px 0 0;padding-left:18px}
+.ressources li{margin-bottom:6px}
+.verbes td:first-child{font-weight:600;color:var(--encre);white-space:nowrap}
+footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;border-top:1px solid var(--trait)}
+@media (max-width:600px){
+  .prog li{grid-template-columns:1fr;gap:2px}
+  .carte{padding:18px}
+  body{font-size:16px}
+}
+@media print{nav.menu,.boutons,.copier{display:none}header.hero{background:none;color:#000}.carte{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="sur">Suppléants 2nd degré · BFC · Journée 3</p>
+    <h1>Construire son enseignement</h1>
+    <p class="chapo">Des textes officiels à la séance : on construit ensemble, pas à pas, une séquence que vous pourrez utiliser dans votre classe.</p>
+    <div class="meta">
+      <span class="pill">Mardi 17 novembre 2026</span>
+      <span class="pill">9h00 – 16h30</span>
+      <span class="pill">5 ateliers · 1 fil rouge</span>
+    </div>
+  </div>
+</header>
+
+<nav class="menu" aria-label="Sommaire">
+  <div class="wrap">
+    <a href="#programme">Programme</a>
+    <a href="#a1">Atelier 1</a>
+    <a href="#a2">Atelier 2</a>
+    <a href="#a3">Atelier 3</a>
+    <a href="#tissage">Quiz flash</a>
+    <a href="#a4">Atelier 4</a>
+    <a href="#a5">Atelier 5</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#bilan">Bilan</a>
+    <a href="#ressources">Ressources</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section id="programme">
+  <h2>Le programme de la journée</h2>
+  <p class="sous">Des apports courts, suivis à chaque fois d'un temps de travail sur votre propre classe.</p>
+
+  <div class="carte filrouge">
+    <strong>Votre fil rouge :</strong> toute la journée, vous travaillez sur <strong>une classe réelle de votre suppléance</strong> et <strong>un chapitre que vous allez enseigner</strong>. Chaque atelier ajoute une pièce. À 16h30, vous repartez avec une séquence prête à l'emploi.
+  </div>
+
+  <div class="carte">
+    <ul class="prog">
+      <li><span class="h">9h00 – 9h20</span><span><span class="tag collectif">Collectif</span><span class="t">Accueil · Vrai ou faux ?</span><br><span class="d">On vote, on débat, puis on remplit sa fiche « Ma suppléance ».</span></span></li>
+      <li><span class="h">9h20 – 9h35</span><span><span class="tag apport">Apport</span><span class="t">Les textes institutionnels</span><br><span class="d">Socle, programmes, repères de progression, référentiels de diplôme.</span></span></li>
+      <li class="atelier"><span class="h">9h35 – 10h15</span><span><span class="tag travail">Atelier 1</span><a class="t" href="#a1">Chasse aux attendus</a></span></li>
+      <li class="pause"><span class="h">10h15 – 10h30</span><span class="t">Pause</span></li>
+      <li><span class="h">10h30 – 10h45</span><span><span class="tag apport">Apport</span><span class="t">Programmation et progression</span><br><span class="d">Unité de temps, unité de sens, types de progression.</span></span></li>
+      <li class="atelier"><span class="h">10h45 – 11h15</span><span><span class="tag travail">Atelier 2</span><a class="t" href="#a2">Ma programmation jusqu'en juin</a></span></li>
+      <li><span class="h">11h15 – 11h30</span><span><span class="tag apport">Apport</span><span class="t">Des objectifs opérationnels</span><br><span class="d">Mager, Bloom révisée, des verbes observables.</span></span></li>
+      <li class="atelier"><span class="h">11h30 – 12h00</span><span><span class="tag travail">Atelier 3</span><a class="t" href="#a3">L'atelier des verbes</a></span></li>
+      <li class="pause"><span class="h">12h00 – 13h30</span><span class="t">Déjeuner</span></li>
+      <li><span class="h">13h30 – 13h45</span><span><span class="tag collectif">Collectif</span><a class="t" href="#tissage">Quiz flash : on revient sur le matin</a></span></li>
+      <li><span class="h">13h45 – 14h00</span><span><span class="tag apport">Apport</span><span class="t">La séquence et l'éclairage didactique</span><br><span class="d">Pré-requis, savoirs associés, activités, représentations et obstacles des élèves.</span></span></li>
+      <li class="atelier"><span class="h">14h00 – 15h00</span><span><span class="tag travail">Atelier 4</span><a class="t" href="#a4">Ma séquence</a></span></li>
+      <li><span class="h">15h00 – 15h10</span><span><span class="tag apport">Apport</span><span class="t">La séance</span><br><span class="d">Tissage, problème à résoudre, activités, différenciation, trace écrite.</span></span></li>
+      <li class="atelier"><span class="h">15h10 – 15h50</span><span><span class="tag travail">Atelier 5</span><a class="t" href="#a5">À la carte</a></span></li>
+      <li><span class="h">15h50 – 16h20</span><span><span class="tag collectif">Collectif</span><a class="t" href="#galerie">Galerie : 2 étoiles, 1 souhait</a></span></li>
+      <li><span class="h">16h20 – 16h30</span><span><span class="tag collectif">Collectif</span><a class="t" href="#bilan">Bilan et préparation de la visio « évaluation »</a></span></li>
+    </ul>
+  </div>
+
+  <div class="carte">
+    <h3>Pour commencer : ma fiche « Ma suppléance »</h3>
+    <p>Ouvrez la trame, faites-en une copie à votre nom, puis notez votre établissement, votre discipline, la classe choisie pour le fil rouge et le chapitre que vous allez enseigner.</p>
+    <div class="boutons" data-liens="a0"></div>
+  </div>
+</section>
+
+<section id="a1">
+  <h2>Atelier 1 · Chasse aux attendus</h2>
+  <p class="sous">Lire un texte officiel pour en tirer ce qui servira à la classe.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 40 min</span><span>👥 Binômes de même discipline ou de même cycle</span><span>📄 Fiche guidée</span></div>
+    <ol class="etapes">
+      <li>Repérez le <strong>texte de référence</strong> de votre classe : programme du cycle 3 ou 4, programme du lycée, référentiel de diplôme (voie professionnelle). Les liens sont dans <a href="#ressources">Ressources</a>.</li>
+      <li>Retrouvez le <strong>thème ou chapitre</strong> de votre fil rouge et relevez-en les <strong>attendus</strong> : de fin d'année, de fin de cycle ou du diplôme.</li>
+      <li>Identifiez les <strong>compétences</strong> concernées : domaines du socle au collège, compétences disciplinaires ou professionnelles au lycée.</li>
+      <li>Si elles existent, consultez les <strong>repères de progression</strong> : qu'est-ce qui a été vu avant ? Qu'est-ce qui viendra après ?</li>
+      <li>Avec votre binôme, comparez : <em>ce texte vous aide-t-il ou vous contraint-il ?</em> Notez un argument pour chaque réponse.</li>
+    </ol>
+    <div class="prod"><b>Production :</b> la fiche « Attendus » complétée (à votre nom) dans le dossier de dépôt de l'atelier 1.</div>
+    <div class="boutons" data-liens="a1"></div>
+  </div>
+</section>
+
+<section id="a2">
+  <h2>Atelier 2 · Ma programmation jusqu'en juin</h2>
+  <p class="sous">Programmation = unité de temps. Progression = unité de sens. Vous êtes en poste depuis septembre : on fait le point, puis on prévoit la suite de l'année.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 30 min</span><span>👤 Seul, puis échange en binôme de même discipline</span><span>📅 Calendrier scolaire 2026-2027</span></div>
+    <h3>Étape 1 · Bilan de septembre à novembre (8 min)</h3>
+    <ol class="etapes">
+      <li>Listez les séquences <strong>déjà traitées</strong> avec votre classe et celle <strong>en cours</strong>.</li>
+      <li>Comparez avec les attendus de l'année (atelier 1) : ce qui est <strong>fait</strong>, ce qui est <strong>à consolider</strong>, ce qui n'est <strong>pas encore abordé</strong>.</li>
+    </ol>
+    <h3>Étape 2 · Le temps qui reste vraiment (8 min)</h3>
+    <ol class="etapes">
+      <li>Comptez les <strong>semaines de cours</strong> de décembre à la fin de l'année, en déduisant vacances (zone A), jours fériés, examens blancs, conseils de classe, sorties et PFMP (voie professionnelle).</li>
+      <li>Attention à la <strong>fin d'année</strong> : en 3e, en 1re, en terminale et dans les classes à examen, les cours s'arrêtent souvent plus tôt.</li>
+      <li>Multipliez par votre volume horaire hebdomadaire, puis <strong>retirez une marge de 10 à 15 %</strong> pour les imprévus.</li>
+    </ol>
+    <h3>Étape 3 · Répartir et donner du sens (14 min)</h3>
+    <ol class="etapes">
+      <li>Répartissez les séquences restantes <strong>période par période</strong> jusqu'en juin : <em>temps disponible ÷ séquences à travailler = programmation</em>.</li>
+      <li>Vérifiez la <strong>progression</strong> : l'ordre des séquences est-il logique ? Quel type de progression choisissez-vous (segmentée, spiralaire, mixte, pluridisciplinaire) ? Où reprendre en spirale ce qui reste <strong>à consolider</strong> depuis le 1er trimestre ?</li>
+      <li>Avec votre binôme : comparez avec la <strong>progression commune de l'équipe disciplinaire</strong> de votre établissement, si elle existe.</li>
+    </ol>
+    <div class="prod"><b>Production :</b> le tableau de programmation par période, jusqu'en juin. Gardez-le : la séquence de l'atelier 4 doit y trouver sa place.</div>
+    <div class="boutons" data-liens="a2"></div>
+    <p style="margin:14px 0 0;font-size:.92rem">📅 <a href="https://www.education.gouv.fr/calendrier-scolaire-100148" target="_blank" rel="noopener">Calendrier scolaire officiel</a> : la région académique Bourgogne-Franche-Comté est en zone A.</p>
+  </div>
+</section>
+
+<section id="a3">
+  <h2>Atelier 3 · L'atelier des verbes</h2>
+  <p class="sous">Un objectif opérationnel décrit ce que l'élève <strong>fera</strong>, dans quelles <strong>conditions</strong>, et à partir de quand c'est <strong>réussi</strong>.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 30 min</span><span>👥 Seul puis relecture en binôme</span><span>🔎 Grille de Mager</span></div>
+
+    <h3>Étape 1 · Transformer 6 objectifs flous (10 min)</h3>
+    <p>Choisissez-en au moins 3, de préférence hors de votre discipline, et réécrivez-les en objectifs opérationnels.</p>
+    <table class="grille">
+      <tr><th>#</th><th>Objectif flou</th></tr>
+      <tr><td>1</td><td>Comprendre la photosynthèse</td></tr>
+      <tr><td>2</td><td>Connaître les grandes étapes de la Révolution française</td></tr>
+      <tr><td>3</td><td>Savoir rédiger un paragraphe argumenté</td></tr>
+      <tr><td>4</td><td>Maîtriser le théorème de Pythagore</td></tr>
+      <tr><td>5</td><td>Être sensibilisé aux règles de sécurité de l'atelier</td></tr>
+      <tr><td>6</td><td>Découvrir le passé composé en anglais</td></tr>
+    </table>
+    <details>
+      <summary>Voir un exemple corrigé</summary>
+      <p><em>« Comprendre la photosynthèse »</em> devient : <strong>« À partir d'un schéma muet d'une feuille (conditions), l'élève légende (verbe observable) les entrées et les sorties de la photosynthèse, avec au moins 4 éléments sur 5 corrects (critère). »</strong></p>
+    </details>
+
+    <h3 style="margin-top:18px">Étape 2 · Mon fil rouge (10 min)</h3>
+    <p>Rédigez l'<strong>objectif général</strong> de votre séquence, puis <strong>3 objectifs opérationnels</strong>.</p>
+
+    <h3 style="margin-top:18px">Étape 3 · Relecture croisée (10 min)</h3>
+    <p>Échangez avec votre voisin. Pour chacun de ses objectifs, cochez la grille :</p>
+    <table class="grille">
+      <tr><th>Critère</th><th>Question à se poser</th></tr>
+      <tr><td>Comportement</td><td>Le verbe décrit-il une action que je peux <strong>voir</strong> ou <strong>entendre</strong> ? (pas « connaître », « comprendre », « savoir »)</td></tr>
+      <tr><td>Conditions</td><td>Avec quoi, à partir de quoi, en combien de temps, seul ou à plusieurs ?</td></tr>
+      <tr><td>Critère de réussite</td><td>À partir de quand dira-t-on que c'est réussi ?</td></tr>
+    </table>
+    <div class="prod"><b>Production :</b> vos 3 objectifs opérationnels, relus et corrigés, ajoutés à votre trame de séquence (atelier 4).</div>
+    <div class="boutons" data-liens="a3"></div>
+  </div>
+</section>
+
+<section id="tissage">
+  <h2>Quiz flash · On revient sur le matin</h2>
+  <p class="sous">Trois questions, sans note. On se rappelle ce qu'on a vu avant d'aller plus loin : c'est le tissage.</p>
+  <div class="carte" id="quiz">
+    <div class="q">
+      <p>1. « Je répartis mes séquences entre la rentrée et les vacances de Noël. » Je fais…</p>
+      <div class="opts" data-bonne="0">
+        <button>une programmation</button><button>une progression</button><button>une séance</button>
+      </div>
+      <div class="explic">La programmation est une <strong>unité de temps</strong>. La progression, elle, est l'enchaînement logique des séquences : une <strong>unité de sens</strong>.</div>
+    </div>
+    <div class="q">
+      <p>2. Quel objectif est opérationnel ?</p>
+      <div class="opts" data-bonne="1">
+        <button>Connaître les fractions</button><button>Placer 5 fractions sur une droite graduée sans erreur</button><button>Comprendre les fractions</button>
+      </div>
+      <div class="explic">Seul le deuxième contient un <strong>verbe observable</strong> (placer), une <strong>condition</strong> (sur une droite graduée) et un <strong>critère</strong> (5 sans erreur).</div>
+    </div>
+    <div class="q">
+      <p>3. Une même notion revient plusieurs fois dans l'année, à chaque fois un peu plus approfondie. C'est une progression…</p>
+      <div class="opts" data-bonne="2">
+        <button>segmentée</button><button>pluridisciplinaire</button><button>spiralaire</button>
+      </div>
+      <div class="explic">La progression <strong>spiralaire</strong> reprend une notion à plusieurs reprises en augmentant la difficulté à chaque fois.</div>
+    </div>
+  </div>
+</section>
+
+<section id="a4">
+  <h2>Atelier 4 · Ma séquence</h2>
+  <p class="sous">On assemble les pièces du matin dans une trame commune.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 60 min</span><span>👤 Individuel, accompagné par le formateur</span><span>📄 Trame de séquence</span></div>
+    <ol class="etapes">
+      <li><strong>Situer</strong> la séquence : niveau, place dans la progression (atelier 2), nombre de séances.</li>
+      <li><strong>Reporter</strong> l'objectif général et les objectifs opérationnels (atelier 3) ainsi que les compétences et attendus (atelier 1).</li>
+      <li><strong>Pré-requis</strong> : de quoi les élèves ont-ils besoin pour commencer ? Comment allez-vous le vérifier rapidement en début de séquence ?</li>
+      <li><strong>Savoirs associés</strong> : quelles notions seront travaillées ?</li>
+      <li><strong>Éclairage didactique</strong> : quelles <strong>représentations</strong> les élèves ont-ils sur cette notion ? Quelle <strong>erreur typique</strong> s'attend-on à voir ? Que dit-elle de leur raisonnement ?</li>
+      <li><strong>Déroulé</strong> : remplissez le tableau des séances (objectif, activité, modalité, support, différenciation, trace écrite).</li>
+    </ol>
+    <details>
+      <summary>Les questions pour vérifier sa cohérence</summary>
+      <ul>
+        <li>Chaque séance sert-elle au moins un objectif opérationnel ?</li>
+        <li>Les activités sont-elles choisies <em>après</em> les objectifs, et pas l'inverse ?</li>
+        <li>La durée est-elle réaliste au regard de la programmation ?</li>
+        <li>Ai-je prévu une aide pour les élèves en difficulté et un prolongement pour ceux qui vont plus vite ?</li>
+      </ul>
+    </details>
+    <div class="prod"><b>Production :</b> la trame de séquence complétée, déposée dans le dossier de l'atelier 4. Elle sera vue en galerie à 15h50.</div>
+    <div class="boutons" data-liens="a4"></div>
+  </div>
+</section>
+
+<section id="a5">
+  <h2>Atelier 5 · À la carte</h2>
+  <p class="sous">40 minutes. Choisissez <strong>un</strong> parcours selon vos besoins du moment.</p>
+  <div class="choix">
+    <div class="carte">
+      <h3><span class="lettre">A</span>Détailler une séance</h3>
+      <p>Prenez une séance de votre séquence et rédigez-la en détail :</p>
+      <ul>
+        <li><strong>Tissage</strong> (5 min) : 3 questions flash sur la séance précédente.</li>
+        <li><strong>Problème</strong> : quelle question va mettre les élèves au travail ?</li>
+        <li><strong>Activités</strong> : consignes exactes, durées, modalités.</li>
+        <li><strong>Différenciation</strong> : coup de pouce et défi.</li>
+        <li><strong>Trace écrite</strong> et bilan « qu'avez-vous appris ? ».</li>
+      </ul>
+      <div class="boutons" data-liens="a5a"></div>
+    </div>
+    <div class="carte">
+      <h3><span class="lettre">B</span>Faire produire, puis auditer une séquence par une IA</h3>
+      <p>Faites générer une séquence par un outil d'IA <strong>autorisé dans votre académie</strong>, puis analysez-la avec les critères de la journée.</p>
+      <pre class="prompt" id="prompt">Tu es professeur de [discipline] en [niveau] dans un établissement français.
+Voici un extrait du programme officiel : [coller l'extrait].
+Propose une séquence de [nombre] séances de [durée] min avec :
+- un objectif général et 3 objectifs opérationnels (verbe observable, conditions, critère de réussite) ;
+- les pré-requis et les savoirs associés ;
+- les erreurs ou représentations fréquentes des élèves sur cette notion ;
+- pour chaque séance : objectif, activité, modalité, différenciation, trace écrite.</pre>
+      <button class="btn copier" type="button" onclick="copierPrompt(this)">Copier le prompt</button>
+      <p style="margin-top:12px"><strong>Audit :</strong> les objectifs sont-ils observables ? La séquence respecte-t-elle vraiment le programme (vérifiez dans le texte) ? Y a-t-il des erreurs ? Que garderiez-vous, que changeriez-vous ?</p>
+      <p style="font-size:.9rem;color:var(--doux)">⚠️ Aucune donnée d'élève (nom, note, difficulté) dans l'outil. Vous restez responsable du contenu.</p>
+      <div class="boutons" data-liens="a5b"></div>
+    </div>
+    <div class="carte">
+      <h3><span class="lettre">C</span>Le bilan de mon premier trimestre</h3>
+      <p>Prenez du recul sur une séquence que vous avez déjà enseignée depuis septembre :</p>
+      <ul>
+        <li>Les <strong>objectifs</strong> étaient-ils clairs et observables ? Ont-ils été atteints ?</li>
+        <li>Quelles <strong>activités</strong> ont fonctionné ? Lesquelles ont décroché les élèves, et pourquoi ?</li>
+        <li>Quelles <strong>erreurs d'élèves</strong> avez-vous vues revenir ? Que révèlent-elles ?</li>
+        <li>Réécrivez <strong>la séquence en mieux</strong> : ce que vous gardez, ce que vous changez pour l'an prochain ou pour une autre classe.</li>
+      </ul>
+      <div class="boutons" data-liens="a5c"></div>
+    </div>
+    <div class="carte">
+      <h3><span class="lettre">D</span>Construire un tableau de suivi des compétences</h3>
+      <p>Construisez un tableau de suivi pour votre classe, inspiré des exemples académiques (voir <a href="#ressources">Ressources</a>) :</p>
+      <ul>
+        <li>en lignes : les élèves (anonymisez-les pour aujourd'hui) ;</li>
+        <li>en colonnes : les compétences de votre séquence ;</li>
+        <li>un code simple de niveau de maîtrise.</li>
+      </ul>
+      <p style="font-size:.9rem;color:var(--doux)">Ce tableau servira de point de départ pour la visio consacrée à l'évaluation.</p>
+      <div class="boutons" data-liens="a5d"></div>
+    </div>
+  </div>
+</section>
+
+<section id="galerie">
+  <h2>Galerie · 2 étoiles, 1 souhait</h2>
+  <p class="sous">Allez lire les productions des collègues et laissez un commentaire bienveillant et précis.</p>
+  <div class="carte">
+    <ol class="etapes">
+      <li>Ouvrez le dossier de dépôt de l'atelier 4 et choisissez <strong>deux séquences</strong> qui ne sont pas de votre discipline.</li>
+      <li>Ajoutez un <strong>commentaire Google Docs</strong> (Insertion → Commentaire) : ⭐ deux points forts et 🙏 une suggestion d'amélioration.</li>
+      <li>Revenez à votre séquence et lisez les commentaires reçus.</li>
+    </ol>
+    <div class="boutons" data-liens="galerie"></div>
+  </div>
+</section>
+
+<section id="bilan">
+  <h2>Bilan · Et après ?</h2>
+  <p class="sous">La prochaine visio portera sur l'évaluation. Elle partira de vos questions.</p>
+  <div class="carte">
+    <p>Dans le document partagé, notez :</p>
+    <ul>
+      <li><strong>Une chose</strong> que vous mettrez en place dès la semaine prochaine.</li>
+      <li><strong>Une question sur l'évaluation</strong> de la séquence que vous venez de construire.</li>
+    </ul>
+    <div class="boutons" data-liens="bilan"></div>
+  </div>
+</section>
+
+<section id="ressources">
+  <h2>Ressources</h2>
+  <p class="sous">Les textes officiels et les outils de la journée.</p>
+  <div class="ressources">
+    <div class="carte">
+      <h3>Textes institutionnels</h3>
+      <ul>
+        <li><a href="https://www.education.gouv.fr/bo/15/Hebdo17/MENE1506516D.htm?cid_bo=87834" target="_blank" rel="noopener">Socle commun de connaissances, de compétences et de culture</a></li>
+        <li><a href="https://eduscol.education.fr/87/j-enseigne-au-cycle-3" target="_blank" rel="noopener">J'enseigne au cycle 3 (Éduscol)</a></li>
+        <li><a href="https://eduscol.education.fr/90/j-enseigne-au-cycle-4" target="_blank" rel="noopener">J'enseigne au cycle 4 (Éduscol)</a></li>
+        <li><a href="https://eduscol.education.fr/137/reperes-annuels-de-progression-et-attendus-de-fin-d-annee-du-cp-la-3e" target="_blank" rel="noopener">Repères annuels de progression et attendus de fin d'année, CP–3e</a></li>
+        <li><a href="https://www.education.gouv.fr/les-programmes-du-lycee-general-et-technologique-9812" target="_blank" rel="noopener">Programmes du lycée général et technologique</a></li>
+        <li><a href="https://eduscol.education.fr/" target="_blank" rel="noopener">Éduscol</a> : programmes et référentiels de la voie professionnelle</li>
+      </ul>
+    </div>
+    <div class="carte">
+      <h3>Outils pour construire</h3>
+      <ul>
+        <li><a href="https://www.bienenseigner.com/taxonomie-de-bloom/" target="_blank" rel="noopener">La taxonomie de Bloom, guide complet</a></li>
+        <li><a href="https://svt.ac-versailles.fr/spip.php?article1031" target="_blank" rel="noopener">Tableur de suivi des compétences, SVT lycée (ac-Versailles)</a></li>
+        <li><a href="http://pedagogie.ac-limoges.fr/lettres/IMG/pdf/01_Referentiel_de_suivi_des_competences_a_l_usage_des_professeurs_de_lettres_du_lycee_decembre2017.pdf" target="_blank" rel="noopener">Référentiel de suivi des compétences, lettres lycée (ac-Limoges)</a></li>
+        <li><a href="https://www.education.gouv.fr/calendrier-scolaire-100148" target="_blank" rel="noopener">Calendrier scolaire officiel</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="carte" style="margin-top:14px">
+    <h3>Aide-mémoire : des verbes observables (Bloom révisée)</h3>
+    <table class="grille verbes">
+      <tr><th>Niveau</th><th>Verbes possibles</th></tr>
+      <tr><td>Se rappeler</td><td>citer, nommer, lister, réciter, identifier, reconnaître</td></tr>
+      <tr><td>Comprendre</td><td>reformuler, expliquer, résumer, classer, illustrer par un exemple</td></tr>
+      <tr><td>Appliquer</td><td>calculer, utiliser, exécuter, résoudre, mettre en œuvre</td></tr>
+      <tr><td>Analyser</td><td>comparer, distinguer, organiser, relier, déduire</td></tr>
+      <tr><td>Évaluer</td><td>justifier, argumenter, critiquer, vérifier, choisir</td></tr>
+      <tr><td>Créer</td><td>concevoir, rédiger, planifier, produire, imaginer</td></tr>
+    </table>
+    <p style="font-size:.92rem;color:var(--doux);margin:6px 0 0">À éviter dans un objectif : <em>connaître, savoir, comprendre, maîtriser, être sensibilisé à…</em> On ne peut pas les observer directement.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Journée 3 : Construire son enseignement.</div>
+</footer>
+
+<script>
+/* =====================================================================
+   LIENS GOOGLE DRIVE : remplacez les "" par vos liens de partage.
+   Laisser "" = le bouton s'affiche « Lien bientôt disponible ».
+   ===================================================================== */
+var LIENS = {
+  a0:      { trame: "", depot: "" },   // Fiche « Ma suppléance »
+  a1:      { trame: "", depot: "" },   // Atelier 1 · Fiche Attendus
+  a2:      { trame: "", depot: "" },   // Atelier 2 · Tableau de programmation
+  a3:      { trame: "", depot: "" },   // Atelier 3 · Objectifs opérationnels
+  a4:      { trame: "", depot: "" },   // Atelier 4 · Trame de séquence
+  a5a:     { trame: "", depot: "" },   // Atelier 5A · Trame de séance
+  a5b:     { trame: "", depot: "" },   // Atelier 5B · Grille d'audit IA
+  a5c:     { trame: "", depot: "" },   // Atelier 5C · Étude de cas
+  a5d:     { trame: "", depot: "" },   // Atelier 5D · Tableau de suivi
+  galerie: { depot: "" },              // Dossier des séquences (atelier 4)
+  bilan:   { doc: "" }                 // Document partagé du bilan
+};
+
+var LIBELLES = {
+  trame: "📄 Ouvrir la trame",
+  depot: "📤 Déposer ma production",
+  doc:   "✍️ Ouvrir le document partagé"
+};
+var LIBELLE_GALERIE = "🖼 Ouvrir la galerie";
+
+document.querySelectorAll("[data-liens]").forEach(function (zone) {
+  var cle = zone.getAttribute("data-liens");
+  var liens = LIENS[cle] || {};
+  Object.keys(liens).forEach(function (type) {
+    var url = liens[type];
+    var a = document.createElement("a");
+    a.className = "btn" + (type === "trame" || type === "doc" ? " plein" : "");
+    a.textContent = (cle === "galerie") ? LIBELLE_GALERIE : LIBELLES[type];
+    if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener"; }
+    else { a.className = "btn inactif"; a.textContent += " (bientôt disponible)"; a.setAttribute("aria-disabled", "true"); }
+    zone.appendChild(a);
+  });
+});
+
+document.querySelectorAll("#quiz .opts").forEach(function (bloc) {
+  var bonne = parseInt(bloc.getAttribute("data-bonne"), 10);
+  var boutons = bloc.querySelectorAll("button");
+  boutons.forEach(function (b, i) {
+    b.type = "button";
+    b.addEventListener("click", function () {
+      boutons.forEach(function (x) { x.classList.remove("ok", "ko"); });
+      b.classList.add(i === bonne ? "ok" : "ko");
+      boutons[bonne].classList.add("ok");
+      bloc.parentNode.classList.add("repondu");
+    });
+  });
+});
+
+function copierPrompt(btn) {
+  var txt = document.getElementById("prompt").innerText;
+  function fait() { btn.textContent = "Copié ✓"; setTimeout(function(){ btn.textContent = "Copier le prompt"; }, 2000); }
+  if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(fait, function(){}); }
+}
+</script>
+</body>
+</html>
