@@ -15,7 +15,7 @@
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--texte);background:var(--fond);line-height:1.5;font-size:15.5px}
 a{color:var(--bleu)}
 header.haut{background:var(--encre);color:#fff;padding:22px 0 0}
-.wrap{max-width:1320px;margin:0 auto;padding:0 18px}
+.wrap{max-width:1360px;margin:0 auto;padding:0 18px}
 .haut .ligne{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
 .haut h1{font-family:Georgia,serif;font-weight:600;font-size:1.7rem;margin:0}
 .haut p{margin:4px 0 0;opacity:.8;font-size:.95rem}
@@ -33,14 +33,14 @@ header.haut{background:var(--encre);color:#fff;padding:22px 0 0}
 .btn.mini{font-size:.8rem;padding:3px 9px;border-radius:7px}
 .btn:hover{filter:brightness(.95)}
 .panneau{display:none}
-.panneau.actif{display:grid;grid-template-columns:minmax(360px,430px) 1fr;gap:18px;align-items:start}
+.panneau.actif{display:grid;grid-template-columns:minmax(360px,440px) 1fr;gap:18px;align-items:start}
 .form{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:16px;max-height:calc(100vh - 40px);overflow:auto;position:sticky;top:12px}
 .form h2{font-family:Georgia,serif;font-size:1.2rem;color:var(--encre);margin:0 0 4px}
 .form h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:18px 0 8px;border-top:1px solid var(--trait);padding-top:14px}
-.form h3:first-of-type{border-top:0;padding-top:0}
 label.ch{display:block;font-size:.85rem;font-weight:600;color:var(--encre);margin:9px 0 3px}
 label.ch small{font-weight:400;color:var(--doux)}
 input[type=text],input[type=number],input[type=date],textarea,select{font:inherit;font-size:.92rem;width:100%;border:1px solid #d3cec3;border-radius:8px;padding:7px 9px;background:#fdfcfa;color:var(--texte)}
+input[type=color]{width:34px;height:32px;border:1px solid #d3cec3;border-radius:8px;padding:2px;background:#fff;cursor:pointer}
 textarea{min-height:58px;resize:vertical}
 input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);border-color:var(--bleu)}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -48,10 +48,13 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .bloc{border:1px solid var(--trait);border-radius:10px;padding:10px 12px;margin:8px 0;background:#fcfbf8}
 .bloc .tete{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .bloc .tete b{color:var(--encre);font-size:.92rem}
-.ligne-liste{display:grid;grid-template-columns:1fr 70px 28px;gap:6px;margin:5px 0;align-items:center}
-.ligne-liste.l3{grid-template-columns:1fr 128px 128px 28px}
-.ligne-liste.l2{grid-template-columns:128px 1fr 28px}
-.suppr{border:0;background:none;color:var(--rouge);font-size:1.1rem;cursor:pointer;padding:0}
+.lg{display:grid;gap:6px;margin:5px 0;align-items:center}
+.lg.seq{grid-template-columns:34px 1fr 64px 22px 22px 22px}
+.lg.cren{grid-template-columns:1fr 1fr 1fr 22px}
+.lg.per{grid-template-columns:1fr 118px 118px 22px}
+.lg.typ{grid-template-columns:34px 1fr 130px 22px}
+.suppr,.fl{border:0;background:none;color:var(--rouge);font-size:1.05rem;cursor:pointer;padding:0;line-height:1}
+.fl{color:var(--doux);font-size:.9rem}
 .aide{font-size:.85rem;color:var(--doux);margin:4px 0}
 .coche{display:flex;align-items:center;gap:7px;font-size:.9rem;margin:8px 0}
 .puces{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
@@ -59,6 +62,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .puce.ok{background:var(--vert-clair);border-color:#bcd9c6;color:var(--vert)}
 .puce.ko{background:var(--rouge-clair);border-color:#efc2bb;color:var(--rouge)}
 .puce.mo{background:var(--orange-clair);border-color:#ecd9a4;color:#8a6410}
+.vol{font-size:.85rem;background:var(--bleu-clair);color:var(--encre);border-radius:8px;padding:5px 9px;margin-top:6px}
 .sortie{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:20px;min-width:0}
 .sortie .actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .alertes{margin:0 0 14px;padding:0;list-style:none}
@@ -71,7 +75,11 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .demarche li::before{content:counter(e) ". ";font-weight:700;color:var(--bleu)}
 .demarche li.ici{background:var(--bleu);color:#fff}
 .demarche li.ici::before{color:#fff}
-/* documents générés */
+.palette{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fcfbf8;border:1px solid var(--trait);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+.palette b{font-size:.85rem;color:var(--encre);margin-right:4px}
+.outil{font:inherit;font-size:.82rem;border:2px solid transparent;border-radius:8px;padding:4px 10px;cursor:pointer;background:#eee;color:#222}
+.outil.sel{border-color:var(--encre);box-shadow:0 0 0 2px #fff inset}
+.palette label{font-size:.82rem;display:flex;align-items:center;gap:4px;margin-left:auto}
 .doc{font-size:.9rem;overflow-x:auto}
 .doc h2{font-family:Georgia,serif;color:var(--encre);font-size:1.35rem;margin:0 0 4px}
 .doc .sous{color:var(--doux);margin:0 0 12px}
@@ -80,40 +88,54 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .doc th{background:#e6eef6;color:var(--encre)}
 .doc td.lab{background:#f3f0e9;font-weight:700;color:var(--encre);width:22%}
 .doc td.etape{background:#f3f0e9;font-weight:700;color:var(--encre)}
-.doc .fiche-sea{min-width:860px;table-layout:fixed}
-.doc .fiche-sea td,.doc .fiche-sea th{overflow-wrap:break-word;hyphens:auto;font-size:.84rem}
 .doc td.vac{background:#ece9e2;color:var(--doux);text-align:center;font-weight:700;letter-spacing:.04em;font-size:.8rem}
-.doc td.pfmp{background:#d9e5f1;color:#1f4a72;text-align:center;font-weight:600}
 .doc td.tampon{background:#fff1cc;color:#6e500c;text-align:center;font-style:italic}
-.doc td.vide{background:#fff}
-.doc td.fin{background:#f0f0f0;color:#888;text-align:center}
-.doc td.sem{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--doux);font-size:.8rem;width:88px}
-.doc .grille-prog td{font-size:.82rem;text-align:center;vertical-align:middle}
+.doc td.fin{background:#f0f0f0;color:#999;text-align:center}
+.doc td.sem{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--doux);font-size:.8rem;width:96px}
+.doc .grille-prog td{font-size:.8rem;text-align:center;vertical-align:middle;padding:4px 6px}
 .doc .grille-prog td.sem{text-align:left}
-.doc .evt{display:block;font-size:.72rem;color:var(--rouge);font-weight:700}
+.doc .grille-prog td.clic{cursor:crosshair}
+.doc .grille-prog td.clic:hover{outline:2px solid var(--encre);outline-offset:-2px}
+.doc .grille-prog .suite{color:rgba(0,0,0,.35)}
+.doc .evt{display:block;font-size:.72rem;font-weight:700}
+.doc .nbc{display:block;font-size:.68rem;color:var(--doux)}
 .doc .resume{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0 14px}
 .doc .resume div{border:1px solid var(--trait);border-radius:10px;padding:10px 12px;background:#fcfbf8}
 .doc .resume b{display:block;color:var(--encre)}
 .doc .phase{font-weight:700;color:var(--accent)}
 .doc .aide-doc{color:var(--doux);font-style:italic;font-size:.82rem}
+.doc .fiche-sea{min-width:820px;table-layout:fixed}
+.doc .fiche-sea td,.doc .fiche-sea th{overflow-wrap:break-word;hyphens:auto;font-size:.84rem}
+.legende{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;margin:4px 0 8px}
+.legende span{padding:2px 8px;border-radius:6px}
 .vide-msg{color:var(--doux);text-align:center;padding:40px 10px}
+.ress{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.ress .carte-r{background:#fff;border:1px solid var(--trait);border-radius:12px;padding:14px 16px}
+.ress h3{margin:0 0 6px;color:var(--encre);font-size:1.02rem}
+.ress ul{margin:0;padding-left:18px}
+.ress li{margin-bottom:6px;font-size:.92rem}
+.ress li small{color:var(--doux)}
+.socle-l{list-style:none;padding:0;margin:0}
+.socle-l li{margin:3px 0;font-size:.88rem}
+.encart{background:var(--bleu-clair);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.88rem}
+.encart ul{margin:4px 0 0;padding-left:18px}
 .modale{position:fixed;inset:0;background:rgba(29,42,68,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modale.ouverte{display:flex}
 .modale .boite{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:88vh;overflow:auto;padding:20px}
 .modale pre{white-space:pre-wrap;background:var(--encre);color:#f3f1ea;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.5}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--encre);color:#fff;padding:9px 16px;border-radius:9px;font-size:.9rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
 .toast.vu{opacity:1}
-.guide{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:22px 26px;max-width:900px}
+.guide{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:22px 26px;max-width:920px;grid-column:1/-1}
 .guide h2{font-family:Georgia,serif;color:var(--encre)}
 .guide li{margin-bottom:6px}
 @media (max-width:900px){.panneau.actif{grid-template-columns:1fr}.form{position:static;max-height:none}}
 @media print{
-  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast{display:none!important}
-  body{background:#fff;font-size:11pt}
+  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast,.palette{display:none!important}
+  body{background:#fff;font-size:10pt}
   .panneau.actif{display:block}
   .sortie{border:0;padding:0}
   .doc{overflow:visible}
-  @page{size:landscape;margin:12mm}
+  @page{size:landscape;margin:10mm}
 }
 </style>
 </head>
@@ -124,7 +146,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     <div class="ligne">
       <div>
         <h1>L'atelier du suppléant</h1>
-        <p>Générer une programmation annuelle, une séquence et une séance, du cadre institutionnel à la classe.</p>
+        <p>Programmation annuelle, séquence et séance : du cadre institutionnel à la classe.</p>
       </div>
       <a class="retour" href="index.html">← Retour à la journée J3</a>
     </div>
@@ -132,6 +154,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <button class="actif" data-onglet="prog">① Programmation annuelle</button>
       <button data-onglet="seq">② Séquence</button>
       <button data-onglet="sea">③ Séance</button>
+      <button data-onglet="ress">📚 Textes et ressources</button>
       <button data-onglet="guide">Mode d'emploi</button>
     </nav>
   </div>
@@ -149,22 +172,38 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   <section class="panneau actif" id="p-prog">
     <div class="form">
       <h2>Programmation annuelle</h2>
-      <p class="aide">Une <b>unité de temps</b> : placer ses séquences dans le temps réellement disponible, semaine par semaine, jusqu'en juin.</p>
+      <p class="aide">Une <b>unité de temps</b> : placer ses séquences dans le temps réellement disponible, semaine par semaine.</p>
       <ul class="demarche">
-        <li>Transposition didactique : lire les programmes</li>
-        <li>Problématiser et découper en séquences</li>
-        <li class="ici">Planifier selon les heures et le calendrier</li>
+        <li>Lire les programmes</li>
+        <li>Découper en séquences</li>
+        <li class="ici">Planifier selon ses cours et le calendrier</li>
       </ul>
-      <h3>Cadre</h3>
+
+      <h3>Mon cadre</h3>
       <div class="duo">
-        <div><label class="ch">Discipline(s)</label><input type="text" data-p="prog.discipline" placeholder="ex. Lettres – Histoire"></div>
-        <div><label class="ch">Établissement</label><input type="text" data-p="prog.etab" placeholder="ex. LP …"></div>
+        <div><label class="ch">Type d'établissement</label>
+          <select data-p="prog.etab" data-rerender="1"><option value="college">Collège</option><option value="lgt">Lycée général et technologique</option><option value="lp">Lycée professionnel</option></select></div>
+        <div><label class="ch">Zone de vacances</label>
+          <select data-p="prog.zone"><option value="A">Zone A (Besançon, Dijon…)</option><option value="B">Zone B</option><option value="C">Zone C</option></select></div>
+      </div>
+      <div class="duo">
+        <div><label class="ch">Ma discipline</label><input type="text" data-p="prog.discipline" list="dlDisc" placeholder="ex. Mathématiques"></div>
+        <div><label class="ch">Établissement <small>(facultatif)</small></label><input type="text" data-p="prog.nomEtab"></div>
       </div>
       <div class="duo">
         <div><label class="ch">Marge de sécurité <small>(%)</small></label><input type="number" min="0" max="40" data-p="prog.marge"></div>
-        <div><label class="ch">Calendrier</label><select data-p="prog.zone"><option value="A">2026-2027 · Zone A (BFC)</option></select></div>
+        <div><label class="ch">Alternance A / B</label><select data-p="prog.ab"><option value="A">1re semaine de cours = A</option><option value="B">1re semaine de cours = B</option></select></div>
       </div>
-      <label class="coche"><input type="checkbox" data-p="prog.tampon"> Prévoir une semaine « tampon » avant chaque période de vacances</label>
+      <label class="coche"><input type="checkbox" data-p="prog.tampon"> Semaine « tampon » avant chaque période de vacances</label>
+
+      <h3>Mes types d'événements</h3>
+      <p class="aide">Ils servent à marquer le calendrier (clic sur la grille) ou des périodes datées. Modifiez-les, créez les vôtres.</p>
+      <div id="listeTypes"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn mini" type="button" data-action="ajoutType">+ Nouveau type</button>
+        <button class="btn mini discret" type="button" data-action="typesDefaut">Ajouter les types habituels de mon établissement</button>
+      </div>
+
       <h3>Mes classes</h3>
       <div id="listeClasses"></div>
       <button class="btn mini" type="button" data-action="ajoutClasse">+ Ajouter une classe</button>
@@ -174,10 +213,11 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <button class="btn plein" type="button" data-export="prog">⬇︎ Télécharger en Word</button>
         <button class="btn" type="button" onclick="window.print()">🖨 Imprimer / PDF</button>
         <button class="btn accent" type="button" data-ia="prog">✨ Prompt pour une IA</button>
-        <span class="esp" style="flex:1"></span>
-        <button class="btn discret" type="button" data-exemple="prog">Charger l'exemple</button>
+        <span style="flex:1"></span>
+        <button class="btn discret" type="button" data-exemple="prog">Charger un exemple</button>
         <button class="btn discret" type="button" data-vider="prog">Vider</button>
       </div>
+      <div class="palette" id="palette"></div>
       <ul class="alertes" id="alertes-prog"></ul>
       <div class="doc" id="doc-prog"></div>
     </div>
@@ -191,37 +231,45 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <ul class="demarche">
         <li>Lire les programmes et attendus</li>
         <li class="ici">Problématiser, fixer les objectifs</li>
-        <li class="ici">Découper en séances problématisées</li>
-        <li>Choisir contenus, supports, activités</li>
+        <li class="ici">Découper en séances</li>
+        <li>Choisir contenus et supports</li>
       </ul>
       <h3>Identité</h3>
       <div class="duo">
-        <div><label class="ch">Classe</label><input type="text" data-p="seq.classe" list="dlClasses" placeholder="ex. 2nde MS"></div>
-        <div><label class="ch">Discipline</label><input type="text" data-p="seq.discipline"></div>
+        <div><label class="ch">Classe</label><input type="text" data-p="seq.classe" list="dlClasses" placeholder="ex. 4eB"></div>
+        <div><label class="ch">Discipline</label><input type="text" data-p="seq.discipline" list="dlDisc"></div>
       </div>
       <label class="ch">Titre de la séquence</label><input type="text" data-p="seq.titre" list="dlSeqs">
       <div class="duo">
-        <div><label class="ch">Nombre de séances</label><input type="number" min="1" max="20" data-p="seq.nb"></div>
-        <div><label class="ch">Durée d'une séance <small>(min)</small></label><input type="number" min="15" max="240" data-p="seq.duree"></div>
+        <div><label class="ch">Nombre de séances</label><input type="number" min="1" max="30" data-p="seq.nb"></div>
+        <div><label class="ch">Durée d'une séance <small>(min)</small></label><input type="number" min="15" max="300" data-p="seq.duree" list="dlDurees"></div>
       </div>
-      <label class="ch">Place dans la progression <small>(avant / après)</small></label><input type="text" data-p="seq.place">
+      <label class="ch">Place dans la progression</label><input type="text" data-p="seq.place">
+
       <h3>Le cadre institutionnel</h3>
-      <label class="ch">Programme, thème, attendus</label><textarea data-p="seq.attendus"></textarea>
+      <div class="encart" id="encartTextes"></div>
+      <label class="ch">Programme, thème, attendus <small>(à recopier depuis le texte officiel)</small></label><textarea data-p="seq.attendus"></textarea>
+      <label class="ch" id="lblRef">Référentiel du diplôme <small>(voie professionnelle : compétences, blocs)</small></label><textarea data-p="seq.referentiel" style="min-height:44px"></textarea>
       <label class="ch">Compétences travaillées</label><textarea data-p="seq.comp"></textarea>
+      <label class="ch">Socle commun <small>(composantes visées)</small></label>
+      <div id="listeSocle"></div>
+
       <h3>Problématique et objectifs</h3>
       <label class="ch">Problématique de la séquence</label><input type="text" data-p="seq.probl" placeholder="La question à laquelle la séquence répond">
       <label class="ch">Objectif général <small>(être capable de…)</small></label><input type="text" data-p="seq.og">
       <label class="ch">Objectifs opérationnels <small>(comportement observable + conditions + critère)</small></label>
       <div id="listeObjs"></div>
       <button class="btn mini" type="button" data-action="ajoutObj">+ Ajouter un objectif</button>
+
       <h3>Ce qu'il faut prévoir</h3>
       <label class="ch">Pré-requis</label><textarea data-p="seq.prereq"></textarea>
       <label class="ch">Comment je vérifie les pré-requis</label><input type="text" data-p="seq.verif" placeholder="ex. quiz de 5 questions en début de séance 1">
       <label class="ch">Savoirs associés <small>(notions, connaissances)</small></label><textarea data-p="seq.savoirs"></textarea>
       <label class="ch">Représentations et obstacles prévisibles des élèves</label><textarea data-p="seq.obstacles"></textarea>
+
       <h3>Les séances</h3>
       <button class="btn mini accent plein" type="button" data-action="trameSeances">⚙︎ Générer la trame des séances</button>
-      <p class="aide">Crée automatiquement le nombre de séances indiqué : lancement et diagnostic, apprentissages, réinvestissement, puis une séance d'évaluation à part entière.</p>
+      <p class="aide">Lancement et diagnostic, apprentissages, réinvestissement, puis une séance d'évaluation à part entière.</p>
       <div id="listeSeances"></div>
       <button class="btn mini" type="button" data-action="ajoutSeance">+ Ajouter une séance</button>
     </div>
@@ -230,8 +278,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <button class="btn plein" type="button" data-export="seq">⬇︎ Télécharger en Word</button>
         <button class="btn" type="button" onclick="window.print()">🖨 Imprimer / PDF</button>
         <button class="btn accent" type="button" data-ia="seq">✨ Prompt pour une IA</button>
-        <span class="esp" style="flex:1"></span>
-        <button class="btn discret" type="button" data-exemple="seq">Charger l'exemple</button>
+        <span style="flex:1"></span>
+        <button class="btn discret" type="button" data-exemple="seq">Charger un exemple</button>
         <button class="btn discret" type="button" data-vider="seq">Vider</button>
       </div>
       <ul class="alertes" id="alertes-seq"></ul>
@@ -243,20 +291,19 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   <section class="panneau" id="p-sea">
     <div class="form">
       <h2>Séance</h2>
-      <p class="aide">Élément d'une séquence : elle répond à une problématique, fait alterner activités et postures, et se termine par un bilan qui donne du sens.</p>
+      <p class="aide">Élément d'une séquence : elle répond à une problématique, fait alterner les activités, et se termine par un bilan qui donne du sens.</p>
       <div class="bloc">
         <div class="tete"><b>Partir de ma séquence</b></div>
         <div class="duo" style="margin-top:6px"><select id="choixSeance"></select><button class="btn mini" type="button" data-action="importSeance">Importer</button></div>
-        <p class="aide">Reprend le titre, la place, la problématique, l'objectif et les pré-requis de la séance choisie dans l'onglet ②.</p>
       </div>
       <h3>En-tête de la fiche</h3>
       <label class="ch">Titre de la séance</label><input type="text" data-p="sea.titre">
       <div class="duo">
         <div><label class="ch">Place dans la séquence</label><input type="text" data-p="sea.place"></div>
-        <div><label class="ch">Durée totale <small>(min)</small></label><input type="number" min="15" max="240" data-p="sea.duree"></div>
+        <div><label class="ch">Durée <small>(min)</small></label><input type="number" min="15" max="300" data-p="sea.duree" list="dlDurees"></div>
       </div>
       <div class="duo">
-        <div><label class="ch">Classe</label><input type="text" data-p="sea.classe"></div>
+        <div><label class="ch">Classe</label><input type="text" data-p="sea.classe" list="dlClasses"></div>
         <div><label class="ch">Date</label><input type="date" data-p="sea.date"></div>
       </div>
       <label class="ch">Pré-requis</label><textarea data-p="sea.prereq"></textarea>
@@ -266,17 +313,17 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 
       <h3>Étape introductive</h3>
       <div class="bloc">
-        <div class="tete"><b>Tissage</b><span class="aide">rappel de la séance précédente</span></div>
-        <div class="ligne-liste" style="grid-template-columns:1fr 70px"><input type="text" data-p="sea.tissage.t" placeholder="ex. 3 questions flash sur la séance 1"><input type="number" min="0" data-p="sea.tissage.d" title="minutes"></div>
+        <div class="tete"><b>Tissage</b><span><input type="number" min="0" data-p="sea.tissage.d" style="width:62px" title="minutes"> min</span></div>
+        <input type="text" data-p="sea.tissage.t" placeholder="ex. 3 questions flash sur la séance précédente">
       </div>
       <div class="bloc">
-        <div class="tete"><b>Phase d'accroche</b><span class="aide">de quoi parle-t-on ?</span></div>
-        <div class="ligne-liste" style="grid-template-columns:1fr 70px"><textarea data-p="sea.accroche.t" placeholder="Document, élément d'actualité, situation proche des élèves…"></textarea><input type="number" min="0" data-p="sea.accroche.d" title="minutes"></div>
-        <input type="text" data-p="sea.accroche.sup" placeholder="Support utilisé">
+        <div class="tete"><b>Phase d'accroche</b><span><input type="number" min="0" data-p="sea.accroche.d" style="width:62px" title="minutes"> min</span></div>
+        <textarea data-p="sea.accroche.t" placeholder="De quoi parle-t-on ? Document, actualité, situation proche des élèves…"></textarea>
+        <input type="text" data-p="sea.accroche.sup" placeholder="Support utilisé" style="margin-top:6px">
       </div>
       <div class="bloc">
-        <div class="tete"><b>Phase de problématisation</b><span class="aide">quelle question ?</span></div>
-        <div class="ligne-liste" style="grid-template-columns:1fr 70px"><textarea data-p="sea.problPhase.t" placeholder="Comment les élèves formulent-ils le problème posé par le cours ?"></textarea><input type="number" min="0" data-p="sea.problPhase.d" title="minutes"></div>
+        <div class="tete"><b>Phase de problématisation</b><span><input type="number" min="0" data-p="sea.problPhase.d" style="width:62px" title="minutes"> min</span></div>
+        <textarea data-p="sea.problPhase.t" placeholder="Quelles questions, quels problèmes sont posés ?"></textarea>
       </div>
 
       <h3>Étape de développement</h3>
@@ -285,8 +332,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 
       <h3>Étape de conclusion</h3>
       <div class="bloc">
-        <div class="tete"><b>Phase de synthèse</b><input type="number" min="0" data-p="sea.synthese.d" style="width:70px" title="minutes"></div>
-        <label class="ch">Bilan construit avec les élèves <small>(réponse à la problématique)</small></label><textarea data-p="sea.synthese.t"></textarea>
+        <div class="tete"><b>Phase de synthèse</b><span><input type="number" min="0" data-p="sea.synthese.d" style="width:62px" title="minutes"> min</span></div>
+        <label class="ch">Que retenir ? Réponse à la problématique</label><textarea data-p="sea.synthese.t"></textarea>
         <label class="ch">Trace écrite</label><textarea data-p="sea.synthese.trace"></textarea>
         <label class="ch">Ouverture vers la séance suivante</label><input type="text" data-p="sea.synthese.ouv">
       </div>
@@ -296,8 +343,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <button class="btn plein" type="button" data-export="sea">⬇︎ Télécharger en Word</button>
         <button class="btn" type="button" onclick="window.print()">🖨 Imprimer / PDF</button>
         <button class="btn accent" type="button" data-ia="sea">✨ Prompt pour une IA</button>
-        <span class="esp" style="flex:1"></span>
-        <button class="btn discret" type="button" data-exemple="sea">Charger l'exemple</button>
+        <span style="flex:1"></span>
+        <button class="btn discret" type="button" data-exemple="sea">Charger un exemple</button>
         <button class="btn discret" type="button" data-vider="sea">Vider</button>
       </div>
       <ul class="alertes" id="alertes-sea"></ul>
@@ -305,33 +352,61 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     </div>
   </section>
 
+  <!-- ===================== RESSOURCES ===================== -->
+  <section class="panneau" id="p-ress">
+    <div class="form">
+      <h2>Textes et ressources</h2>
+      <p class="aide">Les textes de référence et les ressources didactiques officielles, filtrés selon votre établissement.</p>
+      <label class="ch">Type d'établissement</label>
+      <select data-p="prog.etab" data-rerender="1"><option value="college">Collège</option><option value="lgt">Lycée général et technologique</option><option value="lp">Lycée professionnel</option></select>
+      <label class="ch">Discipline</label><input type="text" data-p="prog.discipline" list="dlDisc">
+      <label class="ch">Niveau ou thème à chercher <small>(facultatif)</small></label><input type="text" id="rechNiveau" placeholder="ex. 4e, terminale, CAP, seconde pro…">
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+        <a class="btn plein" id="lienRechProg" target="_blank" rel="noopener">🔎 Chercher le programme sur Éduscol</a>
+        <a class="btn" id="lienRechDidac" target="_blank" rel="noopener">🔎 Ressources didactiques de ma discipline</a>
+        <a class="btn" id="lienRechRef" target="_blank" rel="noopener" style="display:none">🔎 Chercher le référentiel de mon diplôme</a>
+      </div>
+      <p class="aide" style="margin-top:10px">Les recherches s'ouvrent dans un nouvel onglet et ne portent que sur les sites officiels (eduscol.education.gouv.fr et education.gouv.fr).</p>
+      <h3>Le socle commun</h3>
+      <p class="aide">5 domaines, 8 composantes évaluées en fin de cycle 4. Il concerne toute la scolarité obligatoire, collège et 3e prépa-métiers compris.</p>
+      <ul class="socle-l" id="socleListe"></ul>
+    </div>
+    <div class="sortie"><div id="doc-ress"></div></div>
+  </section>
+
   <!-- ===================== MODE D'EMPLOI ===================== -->
   <section class="panneau" id="p-guide">
-    <div class="guide" style="grid-column:1/-1">
+    <div class="guide">
       <h2>Mode d'emploi</h2>
-      <p>L'outil suit la démarche « du programme à la séance ». Les trois onglets s'enchaînent : la programmation alimente la séquence, et la séquence alimente la séance.</p>
+      <p>Les trois onglets s'enchaînent : la programmation alimente la séquence, qui alimente la séance. L'onglet 📚 rassemble les textes officiels.</p>
+      <h3>① Programmation annuelle</h3>
       <ol>
-        <li><b>① Programmation annuelle.</b> Saisissez vos classes, leur volume horaire, leurs séquences avec une estimation en heures, les périodes de PFMP et les événements (bac blanc, CCF…). L'outil place automatiquement les séquences semaine par semaine dans le calendrier 2026-2027 de la zone A. Il tient compte des vacances, des jours fériés, du pont de l'Ascension, de la date de fin des cours et d'une marge de sécurité. Il signale tout ce qui ne rentre pas.</li>
-        <li><b>② Séquence.</b> Tapez le titre d'une séquence de votre programmation : la classe et la durée se retrouvent. Rédigez vos objectifs opérationnels : chacun est vérifié en direct (verbe observable ? conditions ? critère de réussite ?). « Générer la trame des séances » propose un découpage, puis l'outil contrôle que chaque objectif est bien travaillé dans au moins une séance.</li>
-        <li><b>③ Séance.</b> Importez une séance de votre séquence, puis remplissez la fiche : étape introductive (tissage, accroche, problématisation), développement (moments, postures du professeur et des élèves, supports, différenciation) et conclusion (synthèse, trace écrite, ouverture). L'outil vérifie le total des durées et l'alternance des postures.</li>
+        <li><b>Mon cadre</b> : choisissez votre type d'établissement, votre zone de vacances et votre discipline. Les vacances et les jours fériés de 2026-2027 sont intégrés.</li>
+        <li><b>Mes classes</b> : pour chaque classe, créez vos <b>créneaux de cours</b> : jour, durée (55 min, 1 h, 1 h 30… ou toute autre durée) et semaine (toutes, A ou B). L'outil calcule votre volume horaire réel semaine par semaine, en retirant les jours fériés.</li>
+        <li><b>Séquences</b> : listez-les dans l'ordre avec une estimation en heures. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
+        <li><b>Le calendrier</b> : choisissez un type d'événement dans la barre au-dessus de la grille (PFMP, stage, sortie, bac blanc…), puis <b>cliquez sur les semaines</b> concernées. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
+        <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
       </ol>
-      <h3>Exporter et conserver</h3>
+      <h3>② Séquence</h3>
+      <p>Tapez le titre d'une séquence de votre programmation : la classe, la place et le nombre de séances se remplissent. L'encart « Textes officiels » propose les liens qui correspondent à votre établissement et à votre discipline. Cochez les composantes du socle visées. Chaque objectif est vérifié en direct : verbe observable, conditions, critère de réussite. L'outil vérifie aussi que chaque objectif est travaillé dans au moins une séance.</p>
+      <h3>③ Séance</h3>
+      <p>La fiche reprend la trame « étape introductive, développement, conclusion ». Importez une séance de votre séquence, puis détaillez chaque moment : durée, déroulé, modalité, supports, connaissances, compétences et différenciation. L'outil vérifie le total des durées.</p>
+      <h3>Exporter, conserver, partager</h3>
       <ul>
-        <li><b>Télécharger en Word</b> produit un fichier qui s'ouvre dans Word, LibreOffice ou Google Docs (Fichier → Ouvrir).</li>
-        <li><b>Imprimer / PDF</b> imprime le document affiché, en format paysage.</li>
-        <li>Votre saisie est conservée automatiquement <b>dans ce navigateur</b>. Pour la retrouver sur un autre ordinateur, utilisez <b>« Enregistrer mon travail »</b>, puis <b>« Ouvrir un fichier »</b>.</li>
+        <li><b>Télécharger en Word</b> : le fichier s'ouvre dans Word, LibreOffice ou Google Docs. La grille et la fiche séance sont en format paysage.</li>
+        <li><b>Imprimer / PDF</b> : imprime le document affiché.</li>
+        <li>Le travail est conservé <b>dans ce navigateur</b>. Pour changer d'ordinateur ou transmettre votre travail, utilisez <b>Enregistrer mon travail</b>, puis <b>Ouvrir un fichier</b>.</li>
+        <li><b>Prompt pour une IA</b> : rédige une demande complète à coller dans un outil d'IA autorisé par votre académie. Aucune donnée d'élève, et vérification systématique avec le texte officiel.</li>
       </ul>
-      <h3>Le bouton « Prompt pour une IA »</h3>
-      <p>Il rédige une demande complète, à partir de ce que vous avez saisi, à coller dans un outil d'IA autorisé par votre académie. Il sert à compléter ou à améliorer votre travail. Deux règles : <b>aucune donnée d'élève</b>, et <b>vérification systématique</b> de la conformité au programme. Vous restez l'auteur et le responsable de votre enseignement.</p>
-      <h3>Les postures (D. Bucheton)</h3>
-      <p><b>Professeur</b> : <i>contrôle</i> (cadrer, faire avancer la classe ensemble) · <i>accompagnement</i> (aide individualisée, étayage) · <i>enseignement</i> (formuler les savoirs, institutionnaliser) · <i>lâcher-prise</i> (laisser les élèves chercher en autonomie) · <i>magicien</i> (capter l'attention par une énigme, un jeu).<br>
-      <b>Élèves</b> : <i>première</i> (se lancer, faire) · <i>scolaire</i> (répondre à la consigne) · <i>ludique-créative</i> (détourner, inventer) · <i>réflexive</i> (prendre du recul, expliquer comment on a fait).</p>
     </div>
   </section>
 </main>
 
 <datalist id="dlClasses"></datalist>
 <datalist id="dlSeqs"></datalist>
+<datalist id="dlDurees"></datalist>
+<datalist id="dlDisc"></datalist>
+<datalist id="dlNiv"></datalist>
 
 <div class="modale" id="modaleIA" role="dialog" aria-modal="true">
   <div class="boite">
@@ -349,96 +424,190 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 <script>
 "use strict";
 /* ================================================================
-   CALENDRIER 2026-2027 · ZONE A (arrêté du 22 octobre 2025)
+   CALENDRIER 2026-2027 (arrêté du 22 octobre 2025)
    Vacances : du jour indiqué (après la classe) à la veille de la reprise.
    ================================================================ */
 var CAL = {
-  rentree: "2026-09-01",
-  finAnnee: "2027-07-02",
-  vacances: [
+  rentree: "2026-09-01", finAnnee: "2027-07-02",
+  communes: [
     { nom: "Vacances de la Toussaint", d: "2026-10-17", f: "2026-11-01" },
     { nom: "Vacances de Noël", d: "2026-12-19", f: "2027-01-03" },
-    { nom: "Vacances d'hiver", d: "2027-02-13", f: "2027-02-28" },
-    { nom: "Vacances de printemps", d: "2027-04-10", f: "2027-04-25" },
-    { nom: "Pont de l'Ascension", d: "2027-05-06", f: "2027-05-09" }
+    { nom: "Pont de l'Ascension", d: "2027-05-06", f: "2027-05-09", pont: true }
   ],
+  zones: {
+    A: [{ nom: "Vacances d'hiver", d: "2027-02-13", f: "2027-02-28" }, { nom: "Vacances de printemps", d: "2027-04-10", f: "2027-04-25" }],
+    B: [{ nom: "Vacances d'hiver", d: "2027-02-20", f: "2027-03-07" }, { nom: "Vacances de printemps", d: "2027-04-17", f: "2027-05-02" }],
+    C: [{ nom: "Vacances d'hiver", d: "2027-02-06", f: "2027-02-21" }, { nom: "Vacances de printemps", d: "2027-04-03", f: "2027-04-18" }]
+  },
   feries: ["2026-11-11", "2027-03-29", "2027-05-06", "2027-05-17"]
 };
+var JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 function d2s(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 function s2d(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
 function ajoutJours(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
-function isoSemaine(d) {
-  var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  var j = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - j);
-  var debut = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-  return Math.ceil(((t - debut) / 86400000 + 1) / 7);
-}
+function isoSemaine(d) { var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); var j = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - j); var u = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - u) / 86400000 + 1) / 7); }
 function fr(s) { if (!s) return ""; var p = s.split("-"); return p[2] + "/" + p[1]; }
-function enVacances(s) { for (var i = 0; i < CAL.vacances.length; i++) { var v = CAL.vacances[i]; if (s >= v.d && s <= v.f) return v; } return null; }
+function hm(min) { min = Math.round(min); var h = Math.floor(min / 60), m = min % 60; return h + " h" + (m ? " " + String(m).padStart(2, "0") : ""); }
 
-/* Semaines de l'année : lundi → vendredi */
-var SEMAINES = (function () {
-  var res = [], lundi = s2d("2026-08-31"), fin = CAL.finAnnee;
-  while (d2s(lundi) <= fin) {
-    var jours = [], vac = null;
-    for (var k = 0; k < 5; k++) {
-      var s = d2s(ajoutJours(lundi, k));
-      var v = enVacances(s);
-      if (s < CAL.rentree || s > fin) continue;
-      if (v) { if (!vac && v.nom.indexOf("Pont") < 0) vac = v; continue; }
+var cacheSem = {};
+function semaines(zone) {
+  if (cacheSem[zone]) return cacheSem[zone];
+  var vac = CAL.communes.concat(CAL.zones[zone] || CAL.zones.A);
+  function enVac(s) { for (var i = 0; i < vac.length; i++) if (s >= vac[i].d && s <= vac[i].f) return vac[i]; return null; }
+  var res = [], lundi = s2d("2026-08-31"), k = 0;
+  while (d2s(lundi) <= CAL.finAnnee) {
+    var jours = [], v0 = null;
+    for (var j = 0; j < 6; j++) {
+      var s = d2s(ajoutJours(lundi, j));
+      if (s < CAL.rentree || s > CAL.finAnnee) continue;
+      var v = enVac(s);
+      if (v) { if (!v.pont && !v0) v0 = v; continue; }
       if (CAL.feries.indexOf(s) >= 0) continue;
       jours.push(s);
     }
-    res.push({ num: isoSemaine(lundi), lundi: d2s(lundi), vendredi: d2s(ajoutJours(lundi, 4)), jours: jours, vac: jours.length === 0 ? (vac || { nom: "Vacances" }) : null });
-    lundi = ajoutJours(lundi, 7);
+    var nbOuvres = jours.filter(function (x) { return s2d(x).getDay() !== 6; }).length;
+    var w = { num: isoSemaine(lundi), lundi: d2s(lundi), dim: d2s(ajoutJours(lundi, 6)), jours: jours, ouvres: nbOuvres, vac: nbOuvres === 0 ? (v0 || { nom: "Vacances" }) : null };
+    if (!w.vac) w.idx = k++;
+    res.push(w); lundi = ajoutJours(lundi, 7);
   }
-  return res;
-})();
+  return (cacheSem[zone] = res);
+}
 
 /* ================================================================
-   ÉTAT, SAUVEGARDE
+   TYPES D'ÉVÉNEMENTS PAR ÉTABLISSEMENT
+   effet : off = pas de cours · demi = moitié des cours · rep = repère
    ================================================================ */
-var CLE = "atelier-suppleant-v1";
+var TYPES_DEFAUT = {
+  college: [["Stage d'observation (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
+  lgt: [["Stage de seconde", "#cfe0f3", "off"], ["Bac blanc", "#f6d6d1", "demi"], ["Épreuves / oraux", "#f8e3c4", "rep"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]],
+  lp: [["PFMP", "#cfe0f3", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
+};
+var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère" };
+function nouvelId() { return "t" + Math.random().toString(36).slice(2, 8); }
+function typesPour(etab) { return (TYPES_DEFAUT[etab] || TYPES_DEFAUT.college).map(function (t) { return { id: nouvelId(), nom: t[0], col: t[1], effet: t[2] }; }); }
+
+var NIVEAUX = {
+  college: ["6e", "5e", "4e", "3e", "3e prépa-métiers", "ULIS / SEGPA"],
+  lgt: ["2nde GT", "1re générale", "1re technologique", "Tle générale", "Tle technologique"],
+  lp: ["3e prépa-métiers", "CAP 1re année", "CAP 2e année", "2nde pro", "1re pro", "Tle pro"]
+};
+var DISCIPLINES = ["Français", "Mathématiques", "Histoire-géographie", "Enseignement moral et civique", "Anglais", "Espagnol", "Allemand", "Italien", "Physique-chimie", "Sciences de la vie et de la Terre", "Technologie", "Arts plastiques", "Éducation musicale", "Éducation physique et sportive", "Sciences économiques et sociales", "Philosophie", "Lettres – Histoire-géographie", "Mathématiques – Physique-chimie", "Langues – Lettres", "Économie-gestion", "Économie-droit", "Prévention santé environnement", "Arts appliqués", "Enseignement professionnel", "Biotechnologies", "Sciences et techniques sanitaires et sociales", "Sciences numériques et technologie", "Documentation"];
+var COULEURS = ["#dcebd9", "#f9e2cf", "#dfe4f4", "#f3dde6", "#e6f0d0", "#d8ecef", "#f5ecc7", "#e9ddf1", "#d9e9e0", "#f4dcd5"];
+
+/* ================================================================
+   SOCLE COMMUN : 5 domaines, 8 composantes
+   ================================================================ */
+var SOCLE = [
+  ["D1.1", "Domaine 1 · Comprendre, s'exprimer en utilisant la langue française à l'oral et à l'écrit"],
+  ["D1.2", "Domaine 1 · Comprendre, s'exprimer en utilisant une langue étrangère et, le cas échéant, une langue régionale"],
+  ["D1.3", "Domaine 1 · Comprendre, s'exprimer en utilisant les langages mathématiques, scientifiques et informatiques"],
+  ["D1.4", "Domaine 1 · Comprendre, s'exprimer en utilisant les langages des arts et du corps"],
+  ["D2", "Domaine 2 · Les méthodes et outils pour apprendre"],
+  ["D3", "Domaine 3 · La formation de la personne et du citoyen"],
+  ["D4", "Domaine 4 · Les systèmes naturels et les systèmes techniques"],
+  ["D5", "Domaine 5 · Les représentations du monde et l'activité humaine"]
+];
+
+/* ================================================================
+   BIBLIOTHÈQUE DE RESSOURCES OFFICIELLES (vérifiées en novembre 2026)
+   ================================================================ */
+var EDU = "https://eduscol.education.gouv.fr";
+var RESS = {
+  tous: { titre: "Pour tous", liens: [
+    ["Le socle commun de connaissances, de compétences et de culture", EDU + "/4761/le-socle-commun-de-connaissances-de-competences-et-de-culture", "Éduscol · domaines, composantes, évaluation"],
+    ["Le socle commun : présentation et textes officiels", "https://www.education.gouv.fr/le-socle-commun-de-connaissances-de-competences-et-de-culture-12512", "Ministère · décret de 2015 modifié"],
+    ["Projet de refonte du socle (Conseil supérieur des programmes)", "https://www.education.gouv.fr/le-conseil-superieur-des-programmes/projet-de-socle-commun-de-connaissances-de-competences-et-de-culture-470000", "Projet, pour information"],
+    ["Éduscol : tous les niveaux", EDU + "/4332/niveaux", "Point d'entrée par cycle et par voie"],
+    ["Calendrier scolaire officiel", "https://www.education.gouv.fr/calendrier-scolaire-100148", "Vacances par zone"]
+  ] },
+  college: { titre: "Collège : programmes", liens: [
+    ["Enseigner au cycle 3 (6e)", EDU + "/4356/enseigner-au-cycle-3", "Programmes 2026-2027, ressources d'accompagnement"],
+    ["Enseigner au cycle 4 (5e, 4e, 3e)", EDU + "/4362/enseigner-au-cycle-4", "Programmes applicables à chaque niveau en 2026-2027"],
+    ["Les programmes du collège", "https://www.education.gouv.fr/les-programmes-du-college-470408", "Ministère"],
+    ["L'organisation des enseignements au collège", EDU + "/5208/l-organisation-des-enseignements-au-college", "Horaires, EPI, accompagnement"],
+    ["Repères annuels de progression et attendus de fin d'année", "https://eduscol.education.fr/137/reperes-annuels-de-progression-et-attendus-de-fin-d-annee-du-cp-la-3e", "Du CP à la 3e"],
+    ["Français cycle 4 : nouveau programme", "https://eduscol.education.fr/3866/francais-cycle-4", "Application progressive à partir de la 5e en 2026-2027"],
+    ["Ressources d'accompagnement : mathématiques cycle 3", EDU + "/5712/ressources-d-accompagnement-du-programme-de-mathematiques-au-cycle-3", "Programme 2025, tous niveaux en 2026-2027"]
+  ] },
+  lgt: { titre: "Lycée général et technologique : programmes", liens: [
+    ["Enseigner au lycée général et technologique", EDU + "/4368/enseigner-au-lycee-generaltechnologique", "Enseignements communs, spécialités, options"],
+    ["Les programmes du lycée général et technologique", "https://www.education.gouv.fr/les-programmes-du-lycee-general-et-technologique-9812", "Ministère"],
+    ["Physique-chimie : programmes et ressources (toutes voies)", EDU + "/4533/physique-chimie", "Exemple de page disciplinaire"]
+  ] },
+  lp: { titre: "Lycée professionnel : programmes", liens: [
+    ["Enseigner au lycée professionnel", EDU + "/4377/enseigner-au-lycee-professionnel", "Tous les enseignements généraux de CAP et de bac pro"],
+    ["Français – voie professionnelle", EDU + "/5886/programmes-et-ressources-en-francais-voie-professionnelle", ""],
+    ["Histoire-géographie – voie professionnelle", EDU + "/5889/programmes-et-ressources-en-histoire-geographie-voie-professionnelle", ""],
+    ["Enseignement moral et civique – voie professionnelle", "https://eduscol.education.fr/1761/programmes-et-ressources-en-enseignement-moral-et-civique-voie-professionnelle", ""],
+    ["Mathématiques – voie professionnelle", EDU + "/5895/programmes-et-ressources-en-mathematiques-voie-professionnelle", ""],
+    ["Physique-chimie – voie professionnelle", EDU + "/5898/programmes-et-ressources-en-physique-chimie-voie-professionnelle", ""],
+    ["Langues vivantes – voie professionnelle", "https://eduscol.education.fr/1773/programmes-et-ressources-en-langues-vivantes-voie-professionnelle", ""],
+    ["Éducation physique et sportive – voie professionnelle", EDU + "/5880/programmes-et-ressources-en-education-physique-et-sportive-eps-voie-professionnelle", ""],
+    ["Économie-gestion – voie professionnelle", EDU + "/5877/programmes-et-ressources-en-economie-gestion-voie-professionnelle", ""]
+  ] },
+  lpref: { titre: "Lycée professionnel : référentiels et dispositifs", liens: [
+    ["Les diplômes professionnels et leurs référentiels", EDU + "/5556/les-diplomes-professionnels", "Référentiels d'activités, de compétences et d'évaluation"],
+    ["Le CAP : référentiels des spécialités", EDU + "/5568/le-certificat-d-aptitude-professionnelle-cap", ""],
+    ["Textes de référence relatifs aux diplômes professionnels", EDU + "/5553/textes-de-reference-relatifs-aux-diplomes-professionnels", ""],
+    ["Présentation de la formation au lycée professionnel", EDU + "/5622/presentation-de-la-formation-au-lycee-professionnel", "Familles de métiers, PFMP, co-intervention"],
+    ["La co-intervention", "https://eduscol.education.fr/3242/la-co-intervention-dans-la-voie-professionnelle", ""],
+    ["La réalisation du chef-d'œuvre", "https://eduscol.education.fr/3001/la-realisation-du-chef-d-oeuvre", ""],
+    ["Les savoirs fondamentaux au lycée professionnel", "https://eduscol.education.fr/4023/les-savoirs-fondamentaux-au-lycee-professionnel", ""],
+    ["Le contrôle en cours de formation (CCF)", "https://eduscol.education.fr/785/controle-en-cours-de-formation", ""]
+  ] },
+  didac: { titre: "Didactique et pédagogie", liens: [
+    ["Les guides fondamentaux pour l'enseignement", EDU + "/6681/les-guides-fondamentaux-pour-l-enseignement", "Appuyés sur la recherche · français et mathématiques, jusqu'au collège"],
+    ["Enseigner les fondamentaux", EDU + "/4584/enseigner-les-fondamentaux", "Évaluations nationales, tests de positionnement, plans de formation"],
+    ["Banque de ressources pour les fondamentaux au collège", EDU + "/6525/banque-de-ressources-pour-travailler-les-fondamentaux-au-college", ""],
+    ["Français (discipline) : ressources didactiques", EDU + "/31194/domaines-enseignement/francais-discipline", "Ex. Lexique et culture"],
+    ["Physique-chimie (discipline)", EDU + "/31296/domaines-enseignement/physique-chimie-discipline", "Ressources du GRIESP"],
+    ["Les lettres ÉduNum : enseigner avec le numérique et l'IA", EDU + "/node/6699", ""],
+    ["La taxonomie de Bloom : guide complet", "https://www.bienenseigner.com/taxonomie-de-bloom/", "Verbes pour formuler des objectifs"]
+  ] }
+};
+function rechercheOfficielle(q) { return "https://www.google.com/search?q=" + encodeURIComponent(q + " site:eduscol.education.gouv.fr OR site:education.gouv.fr OR site:eduscol.education.fr"); }
+
+/* ================================================================
+   ÉTAT ET SAUVEGARDE
+   ================================================================ */
+var CLE = "atelier-suppleant-v2";
+function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }], seqs: [{ t: "", h: "", col: "" }], periodes: [], marques: {} }; }
 function etatVide() {
   return {
-    prog: { discipline: "", etab: "", marge: 10, tampon: true, zone: "A", classes: [classeVide()] },
-    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", comp: "", probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [] },
+    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
+    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [] },
     sea: seanceVide()
   };
 }
-function classeVide() { return { nom: "", h: 2, fin: "", seqs: [{ t: "", h: "" }], pfmp: [], evts: [] }; }
-function seanceVide() {
-  return { titre: "", place: "", duree: 55, classe: "", date: "", prereq: "", probl: "", objs: "",
-    tissage: { t: "", d: 5 }, accroche: { t: "", d: 5, sup: "" }, problPhase: { t: "", d: 5 },
-    moments: [momentVide()], synthese: { d: 10, t: "", trace: "", ouv: "" } };
-}
-function momentVide() { return { titre: "", d: 15, t: "", pp: "", pe: "", modal: "", sup: "", conn: "", comp: "", diff: "" }; }
+function seanceVide() { return { titre: "", place: "", duree: 55, classe: "", date: "", prereq: "", probl: "", objs: "", tissage: { t: "", d: 5 }, accroche: { t: "", d: 5, sup: "" }, problPhase: { t: "", d: 5 }, moments: [momentVide()], synthese: { d: 10, t: "", trace: "", ouv: "" } }; }
+function momentVide() { return { titre: "", d: 15, t: "", modal: "", sup: "", conn: "", comp: "", diff: "" }; }
 
 var E;
-try { E = JSON.parse(localStorage.getItem(CLE)) || etatVide(); } catch (e) { E = etatVide(); }
-(function completer() { var v = etatVide(); ["prog", "seq", "sea"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); })();
+try { E = JSON.parse(localStorage.getItem(CLE)); } catch (e) { E = null; }
+if (!E) {
+  E = etatVide();
+  try { var ancien = JSON.parse(localStorage.getItem("atelier-suppleant-v1")); if (ancien && ancien.seq) { E.seq = Object.assign(E.seq, ancien.seq); if (ancien.sea) E.sea = Object.assign(E.sea, ancien.sea); } } catch (e) {}
+}
+function completer() { var v = etatVide(); ["prog", "seq", "sea"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); E.prog.classes.forEach(function (c) { var cv = classeVide(); Object.keys(cv).forEach(function (k) { if (c[k] === undefined) c[k] = cv[k]; }); }); }
+completer();
 
 var minuteur;
 function sauver() {
   try { localStorage.setItem(CLE, JSON.stringify(E)); document.getElementById("etatSauvegarde").textContent = "Enregistré dans ce navigateur à " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
   catch (e) { document.getElementById("etatSauvegarde").textContent = "Pensez à « Enregistrer mon travail » : ce navigateur ne conserve pas les données."; }
 }
-function lire(chemin) { return chemin.split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, E); }
-function ecrire(chemin, val) {
-  var k = chemin.split("."), o = E;
-  for (var i = 0; i < k.length - 1; i++) o = o[k[i]];
-  o[k[k.length - 1]] = val;
-}
+function lire(ch) { return ch.split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, E); }
+function ecrire(ch, val) { var k = ch.split("."), o = E; for (var i = 0; i < k.length - 1; i++) o = o[k[i]]; o[k[k.length - 1]] = val; }
 function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 function nl(s) { return esc(s).replace(/\n/g, "<br>"); }
-function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.classList.add("vu"); setTimeout(function () { x.classList.remove("vu"); }, 1800); }
+function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.classList.add("vu"); setTimeout(function () { x.classList.remove("vu"); }, 1900); }
+function typeParId(id) { return E.prog.types.filter(function (t) { return t.id === id; })[0]; }
 
-/* Liaison générique des champs data-p */
-function lierChamps(racine) {
-  (racine || document).querySelectorAll("[data-p]").forEach(function (el) {
+function lierChamps(r) {
+  (r || document).querySelectorAll("[data-p]").forEach(function (el) {
     var v = lire(el.getAttribute("data-p"));
-    if (el.type === "checkbox") el.checked = !!v; else el.value = v == null ? "" : v;
+    if (el.type === "checkbox") el.checked = !!v; else if (document.activeElement !== el) el.value = v == null ? "" : v;
   });
 }
 document.addEventListener("input", function (ev) {
@@ -447,94 +616,173 @@ document.addEventListener("input", function (ev) {
   var v = el.type === "checkbox" ? el.checked : (el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value);
   ecrire(p, v);
   if (p === "seq.titre") remplirDepuisProg();
+  if (p === "prog.etab") proposerTypes();
   if (el.getAttribute("data-rerender")) rendreListes();
-  clearTimeout(minuteur); minuteur = setTimeout(function () { sauver(); rendreTout(); }, 250);
+  clearTimeout(minuteur); minuteur = setTimeout(function () { sauver(); rendreTout(); }, 220);
 });
-document.addEventListener("change", function (ev) { if (ev.target.type === "checkbox" && ev.target.getAttribute("data-p")) { rendreTout(); sauver(); } });
+document.addEventListener("change", function (ev) { var el = ev.target; if ((el.type === "checkbox" || el.tagName === "SELECT" || el.type === "color") && el.getAttribute("data-p")) { rendreListes(); rendreTout(); sauver(); } });
+
+function proposerTypes() {
+  var noms = E.prog.types.map(function (t) { return t.nom; });
+  var ajout = typesPour(E.prog.etab).filter(function (t) { return noms.indexOf(t.nom) < 0; });
+  E.prog.types = E.prog.types.concat(ajout);
+  if (ajout.length) toast(ajout.length + " type(s) d'événement ajouté(s) pour cet établissement");
+}
 
 /* ================================================================
-   ANALYSE D'UN OBJECTIF (Mager + Bloom)
+   ANALYSE D'UN OBJECTIF (Mager)
    ================================================================ */
-var VERBES_FLOUS = ["connaître", "connaitre", "savoir", "comprendre", "maîtriser", "maitriser", "découvrir", "decouvrir", "être sensibilisé", "etre sensibilise", "sensibiliser", "apprendre", "appréhender", "prendre conscience", "aborder", "étudier", "s'approprier", "s’approprier", "voir ", "acquérir", "assimiler"];
+var VERBES_FLOUS = ["connaître", "connaitre", "savoir", "comprendre", "maîtriser", "maitriser", "découvrir", "decouvrir", "être sensibilisé", "etre sensibilise", "sensibiliser", "apprendre", "appréhender", "prendre conscience", "aborder", "étudier", "s'approprier", "s’approprier", "acquérir", "assimiler"];
 function analyseObjectif(t) {
-  var s = " " + (t || "").toLowerCase() + " ";
   if (!t || !t.trim()) return null;
-  var flous = VERBES_FLOUS.filter(function (v) { return s.indexOf(" " + v) >= 0 || s.indexOf("'" + v) >= 0; });
+  var s = " " + t.toLowerCase() + " ";
+  var flous = VERBES_FLOUS.filter(function (v) { return s.indexOf(" " + v) >= 0 || s.indexOf("'" + v) >= 0 || s.indexOf("’" + v) >= 0; });
   var cond = /(à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
   var crit = /(\d|sans erreur|au moins|tous les|toutes les|correctement|en respectant|conforme|critère|grille|%|\/\d)/.test(s);
   return { flous: flous, cond: cond, crit: crit };
 }
 function pucesObjectif(t) {
   var a = analyseObjectif(t); if (!a) return "";
-  var h = a.flous.length ? '<span class="puce ko">Verbe flou : « ' + esc(a.flous[0].trim()) + ' »</span>' : '<span class="puce ok">Verbe observable</span>';
-  h += a.cond ? '<span class="puce ok">Conditions</span>' : '<span class="puce mo">Conditions ?</span>';
-  h += a.crit ? '<span class="puce ok">Critère de réussite</span>' : '<span class="puce mo">Critère de réussite ?</span>';
-  return h;
+  return (a.flous.length ? '<span class="puce ko">Verbe flou : « ' + esc(a.flous[0].trim()) + ' »</span>' : '<span class="puce ok">Verbe observable</span>') +
+    (a.cond ? '<span class="puce ok">Conditions</span>' : '<span class="puce mo">Conditions ?</span>') +
+    (a.crit ? '<span class="puce ok">Critère de réussite</span>' : '<span class="puce mo">Critère de réussite ?</span>');
 }
 
 /* ================================================================
-   RENDU DES LISTES DU FORMULAIRE
+   CALCUL D'UNE CLASSE
    ================================================================ */
+function minutesHebdo(c, ab) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) : 0); }, 0); }
+function lettreAB(w) { return ((w.idx % 2 === 0) === (E.prog.ab !== "B")) ? "A" : "B"; }
+function calculerClasse(c) {
+  var P = E.prog, SEM = semaines(P.zone), fin = c.fin || CAL.finAnnee;
+  var cases = SEM.map(function (w) {
+    if (w.vac) return { type: "vac" };
+    if (w.lundi > fin) return { type: "fin" };
+    var ab = lettreAB(w);
+    var jours = w.jours.filter(function (j) { return j <= fin; });
+    var marque = c.marques[w.lundi] ? typeParId(c.marques[w.lundi]) : null;
+    var evts = [], demi = false, offLib = null;
+    if (marque) { if (marque.effet === "off") offLib = marque; else { evts.push(marque); if (marque.effet === "demi") demi = true; } }
+    (c.periodes || []).forEach(function (p) {
+      var t = typeParId(p.ty); if (!t || !p.d) return;
+      var f = p.f || p.d; if (f < w.lundi || p.d > w.dim) return;
+      if (t.effet === "off") { jours = jours.filter(function (j) { return j < p.d || j > f; }); if (!jours.length) offLib = t; else if (evts.indexOf(t) < 0) evts.push(t); }
+      else { if (evts.indexOf(t) < 0) evts.push(t); if (t.effet === "demi") demi = true; }
+    });
+    if (marque && marque.effet === "off") jours = [];
+    var min = 0, nb = 0;
+    c.creneaux.forEach(function (k) {
+      if (!(k.s === "T" || k.s === ab)) return;
+      jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += Number(k.d) || 0; nb++; } });
+    });
+    if (demi) { min /= 2; nb = Math.ceil(nb / 2); }
+    if (!jours.length && offLib) return { type: "off", t: offLib, ab: ab };
+    return { type: "cours", cap: min / 60, nb: nb, evts: evts, ab: ab };
+  });
+  if (P.tampon) {
+    for (var wi = 1; wi < SEM.length; wi++) if (SEM[wi].vac && !SEM[wi - 1].vac)
+      for (var k = wi - 1; k >= 0 && !SEM[k].vac; k--) if (cases[k].type === "cours") { cases[k].type = "tampon"; break; }
+  }
+  var total = 0, nbTot = 0; cases.forEach(function (x) { if (x.type === "cours") { total += x.cap; nbTot += x.nb; } });
+  var reserve = total * (Number(P.marge) || 0) / 100, utile = total - reserve;
+  var seqs = c.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
+  var coef = utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1;
+  var idx = 0, reste = seqs.length ? (Number(seqs[0].h) || 0) : 0;
+  cases.forEach(function (x) {
+    if (x.type !== "cours") return;
+    x.seqs = [];
+    if (idx >= seqs.length || x.cap <= 0) return;
+    var cap = x.cap * coef + 1e-9;
+    while (cap > 0 && idx < seqs.length) {
+      if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
+      var pris = Math.min(cap, reste); cap -= pris; reste -= pris;
+      if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? (Number(seqs[idx].h) || 0) : 0; }
+    }
+  });
+  return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
+}
+
+/* ================================================================
+   FORMULAIRES DYNAMIQUES
+   ================================================================ */
+function sel(ch, opts, val) { return '<select data-p="' + ch + '">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (String(o[0]) === String(val) ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("") + "</select>"; }
+var outilActif = null, toutesClasses = false;
+
 function rendreListes() {
-  /* Classes */
-  var h = "";
-  E.prog.classes.forEach(function (c, i) {
-    var b = "prog.classes." + i;
-    h += '<div class="bloc"><div class="tete"><b>Classe ' + (i + 1) + (c.nom ? " · " + esc(c.nom) : "") + '</b><button class="suppr" type="button" title="Supprimer la classe" data-action="supprClasse" data-i="' + i + '">✕</button></div>';
-    h += '<div class="trio"><div><label class="ch">Nom</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 2nde MS – Français"></div><div><label class="ch">h / sem.</label><input type="number" step="0.5" min="0.5" data-p="' + b + '.h"></div><div><label class="ch">Fin des cours</label><input type="date" data-p="' + b + '.fin" title="Laisser vide = 2 juillet"></div></div>';
-    h += '<label class="ch">Séquences, dans l\'ordre <small>(titre · heures estimées)</small></label>';
+  var P = E.prog, h = "";
+  P.types.forEach(function (t, i) {
+    var b = "prog.types." + i;
+    h += '<div class="lg typ"><input type="color" data-p="' + b + '.col"><input type="text" data-p="' + b + '.nom">' + sel(b + ".effet", [["off", EFFETS.off], ["demi", EFFETS.demi], ["rep", EFFETS.rep]], t.effet) + '<button class="suppr" type="button" title="Supprimer" data-action="supprType" data-i="' + i + '">✕</button></div>';
+  });
+  document.getElementById("listeTypes").innerHTML = h;
+
+  h = "";
+  var optsTypes = P.types.map(function (t) { return [t.id, t.nom]; });
+  P.classes.forEach(function (c, i) {
+    var b = "prog.classes." + i, mA = minutesHebdo(c, "A"), mB = minutesHebdo(c, "B");
+    h += '<div class="bloc"><div class="tete"><b>Classe ' + (i + 1) + (c.nom ? " · " + esc(c.nom) : "") + '</b><span><button class="btn mini discret" type="button" data-action="dupliquerClasse" data-i="' + i + '" title="Dupliquer la classe">⧉ dupliquer</button> <button class="suppr" type="button" title="Supprimer la classe" data-action="supprClasse" data-i="' + i + '">✕</button></span></div>';
+    h += '<div class="trio"><div><label class="ch">Nom de la classe</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 4eB, 2nde MRC…"></div><div><label class="ch">Niveau</label><input type="text" data-p="' + b + '.niveau" list="dlNiv"></div><div><label class="ch">Fin des cours</label><input type="date" data-p="' + b + '.fin" title="Vide = 2 juillet 2027"></div></div>';
+    h += '<label class="ch">Mes créneaux de cours <small>(jour · durée en minutes · semaine)</small></label>';
+    c.creneaux.forEach(function (k, j) {
+      var bk = b + ".creneaux." + j;
+      h += '<div class="lg cren">' + sel(bk + ".j", [[1, "Lundi"], [2, "Mardi"], [3, "Mercredi"], [4, "Jeudi"], [5, "Vendredi"], [6, "Samedi"]], k.j) + '<input type="number" min="5" max="480" step="5" data-p="' + bk + '.d" list="dlDurees" title="Durée en minutes">' + sel(bk + ".s", [["T", "Toutes"], ["A", "Sem. A"], ["B", "Sem. B"]], k.s) + '<button class="suppr" type="button" data-action="supprCren" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
+    });
+    h += '<button class="btn mini" type="button" data-action="ajoutCren" data-i="' + i + '">+ créneau</button>';
+    h += '<div class="vol">Volume : <b>' + hm(mA) + '</b> par semaine' + (mA !== mB ? " en semaine A, <b>" + hm(mB) + "</b> en semaine B" : "") + " · " + c.creneaux.length + " créneau(x)</div>";
+    h += '<label class="ch">Séquences, dans l\'ordre <small>(couleur · titre · heures estimées)</small></label>';
     c.seqs.forEach(function (s, j) {
-      h += '<div class="ligne-liste"><input type="text" data-p="' + b + '.seqs.' + j + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + b + '.seqs.' + j + '.h" placeholder="h"><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
+      var bs = b + ".seqs." + j;
+      if (!s.col) s.col = COULEURS[j % COULEURS.length];
+      h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" placeholder="h"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
     });
     h += '<button class="btn mini" type="button" data-action="ajoutSeqProg" data-i="' + i + '">+ séquence</button>';
-    h += '<label class="ch">Périodes sans cours <small>(PFMP, stage… : libellé · début · fin)</small></label>';
-    c.pfmp.forEach(function (s, j) {
-      h += '<div class="ligne-liste l3"><input type="text" data-p="' + b + '.pfmp.' + j + '.l" placeholder="PFMP 1"><input type="date" data-p="' + b + '.pfmp.' + j + '.d"><input type="date" data-p="' + b + '.pfmp.' + j + '.f"><button class="suppr" type="button" data-action="supprPfmp" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
+    h += '<label class="ch">Périodes datées <small>(au jour près : type · du · au)</small></label>';
+    c.periodes.forEach(function (p, j) {
+      var bp = b + ".periodes." + j;
+      h += '<div class="lg per">' + sel(bp + ".ty", optsTypes, p.ty) + '<input type="date" data-p="' + bp + '.d"><input type="date" data-p="' + bp + '.f"><button class="suppr" type="button" data-action="supprPer" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
     });
-    h += '<button class="btn mini" type="button" data-action="ajoutPfmp" data-i="' + i + '">+ période</button>';
-    h += '<label class="ch">Événements <small>(bac blanc, CCF, sortie…)</small></label>';
-    c.evts.forEach(function (s, j) {
-      h += '<div class="ligne-liste l2"><input type="date" data-p="' + b + '.evts.' + j + '.d"><input type="text" data-p="' + b + '.evts.' + j + '.l" placeholder="Libellé"><button class="suppr" type="button" data-action="supprEvt" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
-    });
-    h += '<button class="btn mini" type="button" data-action="ajoutEvt" data-i="' + i + '">+ événement</button></div>';
+    h += '<button class="btn mini" type="button" data-action="ajoutPer" data-i="' + i + '">+ période datée</button>';
+    var nbM = Object.keys(c.marques).length;
+    if (nbM) h += ' <button class="btn mini discret" type="button" data-action="effacerMarques" data-i="' + i + '">Effacer les ' + nbM + ' marque(s) de la grille</button>';
+    h += "</div>";
   });
   document.getElementById("listeClasses").innerHTML = h;
 
-  /* Objectifs de séquence */
+  h = "<b>Marquer le calendrier :</b>";
+  P.types.forEach(function (t) { h += '<button type="button" class="outil' + (outilActif === t.id ? " sel" : "") + '" data-outil="' + t.id + '" style="background:' + esc(t.col) + '">' + esc(t.nom) + "</button>"; });
+  h += '<button type="button" class="outil' + (outilActif === "gomme" ? " sel" : "") + '" data-outil="gomme" style="background:#fff;border-color:#ccc">⌫ Gomme</button>';
+  h += '<label><input type="checkbox" id="toutesClasses"' + (toutesClasses ? " checked" : "") + "> toutes mes classes</label>";
+  document.getElementById("palette").innerHTML = h;
+
+  h = SOCLE.map(function (s) { var on = (E.seq.socle || []).indexOf(s[0]) >= 0; return '<label class="coche" style="margin:3px 0;align-items:flex-start"><input type="checkbox" data-action="basculeSocle" data-k="' + s[0] + '"' + (on ? " checked" : "") + '><span style="font-size:.84rem"><b>' + s[0] + "</b> " + esc(s[1].split("· ")[1]) + "</span></label>"; }).join("");
+  document.getElementById("listeSocle").innerHTML = h;
+
   h = "";
   E.seq.objs.forEach(function (o, i) {
-    h += '<div class="bloc" style="padding:8px 10px"><div class="ligne-liste" style="grid-template-columns:22px 1fr 28px;margin:0"><b style="color:var(--accent)">O' + (i + 1) + '</b><textarea data-p="seq.objs.' + i + '" style="min-height:44px" placeholder="ex. À partir d\'un schéma muet, légender… avec au moins 4 éléments sur 5 corrects"></textarea><button class="suppr" type="button" data-action="supprObj" data-i="' + i + '">✕</button></div><div class="puces" data-puces="seq.objs.' + i + '">' + pucesObjectif(o) + '</div></div>';
+    h += '<div class="bloc" style="padding:8px 10px"><div class="lg" style="grid-template-columns:26px 1fr 22px;margin:0"><b style="color:var(--accent)">O' + (i + 1) + '</b><textarea data-p="seq.objs.' + i + '" style="min-height:44px" placeholder="ex. À partir d\'un schéma muet, légender… avec au moins 4 éléments sur 5 corrects"></textarea><button class="suppr" type="button" data-action="supprObj" data-i="' + i + '">✕</button></div><div class="puces" data-puces="seq.objs.' + i + '">' + pucesObjectif(o) + "</div></div>";
   });
   document.getElementById("listeObjs").innerHTML = h;
 
-  /* Séances de la séquence */
   h = "";
   E.seq.seances.forEach(function (s, i) {
     var b = "seq.seances." + i;
     h += '<div class="bloc"><div class="tete"><b>Séance ' + (i + 1) + '</b><button class="suppr" type="button" data-action="supprSeance" data-i="' + i + '">✕</button></div>';
-    h += '<div class="duo"><div><label class="ch">Type</label><select data-p="' + b + '.type">' + ["Lancement et diagnostic", "Apprentissage", "Réinvestissement / remédiation", "Évaluation", "Projet / production"].map(function (t) { return "<option" + (s.type === t ? " selected" : "") + ">" + t + "</option>"; }).join("") + '</select></div><div><label class="ch">Titre</label><input type="text" data-p="' + b + '.titre"></div></div>';
+    h += '<div class="duo"><div><label class="ch">Type</label>' + sel(b + ".type", ["Lancement et diagnostic", "Apprentissage", "Réinvestissement / remédiation", "Évaluation", "Projet / production"].map(function (t) { return [t, t]; }), s.type) + '</div><div><label class="ch">Titre</label><input type="text" data-p="' + b + '.titre"></div></div>';
     h += '<label class="ch">Problématique de la séance</label><input type="text" data-p="' + b + '.probl">';
     h += '<label class="ch">Activités et supports</label><textarea data-p="' + b + '.act" style="min-height:44px"></textarea>';
-    h += '<label class="ch">Objectifs travaillés</label><div class="puces">' + E.seq.objs.map(function (o, k) { var on = (s.objs || []).indexOf(k) >= 0; return '<label class="puce' + (on ? " ok" : "") + '" style="cursor:pointer"><input type="checkbox" data-action="basculeObj" data-i="' + i + '" data-k="' + k + '"' + (on ? " checked" : "") + ' style="margin:0 4px 0 0;vertical-align:-1px">O' + (k + 1) + '</label>'; }).join("") + '</div>';
-    h += '</div>';
+    h += '<label class="ch">Objectifs travaillés</label><div class="puces">' + E.seq.objs.map(function (o, k) { var on = (s.objs || []).indexOf(k) >= 0; return '<label class="puce' + (on ? " ok" : "") + '" style="cursor:pointer"><input type="checkbox" data-action="basculeObj" data-i="' + i + '" data-k="' + k + '"' + (on ? " checked" : "") + ' style="margin:0 4px 0 0;vertical-align:-1px">O' + (k + 1) + "</label>"; }).join("") + "</div></div>";
   });
   document.getElementById("listeSeances").innerHTML = h;
 
-  /* Moments de la séance */
-  var PP = ["", "Contrôle", "Accompagnement", "Enseignement", "Lâcher-prise", "Magicien"];
-  var PE = ["", "Première", "Scolaire", "Ludique-créative", "Réflexive"];
-  var MO = ["", "Collectif", "Individuel", "Binômes", "Groupes", "Îlots / ateliers tournants"];
-  function sel(chemin, liste, val) { return '<select data-p="' + chemin + '">' + liste.map(function (o) { return "<option" + (o === val ? " selected" : "") + ' value="' + esc(o) + '">' + (o || "—") + "</option>"; }).join("") + "</select>"; }
+  var MO = [["", "—"], ["Collectif", "Collectif"], ["Individuel", "Individuel"], ["Binômes", "Binômes"], ["Groupes", "Groupes"], ["Ateliers tournants", "Ateliers tournants"]];
   h = "";
   E.sea.moments.forEach(function (m, i) {
     var b = "sea.moments." + i;
-    h += '<div class="bloc"><div class="tete"><b>Moment ' + (i + 1) + '</b><span><input type="number" min="0" data-p="' + b + '.d" style="width:66px" title="minutes"> min <button class="suppr" type="button" data-action="supprMoment" data-i="' + i + '">✕</button></span></div>';
-    h += '<label class="ch">Intitulé</label><input type="text" data-p="' + b + '.titre" placeholder="ex. Lecture analytique en binômes">';
-    h += '<label class="ch">Déroulé <small>(consigne, ce que font les élèves)</small></label><textarea data-p="' + b + '.t"></textarea>';
-    h += '<div class="trio" style="grid-template-columns:1fr 1fr 1fr"><div><label class="ch">Posture prof.</label>' + sel(b + ".pp", PP, m.pp) + '</div><div><label class="ch">Posture élèves</label>' + sel(b + ".pe", PE, m.pe) + '</div><div><label class="ch">Modalité</label>' + sel(b + ".modal", MO, m.modal) + '</div></div>';
+    h += '<div class="bloc"><div class="tete"><b>Moment ' + (i + 1) + '</b><span><input type="number" min="0" data-p="' + b + '.d" style="width:62px" title="minutes"> min <button class="suppr" type="button" data-action="supprMoment" data-i="' + i + '">✕</button></span></div>';
+    h += '<div class="duo"><div><label class="ch">Intitulé</label><input type="text" data-p="' + b + '.titre" placeholder="ex. Recherche en binômes"></div><div><label class="ch">Modalité</label>' + sel(b + ".modal", MO, m.modal) + "</div></div>";
+    h += '<label class="ch">Déroulé <small>(activité, consigne, ce que font les élèves)</small></label><textarea data-p="' + b + '.t"></textarea>';
     h += '<div class="duo"><div><label class="ch">Supports</label><input type="text" data-p="' + b + '.sup"></div><div><label class="ch">Connaissances</label><input type="text" data-p="' + b + '.conn"></div></div>';
-    h += '<div class="duo"><div><label class="ch">Notions / compétences</label><input type="text" data-p="' + b + '.comp"></div><div><label class="ch">Différenciation</label><input type="text" data-p="' + b + '.diff" placeholder="coup de pouce / défi"></div></div>';
-    h += '</div>';
+    h += '<div class="duo"><div><label class="ch">Notions / compétences</label><input type="text" data-p="' + b + '.comp"></div><div><label class="ch">Différenciation</label><input type="text" data-p="' + b + '.diff" placeholder="coup de pouce / défi"></div></div></div>';
   });
   document.getElementById("listeMoments").innerHTML = h;
 
@@ -544,25 +792,31 @@ function rendreListes() {
 
 function majListesDeroulantes() {
   document.getElementById("dlClasses").innerHTML = E.prog.classes.filter(function (c) { return c.nom; }).map(function (c) { return '<option value="' + esc(c.nom) + '">'; }).join("");
-  var seqs = []; E.prog.classes.forEach(function (c) { c.seqs.forEach(function (s) { if (s.t) seqs.push(s.t); }); });
+  var seqs = []; E.prog.classes.forEach(function (c) { c.seqs.forEach(function (s) { if (s.t && seqs.indexOf(s.t) < 0) seqs.push(s.t); }); });
   document.getElementById("dlSeqs").innerHTML = seqs.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("");
-  var ch = document.getElementById("choixSeance");
+  document.getElementById("dlDisc").innerHTML = DISCIPLINES.map(function (d) { return '<option value="' + esc(d) + '">'; }).join("");
+  document.getElementById("dlNiv").innerHTML = (NIVEAUX[E.prog.etab] || []).map(function (n) { return '<option value="' + esc(n) + '">'; }).join("");
+  var durees = {}; E.prog.classes.forEach(function (c) { c.creneaux.forEach(function (k) { if (k.d) durees[k.d] = 1; }); });
+  [45, 50, 55, 60, 90, 110, 120].forEach(function (d) { durees[d] = 1; });
+  document.getElementById("dlDurees").innerHTML = Object.keys(durees).sort(function (a, b) { return a - b; }).map(function (d) { return '<option value="' + d + '">'; }).join("");
+  var ch = document.getElementById("choixSeance"), v = ch.value;
   ch.innerHTML = E.seq.seances.length ? E.seq.seances.map(function (s, i) { return '<option value="' + i + '">Séance ' + (i + 1) + (s.titre ? " · " + esc(s.titre) : "") + "</option>"; }).join("") : "<option value=''>Aucune séance dans l'onglet ②</option>";
+  if (v) ch.value = v;
 }
 
-/* Quand le titre de séquence correspond à une séquence de la programmation */
 function remplirDepuisProg() {
   E.prog.classes.forEach(function (c) {
-    c.seqs.forEach(function (s, j) {
-      if (s.t && s.t === E.seq.titre) {
-        if (!E.seq.classe) E.seq.classe = c.nom;
-        if (!E.seq.discipline) E.seq.discipline = E.prog.discipline;
-        var avant = c.seqs[j - 1] && c.seqs[j - 1].t, apres = c.seqs[j + 1] && c.seqs[j + 1].t;
-        if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + c.seqs.filter(function (x) { return x.t; }).length + (avant ? " · après « " + avant + " »" : "") + (apres ? " · avant « " + apres + " »" : "");
-        if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / E.seq.duree));
-        lierChamps(document.getElementById("p-seq"));
-        toast("Classe, place et nombre de séances repris de la programmation");
-      }
+    var liste = c.seqs.filter(function (x) { return x.t; });
+    liste.forEach(function (s, j) {
+      if (s.t !== E.seq.titre) return;
+      if (!E.seq.classe) E.seq.classe = c.nom;
+      if (!E.seq.discipline) E.seq.discipline = E.prog.discipline;
+      var cr = c.creneaux.map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
+      if (cr.length) E.seq.duree = Math.round(cr.reduce(function (a, b) { return a + b; }, 0) / cr.length);
+      if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
+      if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / E.seq.duree));
+      lierChamps(document.getElementById("p-seq"));
+      toast("Classe, place, durée et nombre de séances repris de la programmation");
     });
   });
 }
@@ -571,31 +825,41 @@ function remplirDepuisProg() {
    ACTIONS
    ================================================================ */
 document.addEventListener("click", function (ev) {
+  var cell = ev.target.closest("td[data-c]");
+  if (cell) { if (outilActif) marquer(+cell.getAttribute("data-c"), cell.getAttribute("data-w")); else toast("Choisissez d'abord un type d'événement dans la barre au-dessus de la grille"); return; }
+  var o = ev.target.closest("[data-outil]");
+  if (o) { var id = o.getAttribute("data-outil"); outilActif = outilActif === id ? null : id; rendreListes(); if (outilActif) toast("Cliquez sur les semaines de la grille"); return; }
+  if (ev.target.id === "toutesClasses") { toutesClasses = ev.target.checked; return; }
   var b = ev.target.closest("[data-action],[data-onglet],[data-export],[data-ia],[data-exemple],[data-vider]");
   if (!b) return;
-  var i = +b.getAttribute("data-i"), j = +b.getAttribute("data-j"), a = b.getAttribute("data-action");
+  var i = +b.getAttribute("data-i"), j = +b.getAttribute("data-j"), a = b.getAttribute("data-action"), C = E.prog.classes;
   if (b.hasAttribute("data-onglet")) { ouvrirOnglet(b.getAttribute("data-onglet")); return; }
   if (b.hasAttribute("data-export")) { exporterWord(b.getAttribute("data-export")); return; }
   if (b.hasAttribute("data-ia")) { ouvrirIA(b.getAttribute("data-ia")); return; }
-  if (b.hasAttribute("data-exemple")) { var m = b.getAttribute("data-exemple"); if (confirm("Remplacer votre saisie de cet onglet par l'exemple ?")) { E[m] = JSON.parse(JSON.stringify(EXEMPLE[m])); apres(); } return; }
-  if (b.hasAttribute("data-vider")) { var m2 = b.getAttribute("data-vider"); if (confirm("Effacer toute la saisie de cet onglet ?")) { E[m2] = etatVide()[m2]; apres(); } return; }
-  var P = E.prog.classes;
+  if (b.hasAttribute("data-exemple")) { var m = b.getAttribute("data-exemple"); if (confirm("Remplacer votre saisie de cet onglet par un exemple" + (m === "prog" ? " adapté à votre type d'établissement" : "") + " ?")) { E[m] = exemple(m); apres(); } return; }
+  if (b.hasAttribute("data-vider")) { var m2 = b.getAttribute("data-vider"); if (confirm("Effacer toute la saisie de cet onglet ?")) { var keep = E.prog.etab, z = E.prog.zone; E[m2] = etatVide()[m2]; if (m2 === "prog") { E.prog.etab = keep; E.prog.zone = z; E.prog.types = typesPour(keep); } apres(); } return; }
   switch (a) {
-    case "ajoutClasse": P.push(classeVide()); break;
-    case "supprClasse": if (P.length > 1 && confirm("Supprimer cette classe ?")) P.splice(i, 1); break;
-    case "ajoutSeqProg": P[i].seqs.push({ t: "", h: "" }); break;
-    case "supprSeqProg": P[i].seqs.splice(j, 1); break;
-    case "ajoutPfmp": P[i].pfmp.push({ l: "PFMP " + (P[i].pfmp.length + 1), d: "", f: "" }); break;
-    case "supprPfmp": P[i].pfmp.splice(j, 1); break;
-    case "ajoutEvt": P[i].evts.push({ d: "", l: "" }); break;
-    case "supprEvt": P[i].evts.splice(j, 1); break;
+    case "ajoutType": E.prog.types.push({ id: nouvelId(), nom: "Nouvel événement", col: "#f0e0c0", effet: "rep" }); break;
+    case "supprType": var tid = E.prog.types[i].id; if (!confirm("Supprimer ce type ? Les marques et périodes de ce type seront retirées.")) return; E.prog.types.splice(i, 1); C.forEach(function (c) { Object.keys(c.marques).forEach(function (k) { if (c.marques[k] === tid) delete c.marques[k]; }); c.periodes = c.periodes.filter(function (p) { return p.ty !== tid; }); }); if (outilActif === tid) outilActif = null; break;
+    case "typesDefaut": proposerTypes(); break;
+    case "ajoutClasse": C.push(classeVide()); break;
+    case "dupliquerClasse": var cp = JSON.parse(JSON.stringify(C[i])); cp.nom = (cp.nom || "Classe") + " (copie)"; C.splice(i + 1, 0, cp); break;
+    case "supprClasse": if (C.length > 1 && confirm("Supprimer cette classe ?")) C.splice(i, 1); break;
+    case "ajoutCren": var dern = C[i].creneaux[C[i].creneaux.length - 1]; C[i].creneaux.push({ j: dern ? Math.min(6, Number(dern.j) + 1) : 1, d: dern ? dern.d : 55, s: "T" }); break;
+    case "supprCren": C[i].creneaux.splice(j, 1); break;
+    case "ajoutSeqProg": C[i].seqs.push({ t: "", h: "", col: COULEURS[C[i].seqs.length % COULEURS.length] }); break;
+    case "supprSeqProg": C[i].seqs.splice(j, 1); break;
+    case "monterSeq": if (j > 0) { var t1 = C[i].seqs[j]; C[i].seqs[j] = C[i].seqs[j - 1]; C[i].seqs[j - 1] = t1; } break;
+    case "descendreSeq": if (j < C[i].seqs.length - 1) { var t2 = C[i].seqs[j]; C[i].seqs[j] = C[i].seqs[j + 1]; C[i].seqs[j + 1] = t2; } break;
+    case "ajoutPer": C[i].periodes.push({ ty: (E.prog.types[0] || {}).id, d: "", f: "" }); break;
+    case "supprPer": C[i].periodes.splice(j, 1); break;
+    case "effacerMarques": C[i].marques = {}; break;
+    case "basculeSocle": var code = b.getAttribute("data-k"), sl = E.seq.socle = E.seq.socle || [], ps = sl.indexOf(code); if (ps >= 0) sl.splice(ps, 1); else sl.push(code); break;
     case "ajoutObj": E.seq.objs.push(""); break;
     case "supprObj": E.seq.objs.splice(i, 1); E.seq.seances.forEach(function (s) { s.objs = (s.objs || []).filter(function (k) { return k !== i; }).map(function (k) { return k > i ? k - 1 : k; }); }); break;
     case "ajoutSeance": E.seq.seances.push({ type: "Apprentissage", titre: "", probl: "", act: "", objs: [] }); break;
     case "supprSeance": E.seq.seances.splice(i, 1); break;
-    case "basculeObj":
-      var s = E.seq.seances[i], k = +b.getAttribute("data-k"); s.objs = s.objs || [];
-      var pos = s.objs.indexOf(k); if (pos >= 0) s.objs.splice(pos, 1); else s.objs.push(k); s.objs.sort(); break;
+    case "basculeObj": var s = E.seq.seances[i], k = +b.getAttribute("data-k"); s.objs = s.objs || []; var pos = s.objs.indexOf(k); if (pos >= 0) s.objs.splice(pos, 1); else s.objs.push(k); s.objs.sort(); break;
     case "trameSeances": genererTrameSeances(); break;
     case "ajoutMoment": E.sea.moments.push(momentVide()); break;
     case "supprMoment": E.sea.moments.splice(i, 1); break;
@@ -607,6 +871,17 @@ document.addEventListener("click", function (ev) {
   apres();
 });
 function apres() { rendreListes(); rendreTout(); sauver(); }
+
+function marquer(ci, lundi) {
+  var cibles = toutesClasses ? E.prog.classes : [E.prog.classes[ci]];
+  var cible0 = E.prog.classes[ci].marques[lundi];
+  cibles.forEach(function (c) {
+    if (outilActif === "gomme" || cible0 === outilActif) delete c.marques[lundi];
+    else c.marques[lundi] = outilActif;
+  });
+  rendreTout(); sauver();
+  var nb = 0; E.prog.classes.forEach(function (c) { nb += Object.keys(c.marques).length; });
+}
 
 function ouvrirOnglet(o) {
   document.querySelectorAll(".onglets button").forEach(function (x) { x.classList.toggle("actif", x.getAttribute("data-onglet") === o); });
@@ -620,217 +895,196 @@ function genererTrameSeances() {
   if (E.seq.seances.some(function (s) { return s.titre || s.act; }) && !confirm("Remplacer les séances déjà saisies par une nouvelle trame de " + n + " séances ?")) return;
   var t = [];
   for (var i = 0; i < n; i++) {
-    var type, titre, probl, act, objs = [];
-    if (i === 0) { type = "Lancement et diagnostic"; titre = "Entrer dans la séquence"; probl = E.seq.probl || ""; act = "Accroche à partir d'un document proche des élèves · vérification des pré-requis" + (E.seq.verif ? " (" + E.seq.verif + ")" : "") + " · recueil des représentations · présentation des objectifs et de la production finale"; }
-    else if (i === n - 1) { type = "Évaluation"; titre = "Évaluer les acquis"; probl = "Suis-je capable de… ?"; act = "Évaluation des objectifs opérationnels, avec les mêmes critères que ceux travaillés · bilan de la séquence avec les élèves"; for (var k = 0; k < nobj; k++) objs.push(k); }
-    else if (i === n - 2 && n >= 4) { type = "Réinvestissement / remédiation"; titre = "S'entraîner et consolider"; probl = ""; act = "Exercices différenciés à partir des erreurs repérées · groupes de besoin · auto-évaluation avec la grille de critères"; for (var k2 = 0; k2 < nobj; k2++) objs.push(k2); }
-    else { type = "Apprentissage"; titre = ""; probl = ""; act = ""; var idx = (i - 1) % Math.max(1, nobj); if (nobj) objs.push(idx); }
-    t.push({ type: type, titre: titre, probl: probl, act: act, objs: objs });
+    var x = { type: "Apprentissage", titre: "", probl: "", act: "", objs: [] };
+    if (i === 0) { x.type = "Lancement et diagnostic"; x.titre = "Entrer dans la séquence"; x.probl = E.seq.probl || ""; x.act = "Accroche à partir d'un document proche des élèves · vérification des pré-requis" + (E.seq.verif ? " (" + E.seq.verif + ")" : "") + " · recueil des représentations · présentation des objectifs et de la production finale"; }
+    else if (i === n - 1) { x.type = "Évaluation"; x.titre = "Évaluer les acquis"; x.probl = "Suis-je capable de… ?"; x.act = "Évaluation des objectifs opérationnels, avec les critères travaillés · bilan de la séquence avec les élèves"; for (var k = 0; k < nobj; k++) x.objs.push(k); }
+    else if (i === n - 2 && n >= 4) { x.type = "Réinvestissement / remédiation"; x.titre = "S'entraîner et consolider"; x.act = "Exercices différenciés à partir des erreurs repérées · groupes de besoin · auto-évaluation avec la grille de critères"; for (var k2 = 0; k2 < nobj; k2++) x.objs.push(k2); }
+    else if (nobj) x.objs.push((i - 1) % nobj);
+    t.push(x);
   }
-  E.seq.seances = t; toast("Trame de " + n + " séances générée : complétez les séances d'apprentissage");
+  E.seq.seances = t; toast("Trame de " + n + " séances générée");
 }
 
 function importerSeance() {
   var i = document.getElementById("choixSeance").value; if (i === "") { toast("Créez d'abord des séances dans l'onglet ②"); return; }
-  var s = E.seq.seances[+i], q = E.seq;
+  i = +i; var s = E.seq.seances[i], q = E.seq;
   E.sea.titre = s.titre || s.type;
-  E.sea.place = "Séance " + (+i + 1) + "/" + q.seances.length + (q.titre ? " de « " + q.titre + " »" : "");
-  E.sea.classe = q.classe; E.sea.duree = q.duree || E.sea.duree;
-  E.sea.probl = s.probl || "";
-  E.sea.prereq = +i === 0 ? q.prereq : "Séance " + (+i) + (q.seances[+i - 1] && q.seances[+i - 1].titre ? " : " + q.seances[+i - 1].titre : "") + (q.prereq ? "\n" + q.prereq : "");
+  E.sea.place = "Séance " + (i + 1) + "/" + q.seances.length + (q.titre ? " de « " + q.titre + " »" : "");
+  E.sea.classe = q.classe; E.sea.duree = q.duree || E.sea.duree; E.sea.probl = s.probl || "";
+  E.sea.prereq = i === 0 ? q.prereq : "Séance " + i + (q.seances[i - 1] && q.seances[i - 1].titre ? " : " + q.seances[i - 1].titre : "") + (q.prereq ? "\n" + q.prereq : "");
   E.sea.objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean).join("\n");
   if (s.act && !E.sea.moments.some(function (m) { return m.t; })) E.sea.moments[0].t = s.act;
-  var suiv = q.seances[+i + 1]; E.sea.synthese.ouv = suiv ? "Séance suivante : " + (suiv.titre || suiv.type) : "Fin de la séquence";
+  var suiv = q.seances[i + 1]; E.sea.synthese.ouv = suiv ? "Séance suivante : " + (suiv.titre || suiv.type) : "Fin de la séquence";
   toast("Séance importée");
 }
 
 /* ================================================================
-   GÉNÉRATION : PROGRAMMATION
+   DOCUMENT : PROGRAMMATION
    ================================================================ */
-var COULEURS = ["#dcebd9", "#f9e2cf", "#dfe4f4", "#f3dde6", "#e6f0d0", "#d8ecef", "#f5ecc7", "#e9ddf1", "#d9e9e0", "#f4dcd5"];
-function calculerClasse(c, marge, tampon) {
-  var fin = c.fin || CAL.finAnnee;
-  var evts = {}; (c.evts || []).forEach(function (e) { if (e.d) SEMAINES.forEach(function (w, wi) { if (e.d >= w.lundi && e.d <= w.vendredi) (evts[wi] = evts[wi] || []).push(e.l || "Événement"); }); });
-  var cases = SEMAINES.map(function (w, wi) {
-    if (w.vac) return { type: "vac" };
-    if (w.lundi > fin) return { type: "fin" };
-    var jours = w.jours.filter(function (j) { return j <= fin; });
-    var pf = null, joursCours = jours.filter(function (j) { var p = (c.pfmp || []).filter(function (p) { return p.d && p.f && j >= p.d && j <= p.f; })[0]; if (p) pf = p; return !p; });
-    if (!joursCours.length) return pf ? { type: "pfmp", l: pf.l || "PFMP" } : { type: "fin" };
-    return { type: "cours", cap: (Number(c.h) || 0) * joursCours.length / 5, evts: evts[wi] || [] };
-  });
-  /* semaines tampon : dernière semaine de cours avant chaque vacances */
-  if (tampon) {
-    for (var wi = 1; wi < SEMAINES.length; wi++) {
-      if (SEMAINES[wi].vac && !SEMAINES[wi - 1].vac) {
-        for (var k = wi - 1; k >= 0 && !SEMAINES[k].vac; k--) { if (cases[k].type === "cours") { cases[k].type = "tampon"; break; } }
-      }
-    }
-  }
-  var total = 0; cases.forEach(function (x) { if (x.type === "cours") total += x.cap; });
-  var reserve = total * (Number(marge) || 0) / 100, utile = total - reserve;
-  var seqs = c.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
-  /* placement : coefficient d'étalement pour garder la marge répartie */
-  var coef = utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1;
-  var idx = 0, reste = seqs.length ? (Number(seqs[0].h) || 0) : 0, nonPlace = [];
-  cases.forEach(function (x) {
-    if (x.type !== "cours") return;
-    x.seqs = [];
-    if (idx >= seqs.length) { x.libre = true; return; }
-    var cap = x.cap * coef + 1e-9;
-    while (cap > 0 && idx < seqs.length) {
-      if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
-      var pris = Math.min(cap, reste); cap -= pris; reste -= pris;
-      if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? (Number(seqs[idx].h) || 0) : 0; if (reste === 0 && idx < seqs.length) { /* séquence sans heures */ } }
-    }
-  });
-  for (var q = idx; q < seqs.length; q++) nonPlace.push(seqs[q].t);
-  return { cases: cases, total: total, reserve: reserve, besoin: besoin, seqs: seqs, nonPlace: nonPlace };
-}
-
 function docProg(pourWord) {
-  var P = E.prog, classes = P.classes.filter(function (c) { return c.nom || c.seqs.some(function (s) { return s.t; }); });
-  var al = [];
-  if (!classes.length) return { html: '<p class="vide-msg">Saisissez au moins une classe et ses séquences à gauche, ou chargez l\'exemple.</p>', al: al };
-  var calc = classes.map(function (c) { return calculerClasse(c, P.marge, P.tampon); });
-  var h = "<h2>Programmation annuelle 2026-2027</h2><p class=\"sous\">" + esc([P.discipline, P.etab].filter(Boolean).join(" · ")) + (P.discipline || P.etab ? " · " : "") + "Calendrier zone A · marge de sécurité " + (Number(P.marge) || 0) + " %" + (P.tampon ? " · semaine tampon avant chaque vacances" : "") + "</p>";
+  var P = E.prog, al = [], SEM = semaines(P.zone);
+  var classes = P.classes.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.nom || x.c.seqs.some(function (s) { return s.t; }); });
+  if (!classes.length) return { html: '<p class="vide-msg">Saisissez une classe, ses créneaux et ses séquences à gauche, ou chargez un exemple.</p>', al: al };
+  var calc = classes.map(function (x) { return calculerClasse(x.c); });
+  var etabLib = { college: "Collège", lgt: "Lycée général et technologique", lp: "Lycée professionnel" }[P.etab];
+  var h = "<h2>Programmation annuelle 2026-2027</h2><p class=\"sous\">" + esc([P.discipline, P.nomEtab || etabLib].filter(Boolean).join(" · ")) + " · Zone " + P.zone + " · marge " + (Number(P.marge) || 0) + " %" + (P.tampon ? " · semaine tampon avant chaque vacances" : "") + "</p>";
   h += '<div class="resume">';
-  calc.forEach(function (r, i) {
-    var c = classes[i], libre = r.total - r.besoin;
-    h += "<div><b>" + esc(c.nom || "Classe " + (i + 1)) + "</b>" + r.total.toFixed(1).replace(".0", "") + " h de cours disponibles · " + r.besoin + " h prévues<br>";
-    h += (libre >= r.reserve ? "<span style='color:#3f7d58'>Marge : " + libre.toFixed(1).replace(".0", "") + " h</span>" : libre >= 0 ? "<span style='color:#8a6410'>Marge faible : " + libre.toFixed(1).replace(".0", "") + " h</span>" : "<span style='color:#b23b2e'>Dépassement : " + (-libre).toFixed(1).replace(".0", "") + " h</span>") + "</div>";
-    if (!c.nom) al.push(["mo", "Donnez un nom à la classe " + (i + 1) + "."]);
-    if (!Number(c.h)) al.push(["ko", (c.nom || "Classe " + (i + 1)) + " : indiquez le volume horaire hebdomadaire."]);
-    if (r.nonPlace.length) al.push(["ko", (c.nom || "Classe " + (i + 1)) + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou passez une notion en progression spiralaire."]);
-    else if (r.besoin > r.total - r.reserve && r.besoin <= r.total) al.push(["mo", (c.nom || "Classe " + (i + 1)) + " : la marge est inférieure à " + P.marge + " %. Gardez du temps pour les imprévus."]);
-    r.seqs.forEach(function (s) { if (!Number(s.h)) al.push(["mo", "« " + s.t + " » : estimez sa durée en heures pour la placer correctement."]); });
-    if (!r.nonPlace.length && r.besoin && r.besoin <= r.total - r.reserve) al.push(["ok", (c.nom || "Classe " + (i + 1)) + " : toutes les séquences sont placées, avec une marge suffisante."]);
+  calc.forEach(function (r, n) {
+    var c = classes[n].c, nom = c.nom || "Classe " + (classes[n].i + 1), libre = r.total - r.besoin;
+    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (" + r.nbTot + " cours) · " + r.besoin + " h prévues<br>" +
+      (libre >= r.reserve ? "<span style='color:#3f7d58'>Marge : " + hm(libre * 60) + "</span>" : libre >= 0 ? "<span style='color:#8a6410'>Marge faible : " + hm(libre * 60) + "</span>" : "<span style='color:#b23b2e'>Dépassement : " + hm(-libre * 60) + "</span>") + "</div>";
+    if (!c.creneaux.length) al.push(["ko", nom + " : ajoutez vos créneaux de cours (jour et durée)."]);
+    if (r.nonPlace.length) al.push(["ko", nom + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou travaillez une notion en spirale."]);
+    else if (r.besoin > r.total - r.reserve && r.besoin <= r.total) al.push(["mo", nom + " : la marge est inférieure à " + P.marge + " %. Gardez du temps pour les imprévus."]);
+    r.seqs.forEach(function (s) { if (!Number(s.h)) al.push(["mo", "« " + s.t + " » : estimez sa durée en heures pour la placer."]); });
+    if (!r.nonPlace.length && r.besoin && r.besoin <= r.total - r.reserve) al.push(["ok", nom + " : toutes les séquences sont placées, avec une marge suffisante."]);
   });
   h += "</div>";
-  /* Grille */
-  var grille = calc.map(function (r) {
+  h += '<div class="legende">' + P.types.map(function (t) { return '<span style="background:' + esc(t.col) + '">' + esc(t.nom) + " · " + EFFETS[t.effet].toLowerCase() + "</span>"; }).join("") + '<span style="background:#fff1cc">tampon</span><span style="background:#ece9e2">vacances</span></div>';
+  if (!pourWord) h += '<p class="aide-doc" style="margin:0 0 6px">Choisissez un type d\'événement dans la barre ci-dessus, puis cliquez sur les semaines de la grille.</p>';
+
+  var col = calc.map(function (r, n) {
+    var c = classes[n].c, seqsC = c.seqs.filter(function (x) { return x.t; });
     return r.cases.map(function (x) {
-      if (x.type === "cours") {
-        var lib = x.seqs.length ? x.seqs.map(function (k) { return r.seqs[k].t; }).join(" → ") : (x.libre ? "" : "");
-        return { cls: x.seqs.length ? "seq" : "vide", txt: lib, col: x.seqs.length ? COULEURS[x.seqs[x.seqs.length - 1] % COULEURS.length] : "", cap: x.cap, evts: x.evts, cle: "s:" + x.seqs.join(",") };
-      }
-      if (x.type === "pfmp") return { cls: "pfmp", txt: x.l, cle: "p:" + x.l };
-      if (x.type === "tampon") return { cls: "tampon", txt: "tampon", cle: "t" + Math.random() };
+      if (x.type === "vac") return { vac: 1, cle: "vac" };
       if (x.type === "fin") return { cls: "fin", txt: "", cle: "fin" };
-      return { cls: "vac" };
+      if (x.type === "tampon") return { cls: "tampon", txt: "tampon", cle: "tampon" + Math.random() };
+      if (x.type === "off") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "off" + x.t.id };
+      var lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join(" → ");
+      var dern = x.seqs[x.seqs.length - 1];
+      return { cls: "", txt: lib, col: x.seqs.length ? (seqsC[dern].col || COULEURS[dern % COULEURS.length]) : "", cle: "s" + x.seqs.join(","), evts: x.evts, nb: x.nb, seq: x.seqs.length > 0 };
     });
   });
-  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (c) { return "<th>" + esc(c.nom || "Classe") + (c.h ? "<br><span style='font-weight:400;font-size:.75rem'>" + esc(c.h) + " h/sem.</span>" : "") + "</th>"; }).join("") + "</tr></thead><tbody>";
+  var avecAB = P.classes.some(function (c) { return c.creneaux.some(function (k) { return k.s !== "T"; }); });
+  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (x) { return "<th>" + esc(x.c.nom || "Classe") + "<br><span style='font-weight:400;font-size:.74rem'>" + hm(minutesHebdo(x.c, "A")) + "/sem.</span></th>"; }).join("") + "</tr></thead><tbody>";
   var fusion = classes.map(function () { return 0; });
-  SEMAINES.forEach(function (w, wi) {
+  SEM.forEach(function (w, wi) {
     if (w.vac) {
-      if (wi > 0 && SEMAINES[wi - 1].vac && SEMAINES[wi - 1].vac.nom === w.vac.nom) return;
-      var nbv = 1; while (SEMAINES[wi + nbv] && SEMAINES[wi + nbv].vac && SEMAINES[wi + nbv].vac.nom === w.vac.nom) nbv++;
-      h += '<tr><td class="sem">S' + w.num + (nbv > 1 ? "–" + SEMAINES[wi + nbv - 1].num : "") + "</td><td class=\"vac\" colspan=\"" + classes.length + "\">" + esc(w.vac.nom.toUpperCase()) + "</td></tr>";
-      fusion = classes.map(function () { return 0; });
-      return;
+      if (wi > 0 && SEM[wi - 1].vac && SEM[wi - 1].vac.nom === w.vac.nom) return;
+      var nbv = 1; while (SEM[wi + nbv] && SEM[wi + nbv].vac && SEM[wi + nbv].vac.nom === w.vac.nom) nbv++;
+      h += '<tr><td class="sem">S' + w.num + (nbv > 1 ? "–" + SEM[wi + nbv - 1].num : "") + '</td><td class="vac" colspan="' + classes.length + '">' + esc(w.vac.nom.toUpperCase()) + "</td></tr>";
+      fusion = classes.map(function () { return 0; }); return;
     }
-    var partiel = w.jours.length < 5 ? " <span style='color:#b23b2e'>(" + w.jours.length + " j)</span>" : "";
-    h += '<tr><td class="sem">S' + w.num + " · " + fr(w.lundi) + partiel + "</td>";
-    grille.forEach(function (col, ci) {
-      if (fusion[ci] > 0) { fusion[ci]--; return; }
-      var x = col[wi];
-      var n = 1;
-      if (x.cls !== "vac" && !(x.evts && x.evts.length)) {
-        while (col[wi + n] && !SEMAINES[wi + n].vac && col[wi + n].cle === x.cle && !(col[wi + n].evts && col[wi + n].evts.length)) n++;
+    var partiel = w.ouvres < 5 ? " <span style='color:#b23b2e'>(" + w.ouvres + " j)</span>" : "";
+    h += '<tr><td class="sem">S' + w.num + " · " + fr(w.lundi) + partiel + (avecAB ? " <b style='color:#2f5d8a'>" + lettreAB(w) + "</b>" : "") + "</td>";
+    col.forEach(function (cc, ci) {
+      var x = cc[wi], evts = (x.evts || []).map(function (e) { return '<span class="evt" style="color:#333;background:' + esc(e.col) + ';border-radius:4px;padding:0 4px;margin-top:2px">⚑ ' + esc(e.nom) + "</span>"; }).join("");
+      var style = x.col ? ' style="background:' + esc(x.col) + '"' : "";
+      if (pourWord) {
+        if (fusion[ci] > 0) { fusion[ci]--; return; }
+        var n = 1;
+        if (!(x.evts && x.evts.length)) while (cc[wi + n] && !SEM[wi + n].vac && cc[wi + n].cle === x.cle && !(cc[wi + n].evts && cc[wi + n].evts.length)) n++;
+        fusion[ci] = n - 1;
+        h += '<td class="' + x.cls + '"' + (n > 1 ? ' rowspan="' + n + '"' : "") + style + ">" + esc(x.txt) + evts + "</td>";
+      } else {
+        var prec = cc[wi - 1], suite = prec && !SEM[wi - 1].vac && prec.cle === x.cle && x.txt;
+        var nbc = x.seq ? '<span class="nbc">' + x.nb + " cours</span>" : (x.nb === 0 && !x.cls && !x.txt ? '<span class="nbc">pas de cours</span>' : "");
+        h += '<td class="clic ' + x.cls + '" data-c="' + classes[ci].i + '" data-w="' + w.lundi + '"' + style + ' title="Cliquer pour marquer cette semaine">' + (suite ? '<span class="suite">↓</span>' : esc(x.txt)) + evts + nbc + "</td>";
       }
-      fusion[ci] = n - 1;
-      var style = x.col ? ' style="background:' + x.col + '"' : "";
-      var ev = (x.evts || []).map(function (e) { return '<span class="evt">⚑ ' + esc(e) + "</span>"; }).join("");
-      h += "<td class=\"" + x.cls + "\"" + (n > 1 ? ' rowspan="' + n + '"' : "") + style + ">" + esc(x.txt) + ev + "</td>";
     });
     h += "</tr>";
   });
   h += "</tbody></table>";
-  h += '<p class="aide-doc">Les séquences sont étalées en fonction des heures estimées. Les semaines incomplètes (jours fériés, pont) sont signalées en rouge. Les zones « tampon » absorbent retards et imprévus.</p>';
+  h += '<p class="aide-doc">Les séquences sont étalées selon les heures estimées et les créneaux réels de chaque semaine : jours fériés, pont de l\'Ascension, semaines A/B et événements compris.</p>';
   return { html: h, al: al };
 }
 
 /* ================================================================
-   GÉNÉRATION : SÉQUENCE
+   DOCUMENT : SÉQUENCE
    ================================================================ */
 function docSeq() {
   var q = E.seq, al = [];
-  if (!q.titre && !q.og && !q.seances.length) return { html: '<p class="vide-msg">Renseignez votre séquence à gauche (ou chargez l\'exemple). Le document se construit en direct.</p>', al: al };
-  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p>";
-  h += "<table>";
-  [["Place dans la progression", q.place], ["Programme, thème, attendus", q.attendus], ["Compétences travaillées", q.comp], ["Problématique", q.probl], ["Objectif général", q.og]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
+  if (!q.titre && !q.og && !q.seances.length) return { html: '<p class="vide-msg">Renseignez votre séquence à gauche (ou chargez un exemple). Le document se construit en direct.</p>', al: al };
+  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
+  var socle = (q.socle || []).map(function (k) { var s = SOCLE.filter(function (x) { return x[0] === k; })[0]; return s ? "<b>" + k + "</b> " + esc(s[1].split("· ")[1]) : ""; }).join("<br>");
+  [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
   [["Pré-requis", q.prereq], ["Vérification des pré-requis", q.verif], ["Savoirs associés", q.savoirs], ["Représentations et obstacles prévisibles", q.obstacles]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
   h += "</table>";
   if (q.seances.length) {
     h += "<h3 style='color:#c8692c;margin:6px 0'>Déroulé des séances</h3><table><thead><tr><th style='width:5%'>N°</th><th style='width:15%'>Type</th><th style='width:24%'>Titre et problématique</th><th>Activités et supports</th><th style='width:10%'>Objectifs</th></tr></thead><tbody>";
-    q.seances.forEach(function (s, i) {
-      h += "<tr><td><b>" + (i + 1) + "</b></td><td>" + esc(s.type) + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>";
-    });
+    q.seances.forEach(function (s, i) { h += "<tr><td><b>" + (i + 1) + "</b></td><td>" + esc(s.type) + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>"; });
     h += "</tbody></table>";
   }
-  /* Contrôles */
+  if (!q.attendus) al.push(["mo", "Recopiez les attendus du programme : l'encart « Textes officiels » vous donne les liens."]);
   if (!q.probl) al.push(["mo", "Formulez une problématique : elle donne du sens à la séquence pour les élèves."]);
-  var objs = q.objs.map(function (o, i) { return { o: o, i: i, a: analyseObjectif(o) }; }).filter(function (x) { return x.a; });
-  if (!objs.length) al.push(["mo", "Ajoutez des objectifs opérationnels : ce que l'élève saura FAIRE à la fin de la séquence."]);
+  var objs = q.objs.map(function (o, i) { return { i: i, a: analyseObjectif(o) }; }).filter(function (x) { return x.a; });
+  if (!objs.length) al.push(["mo", "Ajoutez des objectifs opérationnels : ce que l'élève saura FAIRE à la fin."]);
   objs.forEach(function (x) {
-    if (x.a.flous.length) al.push(["ko", "O" + (x.i + 1) + " : « " + x.a.flous[0].trim() + " » n'est pas observable. Remplacez-le par un verbe d'action (citer, identifier, comparer, rédiger, justifier…)."]);
-    else if (!x.a.crit) al.push(["mo", "O" + (x.i + 1) + " : ajoutez un critère de réussite (à partir de quand est-ce réussi ?)."]);
+    if (x.a.flous.length) al.push(["ko", "O" + (x.i + 1) + " : « " + x.a.flous[0].trim() + " » n'est pas observable. Préférez un verbe d'action (citer, identifier, comparer, rédiger, justifier…)."]);
+    else if (!x.a.crit) al.push(["mo", "O" + (x.i + 1) + " : ajoutez un critère de réussite."]);
   });
   if (q.seances.length) {
-    objs.forEach(function (x) { if (!q.seances.some(function (s) { return (s.objs || []).indexOf(x.i) >= 0; })) al.push(["ko", "O" + (x.i + 1) + " n'est travaillé dans aucune séance : la séquence n'est pas alignée sur cet objectif."]); });
+    objs.forEach(function (x) { if (!q.seances.some(function (s) { return (s.objs || []).indexOf(x.i) >= 0; })) al.push(["ko", "O" + (x.i + 1) + " n'est travaillé dans aucune séance."]); });
     q.seances.forEach(function (s, i) { if (!(s.objs || []).length && s.type !== "Lancement et diagnostic") al.push(["mo", "Séance " + (i + 1) + " : à quel objectif contribue-t-elle ?"]); });
     if (!q.seances.some(function (s) { return s.type === "Évaluation"; })) al.push(["mo", "Aucune séance d'évaluation : les évaluations sont des séances à part entière."]);
-    if (q.seances.length > 8) al.push(["mo", q.seances.length + " séances : une séquence trop longue fait perdre le fil aux élèves. Pouvez-vous la scinder ?"]);
-    if (!q.seances.some(function (s) { return s.type === "Lancement et diagnostic"; })) al.push(["mo", "Prévoyez un temps pour vérifier les pré-requis et recueillir les représentations des élèves."]);
+    if (q.seances.length > 10) al.push(["mo", q.seances.length + " séances : pouvez-vous scinder la séquence pour que les élèves gardent le fil ?"]);
   }
-  if (!q.obstacles) al.push(["mo", "Éclairage didactique : quelles erreurs typiques ou représentations attendez-vous chez les élèves ?"]);
+  if (!q.obstacles) al.push(["mo", "Éclairage didactique : quelles erreurs ou représentations attendez-vous chez les élèves ?"]);
   if (objs.length && !al.some(function (x) { return x[0] === "ko"; })) al.push(["ok", "Les objectifs sont observables et alignés sur les séances."]);
   return { html: h, al: al };
 }
 
 /* ================================================================
-   GÉNÉRATION : SÉANCE (fiche séance améliorée)
+   DOCUMENT : SÉANCE
    ================================================================ */
 function docSea() {
   var s = E.sea, al = [];
-  if (!s.titre && !s.probl && !s.moments.some(function (m) { return m.t || m.titre; })) return { html: '<p class="vide-msg">Remplissez la fiche séance à gauche, importez une séance de votre séquence, ou chargez l\'exemple.</p>', al: al };
+  if (!s.titre && !s.probl && !s.moments.some(function (m) { return m.t || m.titre; })) return { html: '<p class="vide-msg">Remplissez la fiche à gauche, importez une séance de votre séquence, ou chargez un exemple.</p>', al: al };
   var h = "<h2>Fiche séance : " + esc(s.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([s.classe, s.date ? new Date(s.date).toLocaleDateString("fr-FR") : "", s.duree ? s.duree + " min" : ""].filter(Boolean).join(" · ")) + "</p>";
-  h += "<table><tr><td class='lab'>Titre de la séance</td><td>" + esc(s.titre) + "</td><td class='lab'>Place dans la séquence</td><td>" + esc(s.place) + "</td></tr>";
-  h += "<tr><td class='lab'>Problématique</td><td>" + esc(s.probl) + "</td><td class='lab'>Pré-requis</td><td>" + nl(s.prereq) + "</td></tr>";
-  h += "<tr><td class='lab'>Objectifs</td><td colspan='3'><i>À l'issue de la séance, mon élève est capable de :</i><br>" + nl(s.objs) + "</td></tr></table>";
-  h += "<table class='fiche-sea'><thead><tr><th style='width:9%'>Étape</th><th style='width:5%'>Durée</th><th style='width:31%'>Déroulé de la séance</th><th style='width:12%'>Mise en œuvre<br><span style='font-weight:400'>(postures, modalité)</span></th><th style='width:10%'>Supports</th><th style='width:10%'>Connaissances</th><th style='width:11%'>Notions / compétences</th><th style='width:12%'>Différenciation</th></tr></thead><tbody>";
-  function ligne(etape, rs, d, phase, txt, mo, sup, conn, comp, diff) {
-    return "<tr>" + (etape ? "<td class='etape' rowspan='" + rs + "'>" + etape + "</td>" : "") + "<td>" + (d !== "" && d != null ? d + " min" : "") + "</td><td><span class='phase'>" + phase + "</span><br>" + nl(txt) + "</td><td>" + mo + "</td><td>" + esc(sup) + "</td><td>" + esc(conn) + "</td><td>" + esc(comp) + "</td><td>" + esc(diff) + "</td></tr>";
-  }
+  h += "<table><tr><td class='lab'>Titre de la séance</td><td>" + esc(s.titre) + "</td><td class='lab'>Place dans la séquence</td><td>" + esc(s.place) + "</td></tr><tr><td class='lab'>Problématique</td><td>" + esc(s.probl) + "</td><td class='lab'>Pré-requis</td><td>" + nl(s.prereq) + "</td></tr><tr><td class='lab'>Objectifs</td><td colspan='3'><i>À l'issue de la séance, mon élève est capable de :</i><br>" + nl(s.objs) + "</td></tr></table>";
+  h += "<table class='fiche-sea'><thead><tr><th style='width:10%'>Étape</th><th style='width:6%'>Durée</th><th style='width:32%'>Déroulé de la séance</th><th style='width:9%'>Modalité</th><th style='width:11%'>Supports</th><th style='width:10%'>Connaissances</th><th style='width:10%'>Notions / compétences</th><th style='width:12%'>Différenciation</th></tr></thead><tbody>";
+  function ligne(et, rs, d, ph, txt, mo, sup, conn, comp, diff) { return "<tr>" + (et ? "<td class='etape' rowspan='" + rs + "'>" + et + "</td>" : "") + "<td>" + (d !== "" && d != null ? d + " min" : "") + "</td><td><span class='phase'>" + ph + "</span><br>" + nl(txt) + "</td><td>" + esc(mo) + "</td><td>" + esc(sup) + "</td><td>" + esc(conn) + "</td><td>" + esc(comp) + "</td><td>" + esc(diff) + "</td></tr>"; }
   h += ligne("Étape introductive", 3, s.tissage.d, "Tissage", s.tissage.t, "", "", "", "", "");
   h += ligne("", 0, s.accroche.d, "Phase d'accroche", s.accroche.t, "", s.accroche.sup, "", "", "");
   h += ligne("", 0, s.problPhase.d, "Phase de problématisation", s.problPhase.t, "", "", "", "", "");
-  s.moments.forEach(function (m, i) {
-    var mo = [m.pp ? "Prof. : " + esc(m.pp) : "", m.pe ? "Élèves : " + esc(m.pe) : "", esc(m.modal)].filter(Boolean).join("<br>");
-    h += ligne(i === 0 ? "Étape de développement" : "", s.moments.length, m.d, "Moment " + (i + 1) + (m.titre ? " · " + esc(m.titre) : ""), m.t, mo, m.sup, m.conn, m.comp, m.diff);
-  });
+  s.moments.forEach(function (m, i) { h += ligne(i === 0 ? "Étape de développement" : "", s.moments.length, m.d, "Moment " + (i + 1) + (m.titre ? " · " + esc(m.titre) : ""), m.t, m.modal, m.sup, m.conn, m.comp, m.diff); });
   h += ligne("Étape de conclusion", 1, s.synthese.d, "Phase de synthèse", (s.synthese.t || "") + (s.synthese.trace ? "\nTrace écrite : " + s.synthese.trace : "") + (s.synthese.ouv ? "\nOuverture : " + s.synthese.ouv : ""), "", "", "", "", "");
   h += "</tbody></table>";
-  /* Contrôles */
   var tot = [s.tissage.d, s.accroche.d, s.problPhase.d, s.synthese.d].concat(s.moments.map(function (m) { return m.d; })).reduce(function (a, x) { return a + (Number(x) || 0); }, 0);
   if (s.duree) {
-    if (tot > s.duree) al.push(["ko", "Durées : " + tot + " min prévues pour une séance de " + s.duree + " min. Il faut retirer " + (tot - s.duree) + " min."]);
-    else if (tot < s.duree - 5) al.push(["mo", "Durées : " + tot + " min prévues sur " + s.duree + " min. Il reste " + (s.duree - tot) + " min (installation, consignes, imprévus ?)."]);
+    if (tot > s.duree) al.push(["ko", "Durées : " + tot + " min prévues pour " + s.duree + " min. Retirez " + (tot - s.duree) + " min."]);
+    else if (tot < s.duree - 5) al.push(["mo", "Durées : " + tot + " min sur " + s.duree + " min. Il reste " + (s.duree - tot) + " min (installation, consignes, imprévus ?)."]);
     else al.push(["ok", "Durées : " + tot + " min sur " + s.duree + " min."]);
   }
   if (!s.probl) al.push(["mo", "Une séance répond à une problématique : formulez-la."]);
-  var lignesObj = (s.objs || "").split("\n").filter(function (x) { return x.trim(); });
-  lignesObj.forEach(function (o) { var a = analyseObjectif(o); if (a && a.flous.length) al.push(["ko", "Objectif « " + o.slice(0, 50) + (o.length > 50 ? "…" : "") + " » : le verbe « " + a.flous[0].trim() + " » n'est pas observable."]); });
-  var postures = {}; s.moments.forEach(function (m) { if (m.pp) postures[m.pp] = 1; });
-  if (s.moments.length >= 2 && Object.keys(postures).length < 2) al.push(["mo", "Faites alterner les postures de l'enseignant d'un moment à l'autre (ex. enseignement → lâcher-prise → accompagnement)."]);
-  var modal = {}; s.moments.forEach(function (m) { if (m.modal) modal[m.modal] = 1; });
-  if (s.moments.length >= 2 && Object.keys(modal).length < 2) al.push(["mo", "Variez les modalités (collectif, individuel, binômes, groupes) pour garder le rythme."]);
+  (s.objs || "").split("\n").filter(function (x) { return x.trim(); }).forEach(function (o) { var a = analyseObjectif(o); if (a && a.flous.length) al.push(["ko", "Objectif « " + o.slice(0, 50) + (o.length > 50 ? "…" : "") + " » : « " + a.flous[0].trim() + " » n'est pas observable."]); });
   if (!s.synthese.trace) al.push(["mo", "Quelle trace écrite les élèves garderont-ils ?"]);
   if (!s.moments.some(function (m) { return m.diff; })) al.push(["mo", "Différenciation : prévoyez au moins un coup de pouce ou un défi."]);
-  if (!s.tissage.t) al.push(["mo", "Commencez par un tissage : 2 ou 3 questions sur la séance précédente aident à retenir."]);
   return { html: h, al: al };
+}
+
+/* ================================================================
+   RESSOURCES
+   ================================================================ */
+function rendreRessources() {
+  var P = E.prog, disc = P.discipline || "", niv = (document.getElementById("rechNiveau") || {}).value || "";
+  var voie = { college: "collège cycle", lgt: "lycée général technologique", lp: "voie professionnelle" }[P.etab];
+  document.getElementById("lienRechProg").href = rechercheOfficielle("programme " + disc + " " + niv + " " + voie);
+  document.getElementById("lienRechDidac").href = rechercheOfficielle("ressources d'accompagnement " + disc + " " + niv + " " + voie);
+  var lr = document.getElementById("lienRechRef"); lr.style.display = P.etab === "lp" ? "" : "none"; lr.href = rechercheOfficielle("référentiel " + (niv || "bac pro") + " " + disc);
+  var blocs = ["tous", P.etab, P.etab === "lp" ? "lpref" : null, "didac"].filter(Boolean);
+  var h = '<h2 style="font-family:Georgia,serif;color:var(--encre);margin:0 0 6px">Textes de référence et ressources</h2><p class="aide" style="margin:0 0 14px">Sélection pour : <b>' + ({ college: "Collège", lgt: "Lycée général et technologique", lp: "Lycée professionnel" }[P.etab]) + "</b>" + (disc ? " · " + esc(disc) : "") + '. Les programmes évoluent : vérifiez toujours la version en vigueur pour votre niveau cette année.</p><div class="ress">';
+  blocs.forEach(function (k) {
+    var r = RESS[k];
+    h += '<div class="carte-r"><h3>' + esc(r.titre) + "</h3><ul>" + r.liens.map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + "</a>" + (l[2] ? "<br><small>" + esc(l[2]) + "</small>" : "") + "</li>"; }).join("") + "</ul></div>";
+  });
+  if (P.etab !== "lp") { var autre = P.etab === "college" ? "lgt" : "college"; h += '<div class="carte-r"><h3>Liaison · ' + esc(RESS[autre].titre) + "</h3><ul>" + RESS[autre].liens.slice(0, 2).map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + "</a></li>"; }).join("") + "</ul></div>"; }
+  h += "</div>";
+  document.getElementById("doc-ress").innerHTML = h;
+  document.getElementById("socleListe").innerHTML = SOCLE.map(function (s) { return "<li><b>" + s[0] + "</b> " + esc(s[1].split("· ")[1]) + "</li>"; }).join("");
+  var d2 = E.seq.discipline || disc, cl = E.seq.classe || "";
+  var base = (RESS[P.etab] || RESS.college).liens;
+  var cle = d2 ? d2.toLowerCase().slice(0, 6) : "";
+  var spec = cle ? base.filter(function (l) { return l[0].toLowerCase().indexOf(cle) >= 0; }) : [];
+  var liste = spec.concat(base.slice(0, P.etab === "lp" ? 1 : 2)).slice(0, 4);
+  var e = "<b>📚 Textes officiels pour cette séquence</b><ul>" + liste.map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + "</a></li>"; }).join("") +
+    '<li><a href="' + esc(rechercheOfficielle("programme " + d2 + " " + cl + " " + voie)) + '" target="_blank" rel="noopener">Chercher le programme : ' + esc((d2 + " " + cl).trim() || "ma discipline") + "</a></li>" +
+    (P.etab === "lp" ? '<li><a href="' + RESS.lpref.liens[0][1] + '" target="_blank" rel="noopener">Référentiels des diplômes professionnels</a></li>' : "") +
+    '<li><a href="' + RESS.tous.liens[0][1] + '" target="_blank" rel="noopener">Le socle commun</a></li></ul><span style="font-size:.8rem">Tous les liens : onglet 📚 Textes et ressources.</span>';
+  document.getElementById("encartTextes").innerHTML = e;
+  document.getElementById("lblRef").style.display = P.etab === "lp" ? "" : "none";
+  document.querySelector('[data-p="seq.referentiel"]').style.display = P.etab === "lp" ? "" : "none";
 }
 
 /* ================================================================
@@ -844,25 +1098,28 @@ function rendreTout() {
     document.getElementById("alertes-" + m).innerHTML = r.al.map(function (x) { return '<li class="' + x[0] + '">' + (x[0] === "ko" ? "⛔ " : x[0] === "mo" ? "💡 " : "✅ ") + esc(x[1]) + "</li>"; }).join("");
   });
   document.querySelectorAll("[data-puces]").forEach(function (z) { z.innerHTML = pucesObjectif(lire(z.getAttribute("data-puces"))); });
-  var o = document.getElementById("chkObjSea"); o.innerHTML = (E.sea.objs || "").split("\n").filter(function (x) { return x.trim(); }).length ? pucesObjectif(E.sea.objs.split("\n")[0]) : "";
+  var l1 = (E.sea.objs || "").split("\n").filter(function (x) { return x.trim(); })[0];
+  document.getElementById("chkObjSea").innerHTML = l1 ? pucesObjectif(l1) : "";
+  rendreRessources();
   majListesDeroulantes();
 }
+document.addEventListener("input", function (e) { if (e.target.id === "rechNiveau") rendreRessources(); });
 
+function rgbHex(c) { var m = c.match(/\d+/g); return m ? "#" + m.slice(0, 3).map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("") : ""; }
 function exporterWord(m) {
-  var r = GEN[m](), titres = { prog: "Programmation annuelle", seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || "") };
-  var css = "body{font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#222}h2{font-size:15pt;color:#1d2a44;margin:0}h3{color:#c8692c}.sous{color:#555}table{border-collapse:collapse;width:100%;margin:6pt 0}th,td{border:1px solid #999;padding:4pt;vertical-align:top;font-size:9.5pt}th{background:#e6eef6}td.lab,td.etape{background:#f3f0e9;font-weight:bold}td.vac{background:#e8e5de;text-align:center;font-weight:bold;color:#555}td.pfmp{background:#d9e5f1;text-align:center}td.tampon{background:#fff1cc;text-align:center;font-style:italic}td.fin{background:#f0f0f0}.phase{font-weight:bold;color:#c8692c}.evt{color:#b23b2e;font-weight:bold;font-size:8pt}.resume div{margin-bottom:4pt}.aide-doc{color:#666;font-style:italic}.grille-prog td{text-align:center}" +
-    "@page sec{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:1.5cm}div.sec{page:sec}";
-  /* styles en ligne : Word et LibreOffice ignorent souvent les classes */
+  var r = m === "prog" ? docProg(true) : GEN[m](), titres = { prog: "Programmation annuelle", seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || "") };
   var tmp = document.createElement("div"); tmp.className = "doc"; tmp.style.cssText = "position:absolute;left:-99999px;top:0;width:1100px";
   tmp.innerHTML = r.html; document.body.appendChild(tmp);
   tmp.querySelectorAll("td,th").forEach(function (c) {
-    var cs = getComputedStyle(c), bg = cs.backgroundColor;
-    c.setAttribute("style", (c.getAttribute("style") || "") + ";border:1px solid #999;padding:4pt;vertical-align:" + cs.verticalAlign + ";text-align:" + cs.textAlign + ";color:" + cs.color + ";font-weight:" + cs.fontWeight + ";font-style:" + cs.fontStyle + (bg && bg !== "rgba(0, 0, 0, 0)" ? ";background:" + bg : ""));
-    if (bg && bg !== "rgba(0, 0, 0, 0)") c.setAttribute("bgcolor", rgbHex(bg));
+    var cs = getComputedStyle(c), bg = cs.backgroundColor, has = bg && bg !== "rgba(0, 0, 0, 0)";
+    c.setAttribute("style", (c.getAttribute("style") || "") + ";border:1px solid #999;padding:3pt;font-size:9pt;vertical-align:" + cs.verticalAlign + ";text-align:" + cs.textAlign + ";color:" + cs.color + ";font-weight:" + cs.fontWeight + ";font-style:" + cs.fontStyle + (has ? ";background:" + bg : ""));
+    if (has) c.setAttribute("bgcolor", rgbHex(bg));
   });
-  tmp.querySelectorAll("table").forEach(function (t) { t.setAttribute("border", "1"); t.setAttribute("cellpadding", "4"); t.setAttribute("cellspacing", "0"); t.setAttribute("width", "100%"); t.style.borderCollapse = "collapse"; });
+  tmp.querySelectorAll("table").forEach(function (t) { t.setAttribute("border", "1"); t.setAttribute("cellpadding", "3"); t.setAttribute("cellspacing", "0"); t.setAttribute("width", "100%"); t.style.borderCollapse = "collapse"; t.style.minWidth = ""; t.classList.remove("fiche-sea"); });
+  tmp.querySelectorAll(".legende").forEach(function (d) { d.outerHTML = "<p>Légende : " + Array.prototype.map.call(d.children, function (x) { return '<span style="background:' + x.style.background + ';padding:0 4px">' + x.innerHTML + "</span>"; }).join(" &nbsp; ") + "</p>"; });
   tmp.querySelectorAll(".resume div").forEach(function (d) { d.outerHTML = "<p>" + d.innerHTML + "</p>"; });
   var corps = tmp.innerHTML; tmp.remove();
+  var css = "body{font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#222}h2{font-size:15pt;color:#1d2a44;margin:0}h3{color:#c8692c}.sous{color:#555}table{border-collapse:collapse;width:100%;margin:6pt 0}.phase{font-weight:bold;color:#c8692c}.aide-doc{color:#666;font-style:italic}@page sec{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:1.4cm}div.sec{page:sec}";
   var html = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>" + esc(titres[m]) + "</title><style>" + css + "</style></head><body><div class='sec'>" + corps + "</div></body></html>";
   var blob = new Blob(["﻿", html], { type: "application/msword" });
   var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
@@ -871,36 +1128,36 @@ function exporterWord(m) {
   toast("Fichier Word téléchargé");
 }
 
-function rgbHex(c) { var m = c.match(/\d+/g); return m ? "#" + m.slice(0, 3).map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("") : ""; }
 function promptIA(m) {
-  var regles = "\n\nContraintes :\n- Respecte strictement le programme officiel français en vigueur pour ce niveau ; signale toute incertitude au lieu d'inventer.\n- Formule chaque objectif opérationnel avec un verbe d'action observable, des conditions de réalisation et un critère de réussite (Mager).\n- Ne propose aucune donnée personnelle d'élève.\n- Réponds en français, sous forme de tableau quand c'est pertinent.";
+  var regles = "\n\nContraintes :\n- Respecte strictement le programme officiel français en vigueur pour ce niveau en 2026-2027 ; signale toute incertitude au lieu d'inventer.\n- Formule chaque objectif opérationnel avec un verbe d'action observable, des conditions de réalisation et un critère de réussite.\n- Ne propose aucune donnée personnelle d'élève.\n- Réponds en français, sous forme de tableau quand c'est pertinent.";
+  var etab = { college: "collège", lgt: "lycée général et technologique", lp: "lycée professionnel" }[E.prog.etab];
   if (m === "prog") {
-    var P = E.prog, t = "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à améliorer ma programmation annuelle 2026-2027 (zone A, académies de Besançon et Dijon).\n\nDiscipline : " + (P.discipline || "?") + "\n";
+    var P = E.prog, t = "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à améliorer ma programmation annuelle 2026-2027 (" + etab + ", zone " + P.zone + ").\nDiscipline : " + (P.discipline || "?") + "\n";
     P.classes.forEach(function (c) {
-      t += "\nClasse : " + (c.nom || "?") + ", " + (c.h || "?") + " h par semaine" + (c.fin ? ", fin des cours le " + c.fin : "") + "\nSéquences prévues : " + c.seqs.filter(function (s) { return s.t; }).map(function (s) { return s.t + " (" + (s.h || "?") + " h)"; }).join(" ; ");
-      if (c.pfmp.length) t += "\nPériodes sans cours : " + c.pfmp.map(function (p) { return (p.l || "PFMP") + " du " + p.d + " au " + p.f; }).join(" ; ");
-      if (c.evts.length) t += "\nÉvénements : " + c.evts.map(function (e) { return e.l + " (" + e.d + ")"; }).join(" ; ");
+      var r = calculerClasse(c);
+      t += "\nClasse : " + (c.nom || "?") + (c.niveau ? " (" + c.niveau + ")" : "") + " · créneaux : " + c.creneaux.map(function (k) { return JOURS[k.j] + " " + k.d + " min" + (k.s !== "T" ? " (sem. " + k.s + ")" : ""); }).join(", ") + " · environ " + Math.round(r.total) + " h de cours disponibles dans l'année" + (c.fin ? ", fin des cours le " + c.fin : "") + "\nSéquences prévues : " + c.seqs.filter(function (s) { return s.t; }).map(function (s) { return s.t + " (" + (s.h || "?") + " h)"; }).join(" ; ");
+      var ev = []; Object.keys(c.marques).forEach(function (k) { var ty = typeParId(c.marques[k]); if (ty) ev.push(ty.nom + " semaine du " + k); }); c.periodes.forEach(function (p) { var ty = typeParId(p.ty); if (ty) ev.push(ty.nom + " du " + p.d + " au " + (p.f || p.d)); });
+      if (ev.length) t += "\nÉvénements : " + ev.join(" ; ");
     });
     return t + "\n\nVérifie que toutes les parties du programme sont couvertes, propose un ordre de progression justifié (segmentée, spiralaire ou mixte), signale les séquences trop longues ou trop courtes et les liens possibles entre disciplines." + regles;
   }
   if (m === "seq") {
     var q = E.seq;
-    return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à compléter et améliorer cette séquence.\n\nClasse : " + (q.classe || "?") + " · Discipline : " + (q.discipline || "?") + "\nTitre : " + (q.titre || "?") + "\nNombre de séances : " + q.nb + " de " + q.duree + " min\nProgramme et attendus : " + (q.attendus || "à préciser") + "\nCompétences : " + (q.comp || "à préciser") + "\nProblématique : " + (q.probl || "à proposer") + "\nObjectif général : " + (q.og || "à proposer") + "\nObjectifs opérationnels actuels :\n" + q.objs.filter(Boolean).map(function (o, i) { return "  O" + (i + 1) + ". " + o; }).join("\n") + "\nPré-requis : " + (q.prereq || "?") + "\nSavoirs associés : " + (q.savoirs || "?") + "\nObstacles prévus : " + (q.obstacles || "?") + (q.seances.length ? "\nSéances déjà prévues :\n" + q.seances.map(function (s, i) { return "  " + (i + 1) + ". [" + s.type + "] " + (s.titre || "") + (s.act ? " – " + s.act : ""); }).join("\n") : "") +
+    return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à compléter et améliorer cette séquence (" + etab + ").\n\nClasse : " + (q.classe || "?") + " · Discipline : " + (q.discipline || "?") + "\nTitre : " + (q.titre || "?") + "\nNombre de séances : " + q.nb + " de " + q.duree + " min\nProgramme et attendus : " + (q.attendus || "à préciser") + (q.referentiel ? "\nRéférentiel : " + q.referentiel : "") + "\nCompétences : " + (q.comp || "à préciser") + ((q.socle || []).length ? "\nSocle commun : " + q.socle.join(", ") : "") + "\nProblématique : " + (q.probl || "à proposer") + "\nObjectif général : " + (q.og || "à proposer") + "\nObjectifs opérationnels :\n" + q.objs.filter(Boolean).map(function (o, i) { return "  O" + (i + 1) + ". " + o; }).join("\n") + "\nPré-requis : " + (q.prereq || "?") + "\nSavoirs associés : " + (q.savoirs || "?") + "\nObstacles prévus : " + (q.obstacles || "?") + (q.seances.length ? "\nSéances prévues :\n" + q.seances.map(function (s, i) { return "  " + (i + 1) + ". [" + s.type + "] " + (s.titre || "") + (s.act ? " – " + s.act : ""); }).join("\n") : "") +
       "\n\nPropose : 1) une reformulation des objectifs opérationnels si besoin ; 2) le déroulé détaillé des séances (problématique, activités, modalités, supports, différenciation, trace écrite) ; 3) les représentations et erreurs fréquentes des élèves sur ce sujet, avec une façon de les travailler ; 4) une séance d'évaluation alignée sur les objectifs." + regles;
   }
   var s = E.sea;
-  return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à améliorer cette fiche de séance de " + s.duree + " min.\n\nClasse : " + (s.classe || "?") + "\nTitre : " + (s.titre || "?") + "\nPlace dans la séquence : " + (s.place || "?") + "\nPré-requis : " + (s.prereq || "?") + "\nProblématique : " + (s.probl || "à proposer") + "\nObjectifs : " + (s.objs || "à proposer") + "\nTissage : " + (s.tissage.t || "à proposer") + "\nAccroche : " + (s.accroche.t || "à proposer") + "\nMoments prévus :\n" + s.moments.map(function (m, i) { return "  " + (i + 1) + ". " + (m.titre || "") + " (" + (m.d || "?") + " min) " + (m.t || "") + (m.pp ? " · posture professeur : " + m.pp : "") + (m.modal ? " · " + m.modal : ""); }).join("\n") + "\nSynthèse / trace écrite : " + (s.synthese.t || "") + " " + (s.synthese.trace || "") +
-    "\n\nPropose une version améliorée de la fiche, sous forme de tableau (étape, durée, déroulé, postures du professeur et des élèves selon D. Bucheton, supports, différenciation), avec des consignes exactes à donner aux élèves, une accroche concrète, une trace écrite rédigée et un bilan de fin de séance. Vérifie que le total des durées fait " + s.duree + " min." + regles;
+  return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à améliorer cette fiche de séance de " + s.duree + " min (" + etab + ").\n\nClasse : " + (s.classe || "?") + "\nTitre : " + (s.titre || "?") + "\nPlace dans la séquence : " + (s.place || "?") + "\nPré-requis : " + (s.prereq || "?") + "\nProblématique : " + (s.probl || "à proposer") + "\nObjectifs : " + (s.objs || "à proposer") + "\nTissage : " + (s.tissage.t || "à proposer") + "\nAccroche : " + (s.accroche.t || "à proposer") + "\nMoments prévus :\n" + s.moments.map(function (m, i) { return "  " + (i + 1) + ". " + (m.titre || "") + " (" + (m.d || "?") + " min, " + (m.modal || "modalité ?") + ") " + (m.t || ""); }).join("\n") + "\nSynthèse / trace écrite : " + (s.synthese.t || "") + " " + (s.synthese.trace || "") +
+    "\n\nPropose une version améliorée de la fiche sous forme de tableau (étape, durée, déroulé, modalité, supports, différenciation), avec les consignes exactes à donner aux élèves, une accroche concrète, une trace écrite rédigée et un bilan de fin de séance. Vérifie que le total des durées fait " + s.duree + " min." + regles;
 }
 function ouvrirIA(m) { document.getElementById("texteIA").textContent = promptIA(m); document.getElementById("modaleIA").classList.add("ouverte"); }
 function copier(t) {
   function ok() { toast("Copié dans le presse-papiers"); }
-  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, secours); else secours();
   function secours() { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); ok(); } catch (e) {} ta.remove(); }
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, secours); else secours();
 }
 document.getElementById("modaleIA").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("ouverte"); });
 
-/* Fichier de sauvegarde */
 document.getElementById("btnSauver").addEventListener("click", function () {
   var blob = new Blob([JSON.stringify(E, null, 2)], { type: "application/json" });
   var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "atelier-suppleant-" + new Date().toISOString().slice(0, 10) + ".json";
@@ -909,58 +1166,75 @@ document.getElementById("btnSauver").addEventListener("click", function () {
 document.getElementById("fichierOuvrir").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   var r = new FileReader();
-  r.onload = function () { try { var d = JSON.parse(r.result); if (!d.prog || !d.seq || !d.sea) throw 0; E = d; apres(); toast("Travail rechargé"); } catch (x) { toast("Ce fichier n'est pas un fichier de l'atelier"); } };
+  r.onload = function () { try { var d = JSON.parse(r.result); if (!d.prog || !d.seq || !d.sea) throw 0; E = d; completer(); apres(); toast("Travail rechargé"); } catch (x) { toast("Ce fichier n'est pas un fichier de l'atelier"); } };
   r.readAsText(f); e.target.value = "";
 });
 
 /* ================================================================
-   EXEMPLE (Lettres, voie professionnelle)
+   EXEMPLES (adaptés au type d'établissement choisi)
    ================================================================ */
-var EXEMPLE = {
-  prog: { discipline: "Lettres – Histoire-Géographie", etab: "LP (exemple)", marge: 10, tampon: true, zone: "A", classes: [
-    { nom: "2nde MS – Français", h: 2, fin: "", seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 12 }, { t: "S'informer, informer : les circuits de l'information", h: 12 }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 12 }, { t: "Projet : concours d'éloquence", h: 6 }],
-      pfmp: [{ l: "PFMP 1", d: "2027-01-18", f: "2027-02-12" }, { l: "PFMP 2", d: "2027-05-31", f: "2027-06-18" }], evts: [{ d: "2027-03-18", l: "Sortie théâtre" }] },
-    { nom: "Tle MS – Français", h: 2, fin: "2027-05-28", seqs: [{ t: "Vivre aujourd'hui : l'humanité, le monde, les sciences et la technique", h: 12 }, { t: "Créer, fabriquer : l'invention et l'imaginaire", h: 12 }, { t: "Préparation à l'épreuve écrite", h: 6 }],
-      pfmp: [{ l: "PFMP", d: "2026-11-16", f: "2026-12-11" }, { l: "PFMP", d: "2027-03-08", f: "2027-04-02" }], evts: [{ d: "2027-01-27", l: "Bac blanc" }] }
-  ] },
-  seq: { classe: "2nde MS – Français", discipline: "Français", titre: "Devenir soi : écritures autobiographiques", nb: 6, duree: 55,
-    place: "Séquence 1/4 · avant « S'informer, informer »",
-    attendus: "Programme de français de 2nde bac pro, objet d'étude « Devenir soi : écritures autobiographiques » : lire des textes autobiographiques, comprendre les enjeux de l'écriture de soi, écrire sur soi.",
-    comp: "Lire et comprendre des textes · Écrire pour raconter et réfléchir · S'exprimer à l'oral",
-    probl: "En quoi écrire sur soi permet-il de se construire ?",
-    og: "Être capable de rédiger un court récit autobiographique",
-    objs: ["À partir d'un corpus de 3 extraits, identifier les marques du récit autobiographique en relevant au moins 2 indices par texte (pronoms, temps, regard rétrospectif)", "Rédiger en 45 minutes le récit d'un souvenir marquant de 20 lignes, en respectant les 4 critères de la grille d'écriture", "Lire à voix haute son texte pendant 2 minutes devant un groupe de 4, en respectant 3 critères de la grille d'oral"],
-    prereq: "Distinguer narrateur et auteur · temps du récit (passé composé, imparfait)", verif: "Quiz de 5 questions en début de séance 1",
-    savoirs: "Pacte autobiographique · je narrant / je narré · mémoire et souvenir · énonciation",
-    obstacles: "Confusion entre narrateur et auteur · idée que « raconter sa vie » serait sans intérêt littéraire · difficulté à choisir et sélectionner un souvenir",
+function exemple(m) {
+  var etab = E.prog.etab;
+  if (m === "prog") {
+    var P = { etab: etab, zone: E.prog.zone || "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour(etab), classes: [] };
+    var T = function (nom) { return (P.types.filter(function (t) { return t.nom.indexOf(nom) === 0; })[0] || {}).id; };
+    if (etab === "lp") {
+      P.discipline = "Lettres – Histoire-géographie";
+      var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }], seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 11, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }, { t: "Projet : concours d'éloquence", h: 5, col: "#f3dde6" }], periodes: [{ ty: T("PFMP"), d: "2027-01-18", f: "2027-02-12" }], marques: {} };
+      a.marques["2027-03-15"] = T("Sortie"); a.marques["2027-06-07"] = T("PFMP"); a.marques["2027-06-14"] = T("PFMP");
+      var b = { nom: "Tle MRC", niveau: "Tle pro", fin: "2027-05-28", creneaux: [{ j: 1, d: 110, s: "T" }], seqs: [{ t: "Vivre aujourd'hui : l'humanité, le monde, les sciences et la technique", h: 11, col: "#e6f0d0" }, { t: "Créer, fabriquer : l'invention et l'imaginaire", h: 11, col: "#d8ecef" }, { t: "Préparation à l'épreuve écrite", h: 4, col: "#f5ecc7" }], periodes: [{ ty: T("PFMP"), d: "2026-11-16", f: "2026-12-11" }, { ty: T("PFMP"), d: "2027-03-08", f: "2027-04-02" }], marques: {} };
+      b.marques["2027-01-25"] = T("Examen blanc");
+      P.classes = [a, b];
+    } else if (etab === "lgt") {
+      P.discipline = "Mathématiques";
+      var c = { nom: "2nde 3", niveau: "2nde GT", fin: "2027-06-11", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 3, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }, { j: 5, d: 55, s: "A" }], seqs: [{ t: "Nombres et calculs", h: 14, col: "#dcebd9" }, { t: "Fonctions : généralités", h: 16, col: "#f9e2cf" }, { t: "Géométrie : vecteurs", h: 16, col: "#dfe4f4" }, { t: "Statistiques et probabilités", h: 14, col: "#f3dde6" }, { t: "Algorithmique et programmation", h: 10, col: "#e6f0d0" }], periodes: [{ ty: T("Stage"), d: "2027-06-14", f: "2027-06-25" }], marques: {} };
+      c.marques["2027-01-18"] = T("Bac blanc");
+      P.classes = [c];
+    } else {
+      P.discipline = "Histoire-géographie";
+      var d = { nom: "4eB", niveau: "4e", fin: "", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 3, d: 55, s: "T" }, { j: 5, d: 55, s: "A" }], seqs: [{ t: "H1 · Le XVIIIe siècle : expansions, Lumières et révolutions", h: 12, col: "#dcebd9" }, { t: "G1 · L'urbanisation du monde", h: 10, col: "#f9e2cf" }, { t: "H2 · L'Europe et le monde au XIXe siècle", h: 12, col: "#dfe4f4" }, { t: "G2 · Les mobilités humaines transnationales", h: 10, col: "#f3dde6" }, { t: "EMC · Libertés et droits", h: 6, col: "#e6f0d0" }, { t: "H3 · Société, culture et politique dans la France du XIXe siècle", h: 10, col: "#d8ecef" }], periodes: [], marques: {} };
+      d.marques["2027-03-22"] = T("Sortie");
+      var f = { nom: "3eA", niveau: "3e", fin: "2027-06-18", creneaux: [{ j: 2, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }, { j: 5, d: 55, s: "B" }], seqs: [{ t: "H1 · L'Europe, un théâtre majeur des guerres totales", h: 14, col: "#dcebd9" }, { t: "G1 · Dynamiques territoriales de la France", h: 12, col: "#f9e2cf" }, { t: "H2 · Le monde depuis 1945", h: 14, col: "#dfe4f4" }, { t: "EMC · La République et la citoyenneté", h: 8, col: "#e6f0d0" }, { t: "Révisions du brevet", h: 6, col: "#f5ecc7" }], periodes: [{ ty: T("Stage"), d: "2026-12-07", f: "2026-12-11" }], marques: {} };
+      f.marques["2027-01-25"] = T("Brevet blanc"); f.marques["2027-04-26"] = T("Brevet blanc");
+      P.classes = [d, f];
+    }
+    return P;
+  }
+  if (m === "seq") return {
+    classe: "2nde MRC", discipline: "Français", titre: "Devenir soi : écritures autobiographiques", nb: 6, duree: 55, place: "Séquence 1/4 · avant « S'informer, informer »",
+    attendus: "Programme de français de 2nde bac pro, objet d'étude « Devenir soi : écritures autobiographiques » : lire des textes autobiographiques, comprendre les enjeux de l'écriture de soi, écrire sur soi.", referentiel: "",
+    comp: "Lire et comprendre des textes · Écrire pour raconter et réfléchir · S'exprimer à l'oral", socle: ["D1.1", "D3"],
+    probl: "En quoi écrire sur soi permet-il de se construire ?", og: "Être capable de rédiger un court récit autobiographique",
+    objs: ["À partir d'un corpus de 3 extraits, identifier les marques du récit autobiographique en relevant au moins 2 indices par texte", "Rédiger en 45 minutes le récit d'un souvenir marquant de 20 lignes, en respectant les 4 critères de la grille d'écriture", "Lire à voix haute son texte pendant 2 minutes devant un groupe de 4, en respectant 3 critères de la grille d'oral"],
+    prereq: "Distinguer narrateur et auteur · temps du récit (passé composé, imparfait)", verif: "Quiz de 5 questions en début de séance 1", savoirs: "Pacte autobiographique · je narrant / je narré · mémoire et souvenir · énonciation",
+    obstacles: "Confusion entre narrateur et auteur · idée que « raconter sa vie » serait sans intérêt littéraire · difficulté à sélectionner un souvenir",
     seances: [
-      { type: "Lancement et diagnostic", titre: "Entrer dans la séquence", probl: "En quoi écrire sur soi permet-il de se construire ?", act: "Accroche : photos de leur enfance (objets, lieux) · quiz pré-requis · représentations : « pourquoi écrit-on sur soi ? »", objs: [] },
-      { type: "Apprentissage", titre: "Les marques de l'écriture de soi", probl: "Comment reconnaît-on qu'un auteur parle de lui ?", act: "Lecture de 3 extraits (Pagnol, Ernaux, Gary) en binômes · relevé des indices · mise en commun et trace écrite", objs: [0] },
+      { type: "Lancement et diagnostic", titre: "Entrer dans la séquence", probl: "En quoi écrire sur soi permet-il de se construire ?", act: "Accroche : objets et lieux de l'enfance · quiz pré-requis · représentations : « pourquoi écrit-on sur soi ? »", objs: [] },
+      { type: "Apprentissage", titre: "Les marques de l'écriture de soi", probl: "Comment reconnaît-on qu'un auteur parle de lui ?", act: "Lecture de 3 extraits en binômes · relevé des indices · mise en commun et trace écrite", objs: [0] },
       { type: "Apprentissage", titre: "Choisir et raconter un souvenir", probl: "Comment rendre un souvenir intéressant pour un lecteur ?", act: "Atelier d'écriture : carte mentale du souvenir · premier jet guidé", objs: [1] },
       { type: "Apprentissage", titre: "Améliorer son texte", probl: "Comment réécrire pour mieux dire ?", act: "Relecture croisée avec la grille d'écriture · réécriture", objs: [1] },
       { type: "Réinvestissement / remédiation", titre: "S'entraîner à lire à voix haute", probl: "", act: "Entraînement en groupes de 4 avec la grille d'oral · coups de pouce", objs: [2] },
       { type: "Évaluation", titre: "Évaluer les acquis", probl: "Suis-je capable de raconter et partager un souvenir ?", act: "Remise du texte final et lecture orale · auto-évaluation · bilan de la séquence", objs: [0, 1, 2] }
-    ] },
-  sea: { titre: "Les marques de l'écriture de soi", place: "Séance 2/6 de « Devenir soi : écritures autobiographiques »", duree: 55, classe: "2nde MS – Français", date: "",
-    prereq: "Séance 1 : représentations sur l'écriture de soi\nDistinguer narrateur et auteur",
-    probl: "Comment reconnaît-on qu'un auteur parle de lui ?",
+    ] };
+  return { titre: "Les marques de l'écriture de soi", place: "Séance 2/6 de « Devenir soi : écritures autobiographiques »", duree: 55, classe: "2nde MRC", date: "",
+    prereq: "Séance 1 : représentations sur l'écriture de soi\nDistinguer narrateur et auteur", probl: "Comment reconnaît-on qu'un auteur parle de lui ?",
     objs: "À partir de 3 extraits, identifier les marques du récit autobiographique en relevant au moins 2 indices par texte",
-    tissage: { t: "3 questions flash au tableau : qu'avons-nous dit la dernière fois sur « écrire sur soi » ?", d: 5 },
+    tissage: { t: "3 questions flash : qu'avons-nous dit la dernière fois sur « écrire sur soi » ?", d: 5 },
     accroche: { t: "Projection d'une publication de réseau social où quelqu'un raconte un souvenir : est-ce de l'autobiographie ?", d: 5, sup: "Capture d'écran anonymisée" },
     problPhase: { t: "Les élèves formulent la question : qu'est-ce qui distingue un récit autobiographique d'un autre récit ?", d: 5 },
     moments: [
-      { titre: "Lecture en binômes", d: 15, t: "Chaque binôme lit un extrait et relève les indices : pronoms, temps, marques du souvenir.", pp: "Lâcher-prise", pe: "Première", modal: "Binômes", sup: "Extraits Pagnol / Ernaux / Gary", conn: "Énonciation", comp: "Lire et comprendre", diff: "Coup de pouce : extrait surligné · défi : comparer 2 extraits" },
-      { titre: "Mise en commun", d: 10, t: "Les binômes présentent leurs indices ; on construit ensemble un tableau des marques.", pp: "Accompagnement", pe: "Réflexive", modal: "Collectif", sup: "Tableau collaboratif", conn: "Pacte autobiographique", comp: "S'exprimer à l'oral", diff: "" },
-      { titre: "Institutionnalisation", d: 5, t: "Le professeur formalise : je narrant / je narré, pacte autobiographique.", pp: "Enseignement", pe: "Scolaire", modal: "Collectif", sup: "Diaporama", conn: "Je narrant / je narré", comp: "", diff: "" }
+      { titre: "Lecture en binômes", d: 15, t: "Chaque binôme lit un extrait et relève les indices : pronoms, temps, marques du souvenir.", modal: "Binômes", sup: "3 extraits", conn: "Énonciation", comp: "Lire et comprendre", diff: "Coup de pouce : extrait surligné · défi : comparer 2 extraits" },
+      { titre: "Mise en commun", d: 10, t: "Les binômes présentent leurs indices ; on construit ensemble un tableau des marques.", modal: "Collectif", sup: "Tableau collaboratif", conn: "Pacte autobiographique", comp: "S'exprimer à l'oral", diff: "" },
+      { titre: "Formalisation", d: 5, t: "Le professeur formalise : je narrant / je narré, pacte autobiographique.", modal: "Collectif", sup: "Diaporama", conn: "Je narrant / je narré", comp: "", diff: "" }
     ],
-    synthese: { d: 10, t: "Réponse à la problématique construite avec la classe : on reconnaît l'autobiographie à l'identité auteur-narrateur-personnage et au regard rétrospectif.", trace: "Carte mentale « Les marques de l'écriture de soi » collée dans le cahier", ouv: "Séance suivante : choisir et raconter un souvenir" } }
-};
+    synthese: { d: 10, t: "Réponse à la problématique construite avec la classe : identité auteur-narrateur-personnage et regard rétrospectif.", trace: "Carte mentale « Les marques de l'écriture de soi » dans le cahier", ouv: "Séance suivante : choisir et raconter un souvenir" } };
+}
 
 /* ================================================================
    DÉMARRAGE
    ================================================================ */
 rendreListes(); rendreTout();
-var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
+var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "ress", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
 </script>
 </body>
 </html>
