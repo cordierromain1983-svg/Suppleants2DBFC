@@ -106,6 +106,14 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .doc .aide-doc{color:var(--doux);font-style:italic;font-size:.82rem}
 .doc .fiche-sea{min-width:820px;table-layout:fixed}
 .doc .fiche-sea td,.doc .fiche-sea th{overflow-wrap:break-word;hyphens:auto;font-size:.84rem}
+.entree-cdt{border:1px solid var(--trait);border-radius:12px;margin:0 0 14px;overflow:hidden}
+.entree-cdt .tete-cdt{background:var(--encre);color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.entree-cdt .tete-cdt b{font-size:.98rem}
+.entree-cdt .corps{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.entree-cdt .corps>div{padding:10px 14px}
+.entree-cdt .corps>div+div{border-left:1px solid var(--trait)}
+.entree-cdt h4{margin:0 0 4px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.entree-cdt .copie{font-size:.75rem;padding:2px 8px}
 .legende{display:flex;flex-wrap:wrap;gap:8px;font-size:.78rem;margin:4px 0 8px}
 .legende span{padding:2px 8px;border-radius:6px}
 .vide-msg{color:var(--doux);text-align:center;padding:40px 10px}
@@ -130,7 +138,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .guide li{margin-bottom:6px}
 @media (max-width:900px){.panneau.actif{grid-template-columns:1fr}.form{position:static;max-height:none}}
 @media print{
-  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast,.palette{display:none!important}
+  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast,.palette,.no-word{display:none!important}
   body{background:#fff;font-size:10pt}
   .panneau.actif{display:block}
   .sortie{border:0;padding:0}
@@ -154,6 +162,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <button class="actif" data-onglet="prog">① Programmation annuelle</button>
       <button data-onglet="seq">② Séquence</button>
       <button data-onglet="sea">③ Séance</button>
+      <button data-onglet="cdt">④ Cahier de textes</button>
       <button data-onglet="ress">📚 Textes et ressources</button>
       <button data-onglet="guide">Mode d'emploi</button>
     </nav>
@@ -164,6 +173,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   <div class="barre">
     <button class="btn discret" id="btnSauver" type="button">💾 Enregistrer mon travail (fichier)</button>
     <label class="btn discret" style="cursor:pointer">📂 Ouvrir un fichier<input type="file" id="fichierOuvrir" accept=".json,application/json" hidden></label>
+    <button class="btn plein" id="btnToutExporter" type="button">⬇︎ Exporter tout mon travail (Word)</button>
     <span class="esp"></span>
     <span class="aide" id="etatSauvegarde">Votre travail est conservé dans ce navigateur.</span>
   </div>
@@ -352,6 +362,39 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     </div>
   </section>
 
+  <!-- ===================== CAHIER DE TEXTES ===================== -->
+  <section class="panneau" id="p-cdt">
+    <div class="form">
+      <h2>Cahier de textes</h2>
+      <p class="aide">Document officiel à valeur juridique (circulaire n° 2010-136 du 6 septembre 2010). Pour chaque séance : <b>le contenu de la séance</b> et <b>le travail à effectuer</b>, avec la date où il est donné et la date où il doit être rendu, accompagnés des documents utiles.</p>
+      <h3>Classe</h3>
+      <div class="duo">
+        <div><label class="ch">Classe</label><input type="text" data-p="cdt.classe" list="dlClasses"></div>
+        <div><label class="ch">Discipline</label><input type="text" data-p="cdt.discipline" list="dlDisc"></div>
+      </div>
+      <div class="bloc">
+        <div class="tete"><b>Générer à partir de ma séquence</b></div>
+        <p class="aide">Crée une entrée par séance de l'onglet ②, datée sur vos créneaux réels de l'onglet ① : vacances, jours fériés, PFMP et stages sont sautés.</p>
+        <div class="duo"><div><label class="ch">Première séance le</label><input type="date" data-p="cdt.debut"></div><div style="display:flex;align-items:flex-end"><button class="btn mini accent plein" type="button" data-action="genererCdt">⚙︎ Générer les entrées</button></div></div>
+      </div>
+      <h3>Les entrées</h3>
+      <div id="listeCdt"></div>
+      <button class="btn mini" type="button" data-action="ajoutCdt">+ Ajouter une entrée</button>
+    </div>
+    <div class="sortie">
+      <div class="actions">
+        <button class="btn plein" type="button" data-export="cdt">⬇︎ Télécharger en Word</button>
+        <button class="btn" type="button" data-action="exportCsv">⬇︎ Tableau (CSV)</button>
+        <button class="btn" type="button" onclick="window.print()">🖨 Imprimer / PDF</button>
+        <span style="flex:1"></span>
+        <button class="btn discret" type="button" data-exemple="cdt">Charger un exemple</button>
+        <button class="btn discret" type="button" data-vider="cdt">Vider</button>
+      </div>
+      <ul class="alertes" id="alertes-cdt"></ul>
+      <div class="doc" id="doc-cdt"></div>
+    </div>
+  </section>
+
   <!-- ===================== RESSOURCES ===================== -->
   <section class="panneau" id="p-ress">
     <div class="form">
@@ -391,9 +434,12 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <p>Tapez le titre d'une séquence de votre programmation : la classe, la place et le nombre de séances se remplissent. L'encart « Textes officiels » propose les liens qui correspondent à votre établissement et à votre discipline. Cochez les composantes du socle visées. Chaque objectif est vérifié en direct : verbe observable, conditions, critère de réussite. L'outil vérifie aussi que chaque objectif est travaillé dans au moins une séance.</p>
       <h3>③ Séance</h3>
       <p>La fiche reprend la trame « étape introductive, développement, conclusion ». Importez une séance de votre séquence, puis détaillez chaque moment : durée, déroulé, modalité, supports, connaissances, compétences et différenciation. L'outil vérifie le total des durées.</p>
+      <h3>④ Cahier de textes</h3>
+      <p>Conforme à la circulaire n° 2010-136 : pour chaque séance, <b>le contenu</b> et <b>le travail à effectuer</b>, avec la date où il est donné et la date de remise, les documents utiles et le texte des devoirs et contrôles. « Générer les entrées » crée une entrée par séance de votre séquence, datée sur vos vrais créneaux (vacances, jours fériés et PFMP sautés). Les boutons « Copier le contenu » et « Copier le travail » préparent le texte à coller dans Pronote ou dans votre ENT, à la bonne rubrique. L'outil signale ce qui manque et la charge de travail par date.</p>
       <h3>Exporter, conserver, partager</h3>
       <ul>
-        <li><b>Télécharger en Word</b> : le fichier s'ouvre dans Word, LibreOffice ou Google Docs. La grille et la fiche séance sont en format paysage.</li>
+        <li><b>Exporter tout mon travail</b> (en haut) : un seul fichier Word avec la programmation, la séquence, la séance et le cahier de textes, à remettre au formateur ou à son tuteur.</li>
+        <li><b>Télécharger en Word</b> (dans chaque onglet) : le fichier s'ouvre dans Word, LibreOffice ou Google Docs. La grille et la fiche séance sont en format paysage.</li>
         <li><b>Imprimer / PDF</b> : imprime le document affiché.</li>
         <li>Le travail est conservé <b>dans ce navigateur</b>. Pour changer d'ordinateur ou transmettre votre travail, utilisez <b>Enregistrer mon travail</b>, puis <b>Ouvrir un fichier</b>.</li>
         <li><b>Prompt pour une IA</b> : rédige une demande complète à coller dans un outil d'IA autorisé par votre académie. Aucune donnée d'élève, et vérification systématique avec le texte officiel.</li>
@@ -577,7 +623,8 @@ function etatVide() {
   return {
     prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
     seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [] },
-    sea: seanceVide()
+    sea: seanceVide(),
+    cdt: { classe: "", discipline: "", debut: "", entrees: [] }
   };
 }
 function seanceVide() { return { titre: "", place: "", duree: 55, classe: "", date: "", prereq: "", probl: "", objs: "", tissage: { t: "", d: 5 }, accroche: { t: "", d: 5, sup: "" }, problPhase: { t: "", d: 5 }, moments: [momentVide()], synthese: { d: 10, t: "", trace: "", ouv: "" } }; }
@@ -589,7 +636,7 @@ if (!E) {
   E = etatVide();
   try { var ancien = JSON.parse(localStorage.getItem("atelier-suppleant-v1")); if (ancien && ancien.seq) { E.seq = Object.assign(E.seq, ancien.seq); if (ancien.sea) E.sea = Object.assign(E.sea, ancien.sea); } } catch (e) {}
 }
-function completer() { var v = etatVide(); ["prog", "seq", "sea"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); E.prog.classes.forEach(function (c) { var cv = classeVide(); Object.keys(cv).forEach(function (k) { if (c[k] === undefined) c[k] = cv[k]; }); }); }
+function completer() { var v = etatVide(); ["prog", "seq", "sea", "cdt"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); E.prog.classes.forEach(function (c) { var cv = classeVide(); Object.keys(cv).forEach(function (k) { if (c[k] === undefined) c[k] = cv[k]; }); }); }
 completer();
 
 var minuteur;
@@ -786,6 +833,22 @@ function rendreListes() {
   });
   document.getElementById("listeMoments").innerHTML = h;
 
+  h = "";
+  E.cdt.entrees.forEach(function (x, i) {
+    var b = "cdt.entrees." + i;
+    h += '<div class="bloc"><div class="tete"><b>Entrée ' + (i + 1) + '</b><button class="suppr" type="button" data-action="supprCdt" data-i="' + i + '">✕</button></div>';
+    h += '<div class="trio"><div><label class="ch">Date</label><input type="date" data-p="' + b + '.date"></div><div><label class="ch">Durée</label><input type="number" min="5" data-p="' + b + '.duree" list="dlDurees"></div><div><label class="ch">Dispositif</label>' + sel(b + ".disp", [["Classe entière", "Classe entière"], ["Demi-groupe", "Demi-groupe"], ["Groupes de besoin", "Groupes de besoin"], ["Co-intervention", "Co-intervention"], ["AP / consolidation", "AP / consolidation"], ["Autre", "Autre"]], x.disp) + '</div></div>';
+    h += '<label class="ch">Titre de la séance</label><input type="text" data-p="' + b + '.titre">';
+    h += '<label class="ch">Contenu de la séance <small>(objectif, notions, activités : l\'essentiel, pas toute la trace écrite)</small></label><textarea data-p="' + b + '.contenu"></textarea>';
+    h += '<label class="ch">Documents et ressources <small>(titres, liens, pièces jointes)</small></label><input type="text" data-p="' + b + '.docs">';
+    h += '<label class="ch">Travail à effectuer</label><textarea data-p="' + b + '.taf" style="min-height:44px" placeholder="ex. Lire l\'extrait p. 42 et répondre aux questions 1 à 3"></textarea>';
+    h += '<div class="trio"><div><label class="ch">Pour le</label><input type="date" data-p="' + b + '.pour"></div><div><label class="ch">Temps estimé</label><input type="number" min="0" data-p="' + b + '.tafDuree" placeholder="min"></div><div><label class="ch">Type</label>' + sel(b + ".tafType", [["", "—"], ["À faire", "À faire"], ["À apprendre", "À apprendre"], ["À rendre", "À rendre"], ["À préparer", "À préparer"]], x.tafType) + '</div></div>';
+    h += '<label class="coche"><input type="checkbox" data-p="' + b + '.eval"> Évaluation ou devoir annoncé</label>';
+    if (x.eval) h += '<label class="ch">Texte du devoir ou du contrôle <small>(ou nom du fichier joint)</small></label><textarea data-p="' + b + '.evalTxt" style="min-height:44px"></textarea>';
+    h += "</div>";
+  });
+  document.getElementById("listeCdt").innerHTML = h;
+
   lierChamps(document.querySelector("main"));
   majListesDeroulantes();
 }
@@ -864,6 +927,11 @@ document.addEventListener("click", function (ev) {
     case "ajoutMoment": E.sea.moments.push(momentVide()); break;
     case "supprMoment": E.sea.moments.splice(i, 1); break;
     case "importSeance": importerSeance(); break;
+    case "ajoutCdt": var der = E.cdt.entrees[E.cdt.entrees.length - 1]; E.cdt.entrees.push(entreeVide(der ? der.duree : 55)); break;
+    case "supprCdt": E.cdt.entrees.splice(i, 1); break;
+    case "genererCdt": genererCdt(); break;
+    case "exportCsv": exporterCsv(); return;
+    case "copieCdt": copier(texteCdt(E.cdt.entrees[i], b.getAttribute("data-k"))); return;
     case "fermerIA": document.getElementById("modaleIA").classList.remove("ouverte"); return;
     case "copierIA": copier(document.getElementById("texteIA").textContent); return;
     default: return;
@@ -917,6 +985,97 @@ function importerSeance() {
   var suiv = q.seances[i + 1]; E.sea.synthese.ouv = suiv ? "Séance suivante : " + (suiv.titre || suiv.type) : "Fin de la séquence";
   toast("Séance importée");
 }
+
+/* ================================================================
+   CAHIER DE TEXTES
+   ================================================================ */
+function entreeVide(d) { return { date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
+function frLong(s) { if (!s) return ""; return s2d(s).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); }
+/* Créneaux réels d'une classe à partir d'une date */
+function creneauxDates(c, debut) {
+  var P = E.prog, SEM = semaines(P.zone), fin = c.fin || CAL.finAnnee, res = [];
+  SEM.forEach(function (w) {
+    if (w.vac || w.dim < debut || w.lundi > fin) return;
+    var m = c.marques[w.lundi] ? typeParId(c.marques[w.lundi]) : null;
+    if (m && m.effet === "off") return;
+    var ab = lettreAB(w);
+    w.jours.forEach(function (j) {
+      if (j < debut || j > fin) return;
+      var off = (c.periodes || []).some(function (p) { var t = typeParId(p.ty); return t && t.effet === "off" && p.d && j >= p.d && j <= (p.f || p.d); });
+      if (off) return;
+      c.creneaux.forEach(function (k) { if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55 }); });
+    });
+  });
+  return res.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+}
+function genererCdt() {
+  var q = E.seq, nom = E.cdt.classe || q.classe;
+  if (!q.seances.length) { toast("Créez d'abord les séances de votre séquence (onglet ②)"); return; }
+  var c = E.prog.classes.filter(function (x) { return x.nom && x.nom === nom; })[0];
+  if (!E.cdt.debut) { toast("Indiquez la date de la première séance"); return; }
+  if (E.cdt.entrees.length && !confirm("Remplacer les entrées existantes ?")) return;
+  var slots = c ? creneauxDates(c, E.cdt.debut) : [];
+  if (!c) toast("Classe « " + (nom || "?") + " » absente de la programmation : dates à compléter à la main");
+  E.cdt.classe = nom; E.cdt.discipline = E.cdt.discipline || q.discipline;
+  E.cdt.entrees = q.seances.map(function (s, i) {
+    var e = entreeVide(slots[i] ? slots[i].duree : q.duree);
+    e.date = slots[i] ? slots[i].date : "";
+    e.titre = (q.titre ? q.titre + " · " : "") + "Séance " + (i + 1) + (s.titre ? " : " + s.titre : "");
+    var objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean);
+    e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + (objs.length ? "Objectif : " + objs.join(" ; ") + "\n" : "") + (s.act ? "Activités : " + s.act : "");
+    e.pour = slots[i + 1] ? slots[i + 1].date : "";
+    if (s.type === "Évaluation") { e.eval = true; e.evalTxt = "Évaluation : " + (q.titre || "") + " (sujet joint)"; }
+    return e;
+  });
+  /* l'évaluation est annoncée dans l'entrée précédente */
+  E.cdt.entrees.forEach(function (e, i) { if (E.cdt.entrees[i + 1] && E.cdt.entrees[i + 1].eval && !e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)"; e.tafType = "À apprendre"; } });
+  toast(E.cdt.entrees.length + " entrées créées" + (c && slots.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : ""));
+}
+function texteCdt(e, k) {
+  var cont = "Contenu de la séance" + (e.disp && e.disp !== "Classe entière" ? " (" + e.disp + ")" : "") + " :\n" + (e.titre ? e.titre + "\n" : "") + (e.contenu || "") + (e.docs ? "\nDocuments : " + e.docs : "");
+  var taf = e.taf ? "Travail à effectuer" + (e.tafType ? " (" + e.tafType.toLowerCase() + ")" : "") + " :\n" + e.taf + "\nDonné le " + frLong(e.date) + (e.pour ? " · pour le " + frLong(e.pour) : "") + (e.tafDuree ? " · environ " + e.tafDuree + " min" : "") : "";
+  var ev = e.eval ? "\nÉvaluation : " + (e.evalTxt || "") : "";
+  if (k === "contenu") return cont + ev;
+  if (k === "taf") return taf;
+  return cont + ev + (taf ? "\n\n" + taf : "");
+}
+function docCdt() {
+  var C = E.cdt, al = [];
+  if (!C.entrees.length) return { html: '<p class="vide-msg">Générez les entrées à partir de votre séquence, ajoutez-les une à une, ou chargez un exemple.</p>', al: al };
+  var ent = C.entrees.slice().sort(function (a, b) { return (a.date || "z") < (b.date || "z") ? -1 : 1; });
+  var h = "<h2>Cahier de textes · " + esc(C.classe || "classe") + "</h2><p class=\"sous\">" + esc(C.discipline || "") + " · " + ent.length + " séance(s)</p>";
+  ent.forEach(function (e) {
+    var i = C.entrees.indexOf(e);
+    h += '<div class="entree-cdt"><div class="tete-cdt"><b>' + (e.date ? esc(frLong(e.date)) : "Date à préciser") + (e.duree ? " · " + e.duree + " min" : "") + (e.disp && e.disp !== "Classe entière" ? " · " + esc(e.disp) : "") + '</b><span class="no-word"><button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="contenu">📋 Copier le contenu</button> <button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="taf">📋 Copier le travail</button></span></div>';
+    h += '<div class="corps"><div><h4>Contenu de la séance</h4><b>' + esc(e.titre) + "</b><br>" + nl(e.contenu) + (e.docs ? "<br><i>Documents : " + esc(e.docs) + "</i>" : "") + (e.eval ? '<br><span style="color:#b23b2e;font-weight:700">Évaluation</span> : ' + nl(e.evalTxt) : "") + "</div>";
+    h += "<div><h4>Travail à effectuer</h4>" + (e.taf ? (e.tafType ? "<b>" + esc(e.tafType) + "</b> · " : "") + nl(e.taf) + "<br><small>Donné le " + esc(frLong(e.date)) + (e.pour ? " · <b>pour le " + esc(frLong(e.pour)) + "</b>" : "") + (e.tafDuree ? " · environ " + e.tafDuree + " min" : "") + "</small>" : "<i style='color:#999'>Pas de travail donné</i>") + "</div></div></div>";
+    var nomE = e.date ? frLong(e.date) : "Entrée " + (i + 1);
+    if (!e.date) al.push(["ko", nomE + " : indiquez la date de la séance."]);
+    if (!e.contenu && !e.titre) al.push(["ko", nomE + " : le contenu de la séance est obligatoire."]);
+    if (e.taf && !e.pour) al.push(["ko", nomE + " : indiquez la date pour laquelle le travail doit être fait ou rendu."]);
+    if (e.pour && e.date && e.pour <= e.date) al.push(["ko", nomE + " : la date de remise doit être postérieure à la séance."]);
+    if (e.eval && !e.evalTxt) al.push(["ko", nomE + " : le texte du devoir ou du contrôle doit figurer (texte ou fichier joint)."]);
+    if (e.disp && e.disp !== "Classe entière" && !e.contenu) al.push(["mo", nomE + " : précisez le contenu des activités menées en groupes."]);
+    if ((e.contenu || "").length > 900) al.push(["mo", nomE + " : le cahier de textes n'est pas la trace écrite complète. Gardez l'essentiel pour que les élèves continuent à prendre des notes."]);
+  });
+  /* charge de travail */
+  var charge = {}; C.entrees.forEach(function (e) { if (e.taf && e.pour) { charge[e.pour] = charge[e.pour] || { n: 0, min: 0 }; charge[e.pour].n++; charge[e.pour].min += Number(e.tafDuree) || 0; } });
+  var lignes = Object.keys(charge).sort();
+  if (lignes.length) {
+    h += "<h3 style='color:#c8692c;margin:10px 0 4px'>Charge de travail</h3><table><thead><tr><th>Pour le</th><th>Travaux</th><th>Temps estimé</th></tr></thead><tbody>" + lignes.map(function (d) { var x = charge[d]; return "<tr><td>" + esc(frLong(d)) + "</td><td>" + x.n + "</td><td>" + (x.min ? x.min + " min" : "—") + "</td></tr>"; }).join("") + "</tbody></table>";
+    lignes.forEach(function (d) { if (charge[d].n > 1) al.push(["mo", "Plusieurs travaux pour le " + frLong(d) + " : vérifiez la charge de travail des élèves."]); });
+  }
+  if (!al.some(function (x) { return x[0] === "ko"; })) al.push(["ok", "Les éléments obligatoires sont présents : contenu, travail à effectuer, dates de remise, textes des évaluations."]);
+  al.push(["mo", "Rappel : aucune information personnelle sur un élève dans le cahier de textes ; il est consulté par les élèves, les familles, la direction et l'inspection."]);
+  return { html: h, al: al };
+}
+function exporterCsv() {
+  var L = [["Date", "Durée (min)", "Dispositif", "Titre", "Contenu de la séance", "Documents", "Travail à effectuer", "Type", "Pour le", "Temps estimé (min)", "Évaluation"]];
+  E.cdt.entrees.forEach(function (e) { L.push([e.date, e.duree, e.disp, e.titre, e.contenu, e.docs, e.taf, e.tafType, e.pour, e.tafDuree, e.eval ? (e.evalTxt || "oui") : ""]); });
+  var csv = L.map(function (r) { return r.map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(";"); }).join("\r\n");
+  telecharger(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }), "Cahier_de_textes_" + (E.cdt.classe || "classe").replace(/\s+/g, "_") + ".csv");
+}
+function telecharger(blob, nom) { var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nom; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
 
 /* ================================================================
    DOCUMENT : PROGRAMMATION
@@ -1090,9 +1249,9 @@ function rendreRessources() {
 /* ================================================================
    RENDU, EXPORTS, PROMPTS
    ================================================================ */
-var GEN = { prog: docProg, seq: docSeq, sea: docSea };
+var GEN = { prog: docProg, seq: docSeq, sea: docSea, cdt: docCdt };
 function rendreTout() {
-  ["prog", "seq", "sea"].forEach(function (m) {
+  ["prog", "seq", "sea", "cdt"].forEach(function (m) {
     var r = GEN[m]();
     document.getElementById("doc-" + m).innerHTML = r.html;
     document.getElementById("alertes-" + m).innerHTML = r.al.map(function (x) { return '<li class="' + x[0] + '">' + (x[0] === "ko" ? "⛔ " : x[0] === "mo" ? "💡 " : "✅ ") + esc(x[1]) + "</li>"; }).join("");
@@ -1106,27 +1265,46 @@ function rendreTout() {
 document.addEventListener("input", function (e) { if (e.target.id === "rechNiveau") rendreRessources(); });
 
 function rgbHex(c) { var m = c.match(/\d+/g); return m ? "#" + m.slice(0, 3).map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("") : ""; }
-function exporterWord(m) {
-  var r = m === "prog" ? docProg(true) : GEN[m](), titres = { prog: "Programmation annuelle", seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || "") };
+function htmlPourWord(html) {
   var tmp = document.createElement("div"); tmp.className = "doc"; tmp.style.cssText = "position:absolute;left:-99999px;top:0;width:1100px";
-  tmp.innerHTML = r.html; document.body.appendChild(tmp);
+  tmp.innerHTML = html; document.body.appendChild(tmp);
+  tmp.querySelectorAll(".no-word").forEach(function (x) { x.remove(); });
+  tmp.querySelectorAll(".entree-cdt").forEach(function (d) {
+    var t = d.querySelector(".tete-cdt"), cs = d.querySelectorAll(".corps>div");
+    d.outerHTML = "<table><tr><td colspan='2' style='background:#1d2a44;color:#ffffff;font-weight:bold'>" + t.innerHTML + "</td></tr><tr><td style='width:50%'>" + cs[0].innerHTML + "</td><td>" + cs[1].innerHTML + "</td></tr></table>";
+  });
   tmp.querySelectorAll("td,th").forEach(function (c) {
     var cs = getComputedStyle(c), bg = cs.backgroundColor, has = bg && bg !== "rgba(0, 0, 0, 0)";
-    c.setAttribute("style", (c.getAttribute("style") || "") + ";border:1px solid #999;padding:3pt;font-size:9pt;vertical-align:" + cs.verticalAlign + ";text-align:" + cs.textAlign + ";color:" + cs.color + ";font-weight:" + cs.fontWeight + ";font-style:" + cs.fontStyle + (has ? ";background:" + bg : ""));
+    c.setAttribute("style", "border:1px solid #999;padding:3pt;font-size:9pt;vertical-align:" + cs.verticalAlign + ";text-align:" + cs.textAlign + ";color:" + cs.color + ";font-weight:" + cs.fontWeight + ";font-style:" + cs.fontStyle + (has ? ";background:" + bg : "") + ";" + (c.getAttribute("style") || ""));
     if (has) c.setAttribute("bgcolor", rgbHex(bg));
   });
   tmp.querySelectorAll("table").forEach(function (t) { t.setAttribute("border", "1"); t.setAttribute("cellpadding", "3"); t.setAttribute("cellspacing", "0"); t.setAttribute("width", "100%"); t.style.borderCollapse = "collapse"; t.style.minWidth = ""; t.classList.remove("fiche-sea"); });
   tmp.querySelectorAll(".legende").forEach(function (d) { d.outerHTML = "<p>Légende : " + Array.prototype.map.call(d.children, function (x) { return '<span style="background:' + x.style.background + ';padding:0 4px">' + x.innerHTML + "</span>"; }).join(" &nbsp; ") + "</p>"; });
   tmp.querySelectorAll(".resume div").forEach(function (d) { d.outerHTML = "<p>" + d.innerHTML + "</p>"; });
-  var corps = tmp.innerHTML; tmp.remove();
-  var css = "body{font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#222}h2{font-size:15pt;color:#1d2a44;margin:0}h3{color:#c8692c}.sous{color:#555}table{border-collapse:collapse;width:100%;margin:6pt 0}.phase{font-weight:bold;color:#c8692c}.aide-doc{color:#666;font-style:italic}@page sec{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:1.4cm}div.sec{page:sec}";
-  var html = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>" + esc(titres[m]) + "</title><style>" + css + "</style></head><body><div class='sec'>" + corps + "</div></body></html>";
-  var blob = new Blob(["﻿", html], { type: "application/msword" });
-  var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = titres[m].trim().replace(/[^\wÀ-ÿ\- ]+/g, "").replace(/\s+/g, "_").slice(0, 60) + ".doc";
-  document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  var corps = tmp.innerHTML; tmp.remove(); return corps;
+}
+function enveloppeWord(titre, corps) {
+  var css = "body{font-family:Calibri,Arial,sans-serif;font-size:10pt;color:#222}h2{font-size:15pt;color:#1d2a44;margin:0}h3{color:#c8692c}h4{color:#c8692c;margin:0}.sous{color:#555}table{border-collapse:collapse;width:100%;margin:6pt 0}.phase{font-weight:bold;color:#c8692c}.aide-doc{color:#666;font-style:italic}@page sec{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:1.4cm}div.sec{page:sec}";
+  return "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>" + esc(titre) + "</title><style>" + css + "</style></head><body><div class='sec'>" + corps + "</div></body></html>";
+}
+function nomFichier(t) { return t.trim().replace(/[^\wÀ-ÿ\- ]+/g, "").replace(/\s+/g, "_").slice(0, 60) + ".doc"; }
+function exporterWord(m) {
+  var r = m === "prog" ? docProg(true) : GEN[m](), titres = { prog: "Programmation annuelle", seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || ""), cdt: "Cahier de textes " + (E.cdt.classe || "") };
+  telecharger(new Blob(["\ufeff", enveloppeWord(titres[m], htmlPourWord(r.html))], { type: "application/msword" }), nomFichier(titres[m]));
   toast("Fichier Word téléchargé");
 }
+function exporterTout() {
+  var parts = [], saut = "<br clear='all' style='page-break-before:always'>";
+  var r1 = docProg(true); if (E.prog.classes.some(function (c) { return c.nom || c.seqs.some(function (s) { return s.t; }); })) parts.push(htmlPourWord(r1.html));
+  if (E.seq.titre || E.seq.seances.length) parts.push(htmlPourWord(docSeq().html));
+  if (E.sea.titre || E.sea.moments.some(function (m) { return m.t; })) parts.push(htmlPourWord(docSea().html));
+  if (E.cdt.entrees.length) parts.push(htmlPourWord(docCdt().html));
+  if (!parts.length) { toast("Rien à exporter pour l'instant"); return; }
+  var entete = "<h1 style='font-family:Georgia,serif;color:#1d2a44'>Mon travail · L'atelier du suppléant</h1><p style='color:#555'>Exporté le " + new Date().toLocaleDateString("fr-FR") + " · " + parts.length + " document(s)</p>";
+  telecharger(new Blob(["\ufeff", enveloppeWord("Mon travail", entete + parts.join(saut))], { type: "application/msword" }), "Mon_travail_atelier_suppleant.doc");
+  toast("Tout votre travail est exporté dans un seul fichier Word");
+}
+document.getElementById("btnToutExporter").addEventListener("click", exporterTout);
 
 function promptIA(m) {
   var regles = "\n\nContraintes :\n- Respecte strictement le programme officiel français en vigueur pour ce niveau en 2026-2027 ; signale toute incertitude au lieu d'inventer.\n- Formule chaque objectif opérationnel avec un verbe d'action observable, des conditions de réalisation et un critère de réussite.\n- Ne propose aucune donnée personnelle d'élève.\n- Réponds en français, sous forme de tableau quand c'est pertinent.";
@@ -1166,7 +1344,7 @@ document.getElementById("btnSauver").addEventListener("click", function () {
 document.getElementById("fichierOuvrir").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   var r = new FileReader();
-  r.onload = function () { try { var d = JSON.parse(r.result); if (!d.prog || !d.seq || !d.sea) throw 0; E = d; completer(); apres(); toast("Travail rechargé"); } catch (x) { toast("Ce fichier n'est pas un fichier de l'atelier"); } };
+  r.onload = function () { try { var d = JSON.parse(r.result); if (!d.prog || !d.seq || !d.sea) throw 0; if (!d.cdt) d.cdt = etatVide().cdt; E = d; completer(); apres(); toast("Travail rechargé"); } catch (x) { toast("Ce fichier n'est pas un fichier de l'atelier"); } };
   r.readAsText(f); e.target.value = "";
 });
 
@@ -1199,6 +1377,21 @@ function exemple(m) {
       P.classes = [d, f];
     }
     return P;
+  }
+  if (m === "cdt") {
+    var q = E.seq.seances.length ? E.seq : exemple("seq");
+    var ent = q.seances.map(function (s, i) {
+      var e = entreeVide(q.duree); var d = s2d("2026-11-17"); d.setDate(d.getDate() + i * 2 + (i > 1 ? 1 : 0));
+      if (d.getDay() === 0) d.setDate(d.getDate() + 1); if (d.getDay() === 6) d.setDate(d.getDate() + 2);
+      e.date = d2s(d); e.titre = q.titre + " · Séance " + (i + 1) + " : " + s.titre;
+      e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + "Activités : " + s.act; return e;
+    });
+    ent.forEach(function (e, i) { e.pour = ent[i + 1] ? ent[i + 1].date : ""; });
+    if (ent[1]) { ent[1].taf = "Relire les 3 extraits et surligner un indice de l'écriture de soi par texte"; ent[1].tafType = "À faire"; ent[1].tafDuree = 15; ent[1].docs = "Corpus de 3 extraits (PDF joint)"; }
+    if (ent[2]) { ent[2].taf = "Terminer le premier jet du récit (10 lignes minimum)"; ent[2].tafType = "À rendre"; ent[2].tafDuree = 30; }
+    if (ent[4]) { ent[4].taf = "Réviser la grille d'oral et s'entraîner à lire son texte à voix haute"; ent[4].tafType = "À préparer"; ent[4].tafDuree = 20; ent[4].disp = "Groupes de besoin"; }
+    var last = ent[ent.length - 1]; if (last) { last.eval = true; last.evalTxt = "Évaluation finale : texte autobiographique et lecture orale (grilles jointes)"; }
+    return { classe: q.classe, discipline: q.discipline, debut: ent[0] ? ent[0].date : "", entrees: ent };
   }
   if (m === "seq") return {
     classe: "2nde MRC", discipline: "Français", titre: "Devenir soi : écritures autobiographiques", nb: 6, duree: 55, place: "Séquence 1/4 · avant « S'informer, informer »",
@@ -1234,7 +1427,7 @@ function exemple(m) {
    DÉMARRAGE
    ================================================================ */
 rendreListes(); rendreTout();
-var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "ress", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
+var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "cdt", "ress", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
 </script>
 </body>
 </html>
