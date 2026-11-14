@@ -133,6 +133,17 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .encart ul{margin:4px 0 0;padding-left:18px}
 .modale{position:fixed;inset:0;background:rgba(29,42,68,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modale.ouverte{display:flex}
+.grille-ex{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.carte-ex{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border:1.5px solid #e2dccd;border-radius:12px;background:#fffdf8;cursor:pointer;font:inherit;text-align:left}
+.carte-ex:hover,.carte-ex:focus{border-color:var(--cuivre,#c8692c);background:#fff6ec}
+.carte-ex span{font-size:1.7rem}
+.bandeau-sauv{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--encre,#1d2a44);color:#fff;border-radius:12px;padding:12px 16px;display:none;gap:12px;align-items:center;flex-wrap:wrap;z-index:60;max-width:min(760px,94vw);box-shadow:0 8px 28px rgba(0,0,0,.25);font-size:.93rem}
+.bandeau-sauv.vu{display:flex}
+.bandeau-sauv .bs-actions{display:flex;gap:8px;flex-wrap:wrap}
+.bandeau-sauv button,.bandeau-sauv a{background:#fff;color:var(--encre,#1d2a44);border:0;border-radius:8px;padding:6px 10px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.bandeau-sauv .sec{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)}
+.ent-ok{background:#e3f1e6!important;border-color:#3f7d58!important;color:#2d5e40!important}
+.etapes-ent{font-size:.82rem;color:#555;margin:0;padding:6px 14px;background:#f7f4ec;border-bottom:1px solid #e8e2d4}
 .modale .boite{background:#fff;border-radius:14px;max-width:760px;width:100%;max-height:88vh;overflow:auto;padding:20px}
 .modale pre{white-space:pre-wrap;background:var(--encre);color:#f3f1ea;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.5}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--encre);color:#fff;padding:9px 16px;border-radius:9px;font-size:.9rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
@@ -145,7 +156,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .guide li{margin-bottom:6px}
 @media (max-width:900px){.panneau.actif{grid-template-columns:1fr}.form{position:static;max-height:none}}
 @media print{
-  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast,.palette,.no-word{display:none!important}
+  header.haut,.barre,.form,.sortie .actions,.alertes,.modale,.toast,.palette,.no-word,.bandeau-sauv{display:none!important}
   body{background:#fff;font-size:10pt}
   .panneau.actif{display:block}
   .sortie{border:0;padding:0}
@@ -183,8 +194,10 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     <label class="btn discret" style="cursor:pointer">📂 Ouvrir un fichier<input type="file" id="fichierOuvrir" accept=".json,application/json" hidden></label>
     <button class="btn discret" id="btnInstaller" type="button">📲 Installer l'outil</button>
     <button class="btn plein" id="btnToutExporter" type="button">⬇︎ Exporter tout mon travail (Word)</button>
+    <button class="btn discret" type="button" data-action="ouvrirEx">✨ Partir d'un exemple de ma discipline</button>
+    <button class="btn discret" type="button" data-action="signaler" title="Un bug, une incohérence, une idée ? Dites-le au formateur">🐞 Signaler un problème</button>
     <span class="esp"></span>
-    <span class="aide" id="etatSauvegarde">Votre travail est conservé dans ce navigateur.</span>
+    <span class="aide"><span id="etatSauvegarde">Votre travail est conservé dans ce navigateur.</span><span id="etatFichier"></span></span>
   </div>
 
   <!-- ===================== PROGRAMMATION ===================== -->
@@ -444,6 +457,11 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     <div class="guide">
       <h2>Mode d'emploi</h2>
       <p>Les trois onglets s'enchaînent : la programmation alimente la séquence, qui alimente la séance. L'onglet 📚 rassemble les textes officiels.</p>
+      <h3>Pour démarrer vite</h3>
+      <ul>
+        <li><b>✨ Partir d'un exemple de ma discipline</b> : un exemple complet (programmation, séquence, séance, cahier de textes) en anglais, EPS, mathématiques, SVT, lettres-histoire-EMC, enseignement professionnel ou arts plastiques. Modifiez-le ensuite pour votre classe.</li>
+        <li><b>💾 Enregistrer mon travail</b> crée un fichier dans vos Téléchargements. Déposez-le dans votre dossier Drive : avec « 📂 Ouvrir un fichier », vous reprenez votre travail sur n'importe quel ordinateur. Un rappel s'affiche après 20 minutes sans enregistrement.</li>
+      </ul>
       <h3>① Programmation annuelle</h3>
       <ol>
         <li><b>Mon cadre</b> : choisissez votre type d'établissement, votre zone de vacances et votre discipline. Les vacances et les jours fériés de 2026-2027 sont intégrés.</li>
@@ -493,6 +511,18 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     <button class="btn plein" type="button" data-action="copierIA">Copier le prompt</button>
   </div>
 </div>
+<div class="modale" id="modaleEx" role="dialog" aria-modal="true">
+  <div class="boite">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <h2 style="margin:0;font-family:Georgia,serif;color:var(--encre)">Partir d'un exemple</h2>
+      <button class="btn discret mini" type="button" data-action="fermerEx">Fermer ✕</button>
+    </div>
+    <p class="aide">Chaque exemple est complet : programmation de l'année, une séquence, une séance détaillée et le cahier de textes. Modifiez-le ensuite pour votre classe. <b>Il remplace tout votre travail actuel</b> : enregistrez-le d'abord (💾) si vous voulez le garder.</p>
+    <div class="grille-ex" id="grilleEx"></div>
+    <p class="aide" style="margin-top:10px">Votre discipline n'y est pas ? Prenez la plus proche : la démarche est la même. Les intitulés de programme sont à vérifier dans le texte officiel (onglet 📚).</p>
+  </div>
+</div>
+<div class="bandeau-sauv" id="bandeauSauv" role="status"><span id="bandeauTxt"></span><span class="bs-actions" id="bandeauAct"></span></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -694,7 +724,7 @@ completer();
 
 var minuteur;
 function sauver() {
-  try { localStorage.setItem(CLE, JSON.stringify(E)); document.getElementById("etatSauvegarde").textContent = "Enregistré dans ce navigateur à " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
+  try { localStorage.setItem(CLE, JSON.stringify(E)); modifsDepuisFichier++; document.getElementById("etatSauvegarde").textContent = "Enregistré dans ce navigateur à " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); if (typeof majEtatFichier === "function") majEtatFichier(); }
   catch (e) { document.getElementById("etatSauvegarde").textContent = "Pensez à « Enregistrer mon travail » : ce navigateur ne conserve pas les données."; }
 }
 function lire(ch) { return ch.split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, E); }
@@ -1125,6 +1155,20 @@ document.addEventListener("click", function (ev) {
     case "exportCsv": exporterCsv(); return;
     case "copieCdt": copier(texteCdt(E.cdt.entrees[i], b.getAttribute("data-k"))); return;
     case "fermerIA": document.getElementById("modaleIA").classList.remove("ouverte"); return;
+    case "ouvrirEx": ouvrirExemples(); return;
+    case "fermerEx": document.getElementById("modaleEx").classList.remove("ouverte"); return;
+    case "exDisc":
+      var aDuTravail = E.seq.titre || E.prog.classes.some(function (c) { return c.nom; }) || E.cdt.entrees.length;
+      if (aDuTravail && !confirm("Cet exemple remplace tout votre travail actuel (programmation, séquence, séance, cahier de textes).\n\nPour le garder, annulez et cliquez d'abord sur « 💾 Enregistrer mon travail ».\n\nCharger l'exemple ?")) return;
+      var lib = chargerExempleDisc(b.getAttribute("data-k"));
+      document.getElementById("modaleEx").classList.remove("ouverte"); apres(); ouvrirOnglet("prog");
+      toast("Exemple chargé : " + lib + ". Parcourez les onglets ① à ④, puis modifiez-le.");
+      return;
+    case "enregistrerFichier": enregistrerFichier(); return;
+    case "repousserRappel": rappelRepousseA = Date.now() + 20 * 60 * 1000; fermerBandeau(); return;
+    case "fermerBandeau": fermerBandeau(); return;
+    case "signaler": signaler(); return;
+    case "entCdt": E.cdt.entrees[i].ent = !E.cdt.entrees[i].ent; break;
     case "copierIA": copier(document.getElementById("texteIA").textContent); return;
     default: return;
   }
@@ -1172,8 +1216,8 @@ function genererTrameSeances() {
   E.seq.seances = t; toast("Trame de " + n + " séances générée" + (n > 10 ? " : c'est beaucoup, pensez à scinder la séquence ou à réduire le nombre de séances" : ""));
 }
 
-function importerSeance() {
-  var i = document.getElementById("choixSeance").value; if (i === "") { toast("Créez d'abord des séances dans l'onglet ②"); return; }
+function importerSeance(iForce, muet) {
+  var i = iForce != null ? String(iForce) : document.getElementById("choixSeance").value; if (i === "") { toast("Créez d'abord des séances dans l'onglet ②"); return; }
   i = +i; var s = E.seq.seances[i], q = E.seq;
   E.sea.titre = s.titre || (s.type + ((s.objs || []).length ? " · O" + (s.objs[0] + 1) : ""));
   E.sea.place = "Séance " + (i + 1) + "/" + q.seances.length + (q.titre ? " de « " + q.titre + " »" : "");
@@ -1191,13 +1235,13 @@ function importerSeance() {
     E.sea.moments = []; for (var m = 0; m < nbM; m++) { var mo = momentVide(); mo.d = Math.round(reste / nbM / 5) * 5 || 5; E.sea.moments.push(mo); }
     E.sea.moments[0].t = t0; var ecart = reste - E.sea.moments.reduce(function (a, x) { return a + x.d; }, 0); E.sea.moments[nbM - 1].d += ecart;
   }
-  toast("Séance importée : " + E.sea.moments.length + " moments répartis sur " + E.sea.duree + " min");
+  if (!muet) toast("Séance importée : " + E.sea.moments.length + " moments répartis sur " + E.sea.duree + " min");
 }
 
 /* ================================================================
    CAHIER DE TEXTES
    ================================================================ */
-function entreeVide(d) { return { date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", pourSugg: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
+function entreeVide(d) { return { ent: false, date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", pourSugg: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
 function frLong(s) { if (!s) return ""; return s2d(s).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); }
 /* Créneaux réels d'une classe à partir d'une date */
 function creneauxDates(c, debut, vnom) {
@@ -1240,6 +1284,9 @@ function genererCdt() {
   toast(E.cdt.entrees.length + " entrées créées" + (c && slots.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : ""));
 }
 function texteCdt(e, k) {
+  if (k === "titre") return e.titre || "";
+  if (k === "contenuENT") return (e.contenu || "") + (e.docs ? "\nDocuments : " + e.docs : "") + (e.eval ? "\nÉvaluation : " + (e.evalTxt || "") : "");
+  if (k === "tafENT") return (e.taf || "") + (e.tafDuree ? "\n(Temps estimé : environ " + e.tafDuree + " min)" : "");
   var cont = "Contenu de la séance" + (e.disp && e.disp !== "Classe entière" ? " (" + e.disp + ")" : "") + " :\n" + (e.titre ? e.titre + "\n" : "") + (e.contenu || "") + (e.docs ? "\nDocuments : " + e.docs : "");
   var taf = e.taf ? "Travail à effectuer" + (e.tafType ? " (" + e.tafType.toLowerCase() + ")" : "") + " :\n" + e.taf + "\nDonné le " + frLong(e.date) + (e.pour ? " · pour le " + frLong(e.pour) : "") + (e.tafDuree ? " · environ " + e.tafDuree + " min" : "") : "";
   var ev = e.eval ? "\nÉvaluation : " + (e.evalTxt || "") : "";
@@ -1251,10 +1298,13 @@ function docCdt() {
   var C = E.cdt, al = [];
   if (!C.entrees.length) return { html: '<p class="vide-msg">Générez les entrées à partir de votre séquence, ajoutez-les une à une, ou chargez un exemple.</p>', al: al };
   var ent = C.entrees.slice().sort(function (a, b) { return (a.date || "z") < (b.date || "z") ? -1 : 1; });
-  var h = "<h2>Cahier de textes · " + esc(C.classe || "classe") + "</h2><p class=\"sous\">" + esc(C.discipline || "") + " · " + ent.length + " séance(s)</p>";
+  var nbEnt = C.entrees.filter(function (e) { return e.ent; }).length;
+  var h = "<h2>Cahier de textes · " + esc(C.classe || "classe") + "</h2><p class=\"sous\">" + esc(C.discipline || "") + " · " + ent.length + " séance(s)<span class=\"no-word\"> · <b>" + nbEnt + "/" + ent.length + " reportée(s) dans l'ENT</b></span></p>" +
+    '<p class="aide no-word" style="margin:4px 0 10px">Pour reporter dans l\'ENT (Pronote, ECLAT-BFC…) : ouvrez la séance à sa date, puis collez champ par champ avec les boutons 📋. Cochez « Reporté » au fur et à mesure.</p>';
   ent.forEach(function (e) {
     var i = C.entrees.indexOf(e);
-    h += '<div class="entree-cdt"><div class="tete-cdt"><b>' + (e.date ? esc(frLong(e.date)) : "Date à préciser") + (e.duree ? " · " + e.duree + " min" : "") + (e.disp && e.disp !== "Classe entière" ? " · " + esc(e.disp) : "") + '</b><span class="no-word"><button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="contenu">📋 Copier le contenu</button> <button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="taf">📋 Copier le travail</button></span></div>';
+    h += '<div class="entree-cdt"><div class="tete-cdt"><b>' + (e.date ? esc(frLong(e.date)) : "Date à préciser") + (e.duree ? " · " + e.duree + " min" : "") + (e.disp && e.disp !== "Classe entière" ? " · " + esc(e.disp) : "") + '</b><span class="no-word"><button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="titre" title="Champ « Titre » de l\'ENT">📋 Titre</button> <button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="contenuENT" title="Champ « Contenu » de l\'ENT">📋 Contenu</button>' + (e.taf ? ' <button class="btn mini copie" type="button" data-action="copieCdt" data-i="' + i + '" data-k="tafENT" title="Champ « Travail à faire » de l\'ENT">📋 Travail</button>' : "") + ' <button class="btn mini copie' + (e.ent ? " ent-ok" : "") + '" type="button" data-action="entCdt" data-i="' + i + '">' + (e.ent ? "✓ Reporté dans l'ENT" : "☐ Reporté dans l'ENT ?") + '</button></span></div>' +
+      (e.ent ? "" : '<p class="etapes-ent no-word">Dans l\'ENT, à la date du ' + esc(e.date ? frLong(e.date) : "…") + ' : ① Titre ② Contenu' + (e.taf ? ' ③ Travail à faire, <b>pour le ' + esc(e.pour ? frLong(e.pour) : "…") + '</b>' + (e.tafType ? " (" + esc(e.tafType.toLowerCase()) + ")" : "") : "") + (e.docs ? " · joindre : " + esc(e.docs) : "") + (e.eval ? " · cocher ou choisir la catégorie « Évaluation / devoir »" : "") + '</p>');
     h += '<div class="corps"><div><h4>Contenu de la séance</h4><b>' + esc(e.titre) + "</b><br>" + nl(e.contenu) + (e.docs ? "<br><i>Documents : " + esc(e.docs) + "</i>" : "") + (e.eval ? '<br><span style="color:#b23b2e;font-weight:700">Évaluation</span> : ' + nl(e.evalTxt) : "") + "</div>";
     h += "<div><h4>Travail à effectuer</h4>" + (e.taf ? (e.tafType ? "<b>" + esc(e.tafType) + "</b> · " : "") + nl(e.taf) + "<br><small>Donné le " + esc(frLong(e.date)) + (e.pour ? " · <b>pour le " + esc(frLong(e.pour)) + "</b>" : "") + (e.tafDuree ? " · environ " + e.tafDuree + " min" : "") + "</small>" : "<i style='color:#999'>Pas de travail donné</i>") + "</div></div></div>";
     var nomE = e.date ? frLong(e.date) : "Entrée " + (i + 1);
@@ -1572,12 +1622,9 @@ function copier(t) {
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, secours); else secours();
 }
 document.getElementById("modaleIA").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("ouverte"); });
+document.getElementById("modaleEx").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("ouverte"); });
 
-document.getElementById("btnSauver").addEventListener("click", function () {
-  var blob = new Blob([JSON.stringify(E, null, 2)], { type: "application/json" });
-  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "atelier-suppleant-" + new Date().toISOString().slice(0, 10) + ".json";
-  document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-});
+document.getElementById("btnSauver").addEventListener("click", function () { enregistrerFichier(); });
 document.getElementById("fichierOuvrir").addEventListener("change", function (e) {
   var f = e.target.files[0]; if (!f) return;
   var r = new FileReader();
@@ -1667,9 +1714,277 @@ function exemple(m) {
 }
 
 /* ================================================================
+   EXEMPLES COMPLETS PAR DISCIPLINE (programmation → séquence → séance → cahier de textes)
+   ================================================================ */
+var EX_COULEURS = ["#dcebd9", "#f9e2cf", "#dfe4f4", "#f3dde6", "#e6f0d0", "#d8ecef", "#f5ecc7", "#e9ddf1"];
+function MO(titre, d, t, modal, sup, conn, comp, diff) { return { titre: titre, d: d, t: t, modal: modal || "", prec: "", sup: sup || "", conn: conn || "", comp: comp || "", diff: diff || "" }; }
+function SE(type, titre, probl, act, objs) { return { type: type, titre: titre, probl: probl || "", act: act, objs: objs || [] }; }
+var EXEMPLES_DISC = {
+  anglais: { lib: "Anglais · 4e", ico: "🇬🇧", etab: "college", disc: "Anglais", classe: "4eC", niveau: "4e",
+    cren: [[1, 55, "T"], [3, 55, "T"], [5, 55, "T"]], marques: { "2026-12-14": "Semaine tampon", "2027-03-22": "Sortie" },
+    seqs: [["Travel stories (Voyages et migrations)", 7], ["Heroes and role models (Rencontres avec d'autres cultures)", 8], ["School life around the world (École et société)", 8], ["Getting the message across (Langages)", 7], ["Exploring the UK and the USA", 8]],
+    seq: { titre: "Travel stories (Voyages et migrations)", duree: 55,
+      attendus: "Programme de langues vivantes du cycle 4 : thème culturel « Voyages et migrations ». Niveau visé en fin de cycle 4 : A2 dans toutes les activités langagières, B1 dans plusieurs.",
+      comp: "Écouter et comprendre · Parler en continu · Réagir et dialoguer · Écrire", socle: ["D1.2", "D5"],
+      probl: "What makes a trip unforgettable?", og: "Raconter un voyage passé, à l'oral et à l'écrit",
+      objs: ["Après deux écoutes d'un témoignage audio de 1 min 30 sur un voyage, repérer au moins 4 informations sur 5 (où, quand, avec qui, quoi, ressenti) et les restituer en français",
+        "Raconter par écrit un voyage réel ou imaginaire en 80 mots, en utilisant au moins 5 verbes au prétérit dont 3 irréguliers",
+        "Présenter oralement son voyage pendant 1 minute sans lire ses notes, en respectant les 3 critères de la grille d'oral"],
+      prereq: "Lexique des pays et des moyens de transport · présent simple · was / were", verif: "Quiz de 6 questions en séance 1 (lexique et was / were)",
+      savoirs: "Prétérit des verbes réguliers et irréguliers · marqueurs de temps (last summer, two years ago) · prononciation de -ed",
+      obstacles: "Prétérit calqué sur le passé composé (« I have went ») · -ed oublié à l'oral · réticence à parler de soi : autoriser un voyage imaginaire",
+      spec: { cecrl: "A2", activites: ["Compréhension de l'oral", "Expression écrite", "Expression orale en continu"], axe: "Voyages et migrations", tache: "Enregistrer un « travel vlog » d'1 minute racontant un voyage", langue: "Prétérit (réguliers et irréguliers), ago, last…, prononciation de -ed" },
+      seances: [SE("Lancement et diagnostic", "Entrer dans la séquence", "What makes a trip unforgettable?", "Photos de voyages · remue-méninges lexical · quiz pré-requis · présentation de la tâche finale (travel vlog)"),
+        SE("Apprentissage", "Listening : a trip to remember", "What happened during Sam's trip?", "Anticipation à partir d'une photo · 2 écoutes avec grille de repérage · restitution en français · relevé des verbes au prétérit", [0]),
+        SE("Apprentissage", "Le prétérit : réguliers et irréguliers", "How do we talk about the past in English?", "Observation des verbes relevés · règle construite avec les élèves · prononciation de -ed · exercices progressifs", [1]),
+        SE("Apprentissage", "Writing : my travel diary", "", "Plan guidé (where, when, who, what, how I felt) · premier jet de 80 mots · relecture avec la grille", [1]),
+        SE("Apprentissage", "Speaking : tell us about your trip", "", "Entraînement en binômes à partir de notes-clés · enregistrement test · retour du pair", [2]),
+        SE("Réinvestissement / remédiation", "S'entraîner et consolider", "", "Groupes de besoin : verbes irréguliers, prononciation, fluidité · auto-évaluation", [1, 2]),
+        SE("Évaluation", "Évaluer les acquis", "Can I tell the story of a trip?", "Compréhension de l'oral (nouveau document) · enregistrement du travel vlog · bilan", [0, 1, 2])] },
+    seaIdx: 1, sea: { tissage: ["Warm-up : 3 photos de voyages, les élèves réutilisent le lexique de la séance 1", 5], accroche: ["Photo d'une gare et titre « A trip to remember » : What can you expect?", 5, "Photo projetée"], problPhase: ["Question écrite au tableau : What happened during Sam's trip?", 5],
+      moments: [MO("Première écoute : compréhension globale", 10, "Une écoute : les élèves cochent où, quand, avec qui.", "Individuel", "Audio de 1 min 30, grille de repérage", "Lexique du voyage", "Écouter et comprendre", "Coup de pouce : grille à choix multiples"),
+        MO("Deuxième écoute : détails", 10, "Les élèves complètent la grille (ce qui s'est passé, ressenti), puis comparent en binômes.", "Individuel puis binômes", "Grille de repérage", "Prétérit (repérage)", "Écouter et comprendre", "Défi : relever 3 verbes au prétérit"),
+        MO("Restitution", 10, "Mise en commun en français, puis reformulation de phrases-clés en anglais au tableau.", "Collectif", "Tableau", "Prétérit", "Réagir et dialoguer", "")],
+      synthese: [10, "Que sait-on du voyage de Sam ? Trois phrases construites ensemble.", "Lexique du voyage et 5 verbes au prétérit relevés, classés réguliers / irréguliers"] },
+    taf: [[1, "Apprendre le lexique du voyage (fiche) et les 5 verbes irréguliers relevés", "À apprendre", 15], [3, "Terminer le premier jet du travel diary (80 mots)", "À rendre", 20]] },
+
+  eps: { lib: "EPS · Terminale", ico: "🏸", etab: "lgt", disc: "EPS", classe: "TG2", niveau: "Tle générale",
+    cren: [[2, 120, "T"]], marques: { "2026-12-14": "Semaine tampon", "2027-01-18": "Bac blanc" },
+    seqs: [["Badminton (CA4)", 16], ["Musculation (CA5)", 14], ["Danse (CA3)", 14]],
+    seq: { titre: "Badminton (CA4)", duree: 120,
+      attendus: "Programme d'EPS du lycée général et technologique, champ d'apprentissage 4 « Conduire et maîtriser un affrontement individuel ou collectif pour gagner » : attendus de fin de lycée AFL1 (s'engager pour gagner en faisant des choix techniques et tactiques), AFL2 (se préparer et s'entraîner), AFL3 (choisir et remplir des rôles). Texte exact à vérifier dans le programme.",
+      comp: "Développer sa motricité · Savoir se préparer et s'entraîner · Exercer sa responsabilité individuelle et au sein d'un collectif", socle: [],
+      probl: "Comment construire le point pour gagner face à un adversaire de niveau proche ?", og: "Gagner une rencontre en construisant le point par des choix tactiques adaptés",
+      objs: ["En match en simple, rompre l'échange en jouant au moins 3 volants sur 5 dans les zones arrière, relevé par un observateur",
+        "Lors d'un match, utiliser le smash ou l'amorti sur au moins 2 volants hauts favorables sur 3",
+        "Arbitrer un match en 2 sets de 15 points, sans erreur de comptage ni de placement au service"],
+      prereq: "Service réglementaire · dégagé · règles de base du simple", verif: "Montée-descente en séance 1 avec une grille d'observation",
+      savoirs: "Rupture par la profondeur et la latéralité · replacement au centre · règles du comptage en 15 points",
+      obstacles: "Jeu au centre, « à la renvoyette » · replacement oublié · élèves qui évitent l'arbitrage",
+      spec: { champ: "CA4 · Conduire et maîtriser un affrontement individuel ou collectif pour gagner", apsa: "Badminton, 8 leçons de 2 h", attendus: "AFL1, AFL2 et AFL3 du CA4", roles: "arbitre, observateur, coach", secu: "Échauffement des épaules et des chevilles · pas de traversée des terrains pendant le jeu · volants abîmés retirés" },
+      seances: [SE("Lancement et diagnostic", "Situation de référence et diagnostic", "Comment construire le point pour gagner ?", "Échauffement · montée-descente · observation croisée avec grille · présentation du projet de cycle et des modalités d'évaluation"),
+        SE("Apprentissage", "Jouer long pour faire reculer", "Comment déplacer l'adversaire vers le fond du terrain ?", "Situations à zones cibles arrière · jeu à thème : point doublé si gagné en fond de court", [0]),
+        SE("Apprentissage", "Varier les trajectoires", "", "Alternance dégagé / amorti · matchs à thème avec observateur", [0]),
+        SE("Apprentissage", "Conclure le point", "Quand et comment smasher ?", "Repérage du volant haut favorable · smash et amorti · matchs à thème", [1]),
+        SE("Apprentissage", "Arbitrer et coacher", "", "Règlement du comptage · arbitrage en rotation · coach avec fiche de conseils", [2]),
+        SE("Apprentissage", "Construire son projet tactique", "", "Analyse de son jeu (vidéo ou fiche) · choix de 2 intentions tactiques · matchs", [0, 1]),
+        SE("Réinvestissement / remédiation", "S'entraîner et consolider", "", "Groupes de besoin · tournoi montée-descente avec rôles", [0, 1, 2]),
+        SE("Évaluation", "Évaluation", "Suis-je capable de gagner en construisant le point ?", "Poules de niveau · observation des AFL · arbitrage évalué", [0, 1, 2])] },
+    seaIdx: 1, sea: { tissage: ["Rappel du projet du cycle · échauffement articulaire et déplacements spécifiques (pas chassés, fente avant)", 15], accroche: ["Match de 5 min : qui marque le plus de points en fond de court ?", 10, "Terrains, feuilles de marque"], problPhase: ["Bilan rapide : où sont tombés vos points gagnants ? Comment déplacer l'adversaire vers le fond ?", 5],
+      moments: [MO("Dégagés vers zones cibles", 25, "Par 3 : 10 dégagés chacun vers les zones arrière matérialisées ; l'observateur compte.", "Groupes de 3 (joueur, relanceur, observateur)", "Plots, cerceaux", "Le dégagé : frappe haute, bras tendu", "Développer sa motricité", "Coup de pouce : zone cible élargie · défi : alterner gauche et droite"),
+        MO("Jeu à thème", 35, "Matchs de 7 min : un point gagné en zone arrière compte double. Rotation des rôles.", "Matchs en simple avec observateur", "Fiche d'observation", "Rupture par la profondeur", "Savoir se préparer et s'entraîner", "Adversaires de niveau proche"),
+        MO("Matchs arbitrés", 15, "Matchs de 15 points arbitrés par un élève.", "Matchs arbitrés", "Feuilles de match", "Règles du comptage", "Exercer sa responsabilité", "")],
+      synthese: [15, "Retour au calme (étirements) · bilan : combien de volants en zone arrière ? Quelle règle d'action retenir ?", "Fiche d'observation remplie et règle d'action notée dans le carnet d'entraînement"] },
+    taf: [[3, "Relire la fiche « Règles du comptage » (ENT) avant la séance d'arbitrage", "À préparer", 10]] },
+
+  maths: { lib: "Mathématiques · 2nde", ico: "📐", etab: "lgt", disc: "Mathématiques", classe: "2nde 5", niveau: "2nde GT",
+    cren: [[1, 55, "T"], [2, 55, "T"], [4, 55, "T"], [5, 55, "T"]], marques: { "2026-12-14": "Semaine tampon" }, periodes: [["Stage de seconde", "2027-06-14", "2027-06-25"]],
+    seqs: [["Nombres et calculs", 14], ["Fonctions : généralités", 14], ["Vecteurs et colinéarité", 10], ["Statistiques", 10], ["Fonctions de référence", 14], ["Probabilités", 10], ["Algorithmique et programmation", 8]],
+    seq: { titre: "Vecteurs et colinéarité", duree: 55,
+      attendus: "Programme de mathématiques de seconde générale et technologique, partie « Géométrie » : manipuler les vecteurs du plan, la colinéarité et le déterminant de deux vecteurs dans une base orthonormée ; démontrer un alignement ou un parallélisme.",
+      comp: "Chercher · Modéliser · Représenter · Raisonner · Calculer · Communiquer", socle: [],
+      probl: "Comment prouver que trois points sont alignés sans se fier à la figure ?", og: "Utiliser les vecteurs pour démontrer des propriétés géométriques",
+      objs: ["Construire sur une figure la somme de deux vecteurs avec la relation de Chasles, avec au moins 4 constructions justes sur 5",
+        "Calculer dans un repère les coordonnées d'un vecteur et d'une somme de vecteurs, sans erreur sur au moins 3 exercices sur 4",
+        "Démontrer avec le déterminant que trois points sont alignés ou que deux droites sont parallèles, en rédigeant les 3 étapes du raisonnement"],
+      prereq: "Translations (collège) · repère du plan et coordonnées · milieu d'un segment", verif: "Questions flash en séance 1 : coordonnées, milieu",
+      savoirs: "Vecteur, égalité de vecteurs, relation de Chasles · coordonnées · colinéarité et déterminant",
+      obstacles: "Confondre vecteur et segment (sens oublié) · erreur de signe dans xB − xA · croire qu'une figure suffit à prouver",
+      spec: { demarche: "Résolution de problème", situation: "Sur une figure GeoGebra, trois points semblent alignés : le sont-ils vraiment ? (un zoom révèle un léger décalage)", materiel: "GeoGebra, vidéoprojecteur, calculatrice", secu: "" },
+      seances: [SE("Lancement et diagnostic", "Entrer dans la séquence", "Comment prouver que trois points sont alignés ?", "Situation GeoGebra · questions flash sur les pré-requis · représentations : « qu'est-ce qu'une preuve ? »"),
+        SE("Apprentissage", "Translation et vecteur", "Comment décrire un déplacement ?", "De la translation au vecteur · égalité de vecteurs · parallélogramme", [0]),
+        SE("Apprentissage", "Somme de vecteurs", "", "Constructions sur quadrillage · relation de Chasles", [0]),
+        SE("Apprentissage", "Coordonnées d'un vecteur", "Comment calculer avec des vecteurs ?", "Coordonnées dans un repère · somme et produit par un réel", [1]),
+        SE("Apprentissage", "S'entraîner au calcul vectoriel", "", "Exercices différenciés en îlots · correction entre pairs", [1]),
+        SE("Apprentissage", "Colinéarité et déterminant", "Comment savoir si deux vecteurs ont la même direction ?", "Découverte du critère de colinéarité · déterminant", [2]),
+        SE("Apprentissage", "Démontrer un alignement", "Comment prouver l'alignement sans se fier à la figure ?", "Recherche en binômes · rédaction modèle en 3 étapes · retour sur la situation de départ", [2]),
+        SE("Apprentissage", "Démontrer un parallélisme", "", "Problèmes de géométrie en groupes", [2]),
+        SE("Réinvestissement / remédiation", "S'entraîner et consolider", "", "Plan de travail différencié · auto-évaluation avec la grille de critères", [0, 1, 2]),
+        SE("Évaluation", "Évaluer les acquis", "Suis-je capable de démontrer avec les vecteurs ?", "Évaluation écrite d'une heure · correction commentée à la séance suivante", [0, 1, 2])] },
+    seaIdx: 6, sea: { tissage: ["Question flash : calculer det(u, v) pour deux vecteurs donnés", 5], accroche: ["Retour sur la figure GeoGebra de la séance 1 : alignés ou pas ?", 5, "Fichier GeoGebra"], problPhase: ["Comment prouver l'alignement sans se fier à la figure ?", 5],
+      moments: [MO("Recherche", 12, "Par deux, les élèves cherchent une preuve pour les points A, B, C de la figure.", "Binômes", "Fiche d'exercice", "Colinéarité", "Chercher · Raisonner", "Coup de pouce : carte-aide « quels vecteurs choisir ? »"),
+        MO("Mise en commun et rédaction modèle", 10, "Deux binômes présentent ; on construit la rédaction en 3 étapes : vecteurs, déterminant, conclusion.", "Collectif", "Tableau", "Rédaction d'une démonstration", "Communiquer", ""),
+        MO("Entraînement", 10, "Deux exercices : un cas aligné, puis un cas non aligné.", "Individuel", "Fiche d'exercices", "Déterminant", "Calculer · Raisonner", "Défi : trouver m pour que les points soient alignés")],
+      synthese: [8, "Les élèves reformulent la méthode, puis l'écrivent dans le cahier.", "Méthode « Démontrer que trois points sont alignés » en 3 étapes, avec un exemple rédigé"] },
+    taf: [[6, "Exercices 2 et 3 de la fiche : rédiger les démonstrations en 3 étapes", "À faire", 25]] },
+
+  svt: { lib: "SVT · 5e", ico: "🌱", etab: "college", disc: "Sciences de la vie et de la Terre", classe: "5eA", niveau: "5e",
+    cren: [[4, 90, "T"]], marques: { "2026-12-14": "Semaine tampon", "2027-03-22": "Sortie" },
+    seqs: [["La respiration et les échanges gazeux", 9], ["Le peuplement des milieux", 9], ["Séismes et volcans", 9], ["Nutrition et digestion", 9], ["Alimentation et activité physique", 6]],
+    seq: { titre: "La respiration et les échanges gazeux", duree: 90,
+      attendus: "Programme de SVT du cycle 4, thème « Le vivant et son évolution » : relier les besoins des cellules aux fonctions de nutrition, dont la respiration et les échanges gazeux (formulation exacte à vérifier dans le programme).",
+      comp: "Pratiquer des démarches scientifiques · Concevoir, créer, réaliser · Pratiquer des langages", socle: ["D4", "D2"],
+      probl: "Comment les êtres vivants obtiennent-ils le dioxygène dont ils ont besoin ?", og: "Montrer que tous les êtres vivants respirent et expliquer les échanges gazeux",
+      objs: ["À partir de mesures fournies (ExAO), identifier les échanges gazeux d'un animal en citant les 2 gaz et le sens de chaque échange",
+        "Concevoir en groupe de 3 un protocole pour montrer qu'un végétal rejette du CO2, en respectant les 4 étapes de la fiche méthode (hypothèse, témoin, expérience, résultat attendu)",
+        "Légender un schéma de l'appareil respiratoire humain avec au moins 6 termes justes sur 7"],
+      prereq: "Distinguer vivant et non-vivant · lire un graphique simple", verif: "Questionnaire de 5 questions en séance 1",
+      savoirs: "Dioxygène, dioxyde de carbone · eau de chaux · respiration animale et végétale · appareil respiratoire",
+      obstacles: "« Les plantes ne respirent pas, elles font seulement la photosynthèse » · confusion respiration / ventilation · témoin oublié dans l'expérience",
+      spec: { demarche: "Démarche d'investigation", situation: "Un poisson dans un aquarium sans bulleur finit par remonter à la surface : pourquoi ?", materiel: "ExAO (sondes O2 et CO2), eau de chaux, bocaux, végétaux", secu: "Lunettes pour l'eau de chaux · manipulation prudente des bocaux en verre" },
+      seances: [SE("Lancement et diagnostic", "Entrer dans la séquence", "Comment les êtres vivants obtiennent-ils le dioxygène ?", "Situation du poisson · questionnaire pré-requis · représentations : « qui respire ? » · hypothèses"),
+        SE("Apprentissage", "Les échanges gazeux chez l'animal", "Que prélève et que rejette un animal ?", "Analyse de mesures ExAO · test à l'eau de chaux · trace écrite", [0]),
+        SE("Apprentissage", "Les végétaux respirent-ils ?", "Comment prouver qu'un végétal rejette du CO2 ?", "Conception du protocole en groupes · validation avec la fiche méthode · mise en œuvre", [1]),
+        SE("Apprentissage", "L'appareil respiratoire humain", "", "Observation de documents et d'une maquette · schéma légendé", [2]),
+        SE("Réinvestissement / remédiation", "S'entraîner et consolider", "", "Ateliers différenciés : protocole, schéma, graphique · auto-évaluation", [0, 1, 2]),
+        SE("Évaluation", "Évaluer les acquis", "Suis-je capable d'expliquer comment les êtres vivants respirent ?", "Évaluation : analyse de données et protocole · bilan", [0, 1, 2])] },
+    seaIdx: 2, sea: { tissage: ["Rappel : quels gaz l'animal échange-t-il ? Comment le prouve-t-on ?", 5], accroche: ["Affirmation projetée : « Les plantes ne respirent pas. » D'accord ou pas ?", 5, "Diapositive"], problPhase: ["Formulation collective : comment prouver qu'un végétal rejette du CO2 ?", 5],
+      moments: [MO("Conception du protocole", 25, "Par 3, les élèves rédigent hypothèse, expérience, témoin et résultat attendu.", "Groupes de 3", "Fiche méthode, liste du matériel", "Démarche expérimentale, témoin", "Concevoir, créer, réaliser", "Coup de pouce : carte « à quoi sert un témoin ? »"),
+        MO("Validation et mise en œuvre", 25, "Chaque groupe fait valider son protocole puis le réalise (bocal à l'obscurité avec eau de chaux).", "Groupes de 3", "Bocaux, eau de chaux, végétaux", "Test à l'eau de chaux", "Pratiquer des démarches scientifiques", "Défi : prévoir un second témoin"),
+        MO("Résultats et interprétation", 15, "Lecture des résultats (montage préparé la veille par le professeur) et interprétation par groupe.", "Groupes puis collectif", "Montage témoin", "Respiration végétale", "Pratiquer des langages", "")],
+      synthese: [10, "Réponse à la problématique : les végétaux respirent aussi, de jour comme de nuit.", "Schéma bilan des échanges gazeux d'un végétal et phrase de conclusion"] },
+    taf: [[1, "Apprendre la trace écrite sur les échanges gazeux de l'animal", "À apprendre", 15]] },
+
+  lhg: { lib: "Lettres-histoire-EMC · LP", ico: "📖", lp: true },
+
+  cap: { lib: "Enseignement pro · CAP", ico: "🔧", etab: "lp", disc: "Enseignement professionnel", classe: "CAP1 MV", niveau: "CAP 1re année",
+    cren: [[1, 180, "T"], [2, 180, "T"]], marques: { "2026-12-14": "Semaine tampon" }, periodes: [["PFMP", "2027-02-01", "2027-02-26"], ["PFMP", "2027-05-31", "2027-06-25"]],
+    seqs: [["Accueil, sécurité et organisation de l'atelier", 9], ["Vidange et contrôles périodiques", 24], ["Pneumatiques et roues", 18], ["Freinage : contrôle et remplacement des plaquettes", 24], ["Éclairage et signalisation", 15]],
+    seq: { titre: "Vidange et contrôles périodiques", duree: 180,
+      attendus: "Référentiel du CAP Maintenance des véhicules, option voitures particulières : réaliser les opérations de maintenance périodique (contrôles, vidange, remplacement des filtres).",
+      referentiel: "Recopier ici les compétences visées du référentiel (bloc et intitulé exacts).",
+      comp: "Préparer son intervention · Réaliser une intervention de maintenance périodique · Contrôler et rendre compte", socle: [],
+      probl: "Comment réaliser une vidange conforme, en sécurité, et en rendre compte au client ?", og: "Réaliser l'entretien périodique d'un véhicule selon les préconisations du constructeur",
+      objs: ["Sur un véhicule de l'atelier, identifier à l'aide de la documentation technique les 6 points de contrôle de l'entretien périodique, sans oubli",
+        "Réaliser une vidange moteur et le remplacement du filtre à huile en 45 minutes, en respectant la fiche de procédure et les 5 règles de sécurité",
+        "Renseigner l'ordre de réparation et la fiche de contrôle de façon complète et lisible, avec toutes les valeurs relevées"],
+      prereq: "Règles de sécurité de l'atelier · utilisation du pont élévateur sous surveillance · outillage de base", verif: "Quiz sécurité et identification de l'outillage en séance 1",
+      savoirs: "Lubrification du moteur · viscosité (ex. 5W30) · préconisations du constructeur · tri et récupération des déchets",
+      obstacles: "Serrage excessif du bouchon de vidange · joint oublié · déchets non triés · documentation technique peu consultée",
+      spec: { ref: "Compétences de maintenance périodique du référentiel (à recopier)", situation: "Un client dépose son véhicule pour la révision des 30 000 km", lieu: "Atelier, demi-groupe de 12, 4 postes", secu: "Chaussures de sécurité, gants nitrile, lunettes · pont élévateur sous surveillance · bac de récupération", liens: "Fiche de suivi des PFMP : opérations de maintenance périodique réalisées en entreprise" },
+      seances: [SE("Lancement et diagnostic", "Entrer dans la séquence", "Comment réaliser une révision conforme ?", "Situation du client · quiz sécurité · représentations sur l'entretien · présentation des postes"),
+        SE("Apprentissage", "Lire la documentation technique", "Que préconise le constructeur ?", "Recherche dans la documentation technique · repérage des points de contrôle sur véhicule", [0]),
+        SE("Apprentissage", "Contrôles périodiques", "", "Rotation sur 4 postes : niveaux, pneumatiques, éclairage, courroie · fiche de contrôle", [0, 2]),
+        SE("Apprentissage", "Vidange et filtre à huile", "Comment réaliser une vidange en sécurité et sans oubli ?", "Démonstration commentée · fiche de procédure · première réalisation en binôme", [1]),
+        SE("Apprentissage", "Vidange en autonomie", "", "Réalisation en binôme puis seul · auto-contrôle avec la fiche de procédure", [1]),
+        SE("Apprentissage", "Rendre compte au client", "", "Renseigner l'ordre de réparation · jeu de rôle de restitution au client", [2]),
+        SE("Réinvestissement / remédiation", "S'entraîner et consolider", "", "Ateliers de remédiation · chronométrage · auto-évaluation", [0, 1, 2]),
+        SE("Évaluation", "Évaluation en situation", "Suis-je capable de réaliser une révision complète ?", "Situation d'évaluation sur véhicule · grille du référentiel · bilan", [0, 1, 2])] },
+    seaIdx: 3, sea: { tissage: ["Rappel de la séance précédente · vérification des équipements de protection et des consignes de sécurité", 15], accroche: ["Photo d'un moteur endommagé par manque d'huile : que s'est-il passé ?", 10, "Photo projetée"], problPhase: ["Comment réaliser une vidange en sécurité et sans oubli ?", 5],
+      moments: [MO("Démonstration commentée", 30, "Le professeur réalise la vidange sur véhicule ; les élèves complètent la fiche de procédure.", "Groupe autour du véhicule", "Véhicule, fiche de procédure à compléter", "Lubrification, viscosité", "Préparer son intervention", ""),
+        MO("Réalisation en binôme", 60, "Chaque binôme réalise la vidange et le remplacement du filtre sur son poste.", "Binômes, 4 postes", "Outillage, bac de récupération", "Couple de serrage, joint", "Réaliser une intervention", "Coup de pouce : fiche illustrée pas à pas · défi : viser 45 min"),
+        MO("Contrôle et tri des déchets", 30, "Contrôle croisé entre binômes avec la fiche · tri de l'huile et des filtres usagés.", "Binômes", "Fiche de contrôle", "Gestion des déchets", "Contrôler et rendre compte", "")],
+      synthese: [30, "Rangement et nettoyage du poste · bilan : les 3 erreurs à éviter", "Fiche de procédure « Vidange moteur » complétée et validée"] },
+    taf: [[2, "Relire la fiche de procédure et apprendre les 5 règles de sécurité", "À apprendre", 15]] },
+
+  arts: { lib: "Arts plastiques · 6e", ico: "🎨", etab: "college", disc: "Arts plastiques", classe: "6eB", niveau: "6e",
+    cren: [[2, 55, "T"]], marques: { "2026-12-14": "Semaine tampon", "2027-03-22": "Sortie" },
+    seqs: [["L'objet détourné", 5], ["Représenter le mouvement", 5], ["Le portrait", 6], ["Couleur et matière", 5], ["Mettre en scène ses productions", 5]],
+    seq: { titre: "L'objet détourné", duree: 55,
+      attendus: "Programme d'arts plastiques du cycle 3, questionnement « Les fabrications et la relation entre l'objet et l'espace » : l'invention, la fabrication, les détournements et les mises en scène des objets.",
+      comp: "Expérimenter, produire, créer · Mettre en œuvre un projet artistique · S'exprimer, analyser sa pratique, celle de ses pairs · Se repérer dans les domaines liés aux arts plastiques", socle: ["D1.4", "D5"],
+      probl: "Comment un objet du quotidien peut-il devenir autre chose ?", og: "Transformer un objet ordinaire pour lui donner une nouvelle signification",
+      objs: ["À partir d'un objet du quotidien apporté, réaliser en 2 séances un détournement qui change sa fonction ou son sens, en utilisant au moins 2 opérations plastiques (assembler, couper, recouvrir, changer d'échelle…)",
+        "Présenter oralement sa production en 1 minute à la classe, en nommant l'objet de départ, les opérations utilisées et l'effet recherché",
+        "À l'oral, relier sa production à l'une des 3 œuvres de référence étudiées, en citant au moins un point commun"],
+      prereq: "Vocabulaire de base : forme, matière, couleur", verif: "Observation d'objets en séance 1 : que peut-on en faire d'autre ?",
+      savoirs: "Détournement · assemblage · ready-made (première approche) · changement d'échelle",
+      obstacles: "Recherche du « beau » ou du réalisme au lieu de l'idée · difficulté à verbaliser · objet décoré mais pas transformé",
+      spec: { question: "Les fabrications et la relation entre l'objet et l'espace", pratique: "Détournement d'un objet du quotidien, en volume", refs: "Picasso, Tête de taureau (1942) · Meret Oppenheim, Le Déjeuner en fourrure (1936) · Marcel Duchamp, Roue de bicyclette (1913)" },
+      seances: [SE("Lancement et diagnostic", "Incitation : « Ce n'est pas ce que vous croyez »", "Comment un objet du quotidien peut-il devenir autre chose ?", "Présentation d'objets · premières idées dans le carnet de bord · représentations"),
+        SE("Apprentissage", "Expérimenter le détournement", "Quelles opérations transforment un objet ?", "Pratique : première transformation de l'objet apporté · verbalisation intermédiaire", [0]),
+        SE("Apprentissage", "Finaliser et rencontrer des œuvres", "", "Finalisation de la production · découverte de 3 œuvres de référence · lien avec sa production", [0, 2]),
+        SE("Réinvestissement / remédiation", "Verbaliser et améliorer", "", "Présentation en petits groupes · conseils entre pairs · ajustements", [1]),
+        SE("Évaluation", "Exposer et présenter", "Ma production change-t-elle le sens de l'objet ?", "Exposition des productions · présentation orale d'une minute · auto-évaluation", [0, 1, 2])] },
+    seaIdx: 1, sea: { tissage: ["Retour sur les idées notées dans le carnet de bord", 5], accroche: ["Incitation : « Et si votre objet changeait de vie ? »", 5, "Objets apportés par les élèves"], problPhase: ["Quelles opérations peuvent transformer un objet ?", 5],
+      moments: [MO("Pratique", 25, "Les élèves transforment leur objet en testant au moins 2 opérations plastiques.", "Individuel", "Objets, colle, ciseaux, papier, peinture", "Opérations plastiques", "Expérimenter, produire, créer", "Coup de pouce : cartes-opérations (assembler, couper, recouvrir…) · défi : changer d'échelle"),
+        MO("Verbalisation intermédiaire", 5, "Quelques productions sont regardées par la classe : quelle opération ? quel effet ?", "Collectif", "Productions en cours", "Vocabulaire plastique", "S'exprimer, analyser sa pratique", "")],
+      synthese: [10, "Rangement · verbalisation : qu'est-ce qui transforme vraiment un objet ?", "Photo de la production et 2 mots-clés dans le carnet de bord"] },
+    taf: [[0, "Apporter un petit objet du quotidien (propre et sans danger)", "À préparer", 5]] }
+};
+function premierLundiApres(d) { var x = s2d(d); while (x.getDay() !== 1) x.setDate(x.getDate() + 1); return d2s(x); }
+function chargerExempleDisc(k) {
+  var X = EXEMPLES_DISC[k]; if (!X) return;
+  var nv = etatVide();
+  if (X.lp) {
+    E = nv; E.prog.etab = "lp"; E.prog.types = typesPour("lp"); E.prog = exemple("prog"); E.seq = Object.assign(etatVide().seq, exemple("seq")); E.seq.valence = "Français"; E.sea = Object.assign(seanceVide(), exemple("sea"));
+    completer(); E.cdt.classe = E.seq.classe; E.cdt.discipline = "Français"; E.cdt.debut = "2026-11-16"; genererCdt();
+    if (E.cdt.entrees[1]) { E.cdt.entrees[1].taf = "Relire les 3 extraits et surligner un indice de l'écriture de soi par texte"; E.cdt.entrees[1].tafType = "À faire"; E.cdt.entrees[1].tafDuree = 15; E.cdt.entrees[1].pour = E.cdt.entrees[1].pourSugg; }
+    return X.lib;
+  }
+  var P = nv.prog; P.etab = X.etab; P.zone = (E && E.prog && E.prog.zone) || "A"; P.discipline = X.disc; P.types = typesPour(X.etab);
+  var T = function (nom) { return (P.types.filter(function (t) { return t.nom.indexOf(nom) === 0; })[0] || {}).id; };
+  var c = classeVide(); c.nom = X.classe; c.niveau = X.niveau;
+  c.creneaux = X.cren.map(function (k) { return { j: k[0], d: k[1], s: k[2], v: "" }; });
+  c.valences = [{ nom: "", part: 100, seqs: X.seqs.map(function (s, i) { return { t: s[0], h: s[1], col: EX_COULEURS[i % EX_COULEURS.length] }; }) }];
+  Object.keys(X.marques || {}).forEach(function (l) { var id = T(X.marques[l]); if (id) c.marques[l] = id; });
+  c.periodes = (X.periodes || []).map(function (p) { return { ty: T(p[0]), d: p[1], f: p[2] }; }).filter(function (p) { return p.ty; });
+  P.classes = [c];
+  var rang = X.seqs.map(function (s) { return s[0]; }).indexOf(X.seq.titre);
+  Object.assign(nv.seq, X.seq, { classe: X.classe, discipline: X.disc, nb: X.seq.seances.length, profil: "auto", spec: {},
+    place: "Séquence " + (rang + 1) + "/" + X.seqs.length + (X.seqs[rang + 1] ? " · avant « " + X.seqs[rang + 1][0] + " »" : "") });
+  nv.seq.seances = X.seq.seances.map(function (s) { return JSON.parse(JSON.stringify(s)); });
+  E = nv; completer();
+  var p0 = profilsActifs()[0]; if (p0) { E.seq.spec[p0] = JSON.parse(JSON.stringify(X.seq.spec)); }
+  importerSeance(X.seaIdx, true);
+  var S = X.sea, sea = E.sea;
+  sea.probl = X.seq.seances[X.seaIdx].probl || sea.probl;
+  sea.tissage = { t: S.tissage[0], d: S.tissage[1] }; sea.accroche = { t: S.accroche[0], d: S.accroche[1], sup: S.accroche[2] || "" }; sea.problPhase = { t: S.problPhase[0], d: S.problPhase[1] };
+  sea.moments = S.moments.map(function (m) { return Object.assign(momentVide(), m); });
+  sea.synthese.d = S.synthese[0]; sea.synthese.t = S.synthese[1]; sea.synthese.trace = S.synthese[2];
+  E.cdt.classe = X.classe; E.cdt.discipline = X.disc; E.cdt.debut = "2026-11-16"; genererCdt();
+  (X.taf || []).forEach(function (t) { var e = E.cdt.entrees[t[0]]; if (!e) return; e.taf = t[1]; e.tafType = t[2]; e.tafDuree = t[3]; e.pour = e.pourSugg; });
+  return X.lib;
+}
+function ouvrirExemples() {
+  var h = Object.keys(EXEMPLES_DISC).map(function (k) { var X = EXEMPLES_DISC[k]; return '<button class="carte-ex" type="button" data-action="exDisc" data-k="' + k + '"><span>' + X.ico + '</span><b>' + esc(X.lib) + '</b></button>'; }).join("");
+  document.getElementById("grilleEx").innerHTML = h;
+  document.getElementById("modaleEx").classList.add("ouverte");
+}
+
+/* ================================================================
+   PENSER À ENREGISTRER (fichier) ET SIGNALER UN PROBLÈME
+   ================================================================ */
+var LIEN_DOSSIERS = "https://drive.google.com/drive/folders/1riNDrX-JJsqcscDI7YXXGbxednVuiJ5R";
+var FORM_SIGNAL = "__FORM_SIGNAL__";
+var CLE_FICHIER = "atelier-suppleant-dernier-fichier", modifsDepuisFichier = 0, rappelRepousseA = 0, debutSession = Date.now();
+function dernierFichier() { try { return Number(localStorage.getItem(CLE_FICHIER)) || 0; } catch (e) { return 0; } }
+function bandeau(txt, actions) {
+  document.getElementById("bandeauTxt").textContent = txt;
+  document.getElementById("bandeauAct").innerHTML = actions;
+  document.getElementById("bandeauSauv").classList.add("vu");
+}
+function fermerBandeau() { document.getElementById("bandeauSauv").classList.remove("vu"); }
+function nomFichierSauvegarde() {
+  var bout = [E.prog.discipline || E.seq.discipline, (E.prog.classes[0] || {}).nom || E.seq.classe].filter(Boolean).join("-").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w-]+/g, "-").replace(/-+/g, "-").slice(0, 40);
+  return "atelier-suppleant" + (bout ? "-" + bout : "") + "-" + new Date().toISOString().slice(0, 10) + ".json";
+}
+function enregistrerFichier() {
+  var blob = new Blob([JSON.stringify(E, null, 2)], { type: "application/json" });
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nomFichierSauvegarde();
+  document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  try { localStorage.setItem(CLE_FICHIER, String(Date.now())); } catch (e) {}
+  modifsDepuisFichier = 0; majEtatFichier();
+  bandeau("✅ Fichier « " + a.download + " » enregistré dans vos Téléchargements. Déposez-le dans votre dossier Drive : vous le retrouverez sur n'importe quel ordinateur (bouton « 📂 Ouvrir un fichier »).",
+    '<a href="' + LIEN_DOSSIERS + '" target="_blank" rel="noopener">Ouvrir les dossiers Drive</a><button type="button" class="sec" data-action="fermerBandeau">OK</button>');
+}
+function majEtatFichier() {
+  var d = dernierFichier(), el = document.getElementById("etatFichier"); if (!el) return;
+  el.textContent = d ? " · Dernier fichier : " + new Date(d).toLocaleString("fr-FR", { weekday: "short", hour: "2-digit", minute: "2-digit" }) : " · Aucun fichier enregistré pour l'instant";
+}
+function verifierRappel() {
+  if (!modifsDepuisFichier || Date.now() < rappelRepousseA) return;
+  var depuis = Math.max(dernierFichier(), debutSession);
+  if (Date.now() - depuis < 20 * 60 * 1000) return;
+  if (document.getElementById("bandeauSauv").classList.contains("vu")) return;
+  bandeau("⏰ Cela fait 20 minutes que vous travaillez sans enregistrer de fichier. Le navigateur garde votre travail, mais il le perd si vous changez d'ordinateur ou videz l'historique.",
+    '<button type="button" data-action="enregistrerFichier">💾 Enregistrer maintenant</button><button type="button" class="sec" data-action="repousserRappel">Plus tard</button>');
+}
+setInterval(verifierRappel, 60 * 1000);
+window.addEventListener("beforeunload", function (e) { if (modifsDepuisFichier > 3) { e.preventDefault(); e.returnValue = ""; } });
+function signaler() {
+  var onglet = (document.querySelector("nav button.actif") || {}).textContent || "";
+  if (FORM_SIGNAL.indexOf("http") !== 0) { toast("Formulaire indisponible : signalez le problème au formateur"); return; }
+  if (!navigator.onLine) { toast("Hors ligne : notez le problème et signalez-le dès le retour de la connexion"); return; }
+  var url = FORM_SIGNAL.replace("{ONGLET}", encodeURIComponent(onglet.trim())).replace("{TECH}", encodeURIComponent(navigator.userAgent.slice(0, 180) + " · écran " + screen.width + "×" + screen.height));
+  window.open(url, "_blank", "noopener");
+}
+
+/* ================================================================
    DÉMARRAGE
    ================================================================ */
-rendreListes(); rendreTout();
+rendreListes(); rendreTout(); majEtatFichier();
+if (FORM_SIGNAL.indexOf("http") !== 0) document.querySelectorAll('[data-action=signaler]').forEach(function (b) { b.style.display = "none"; });
 var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "cdt", "ress", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
 
 /* ===== Hors ligne et installation ===== */
