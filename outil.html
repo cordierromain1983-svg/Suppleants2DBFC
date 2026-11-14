@@ -1936,7 +1936,7 @@ function ouvrirExemples() {
    PENSER À ENREGISTRER (fichier) ET SIGNALER UN PROBLÈME
    ================================================================ */
 var LIEN_DOSSIERS = "https://drive.google.com/drive/folders/1riNDrX-JJsqcscDI7YXXGbxednVuiJ5R";
-var FORM_SIGNAL = "__FORM_SIGNAL__";
+var FORM_SIGNAL = "https://docs.google.com/forms/d/e/1FAIpQLSf2QlkYvI1uYPUnhjJ-M2-qsCxh2k3akLkf0GZLVTyxSgvHwA/viewform?usp=pp_url&entry.2143209314={ONGLET}&entry.583597075={TECH}";
 var CLE_FICHIER = "atelier-suppleant-dernier-fichier", modifsDepuisFichier = 0, rappelRepousseA = 0, debutSession = Date.now();
 function dernierFichier() { try { return Number(localStorage.getItem(CLE_FICHIER)) || 0; } catch (e) { return 0; } }
 function bandeau(txt, actions) {
@@ -1973,10 +1973,11 @@ function verifierRappel() {
 setInterval(verifierRappel, 60 * 1000);
 window.addEventListener("beforeunload", function (e) { if (modifsDepuisFichier > 3) { e.preventDefault(); e.returnValue = ""; } });
 function signaler() {
-  var onglet = (document.querySelector("nav button.actif") || {}).textContent || "";
+  var ong = ((document.querySelector("nav button.actif") || {}).getAttribute || function () { return ""; }).call(document.querySelector("nav button.actif"), "data-onglet");
+  var onglet = { prog: "Programmation annuelle", seq: "Séquence", sea: "Séance", cdt: "Cahier de textes", ress: "Textes et ressources" }[ong] || "Autre ou je ne sais pas";
   if (FORM_SIGNAL.indexOf("http") !== 0) { toast("Formulaire indisponible : signalez le problème au formateur"); return; }
   if (!navigator.onLine) { toast("Hors ligne : notez le problème et signalez-le dès le retour de la connexion"); return; }
-  var url = FORM_SIGNAL.replace("{ONGLET}", encodeURIComponent(onglet.trim())).replace("{TECH}", encodeURIComponent(navigator.userAgent.slice(0, 180) + " · écran " + screen.width + "×" + screen.height));
+  var url = FORM_SIGNAL.replace("{ONGLET}", encodeURIComponent(onglet)).replace("{TECH}", encodeURIComponent(navigator.userAgent.slice(0, 180) + " · écran " + screen.width + "×" + screen.height));
   window.open(url, "_blank", "noopener");
 }
 
