@@ -1,0 +1,16 @@
+{
+  "name": "L'atelier du suppléant",
+  "short_name": "Atelier suppléant",
+  "description": "Programmation annuelle, séquence, séance et cahier de textes pour les suppléants du 2nd degré.",
+  "lang": "fr",
+  "start_url": "./outil.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#1d2a44",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

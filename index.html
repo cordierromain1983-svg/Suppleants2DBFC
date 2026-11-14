@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d2a44">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
 <title>Suppléants 2D BFC – J3 Construire son enseignement</title>
 <style>
 :root{
@@ -86,6 +89,18 @@ pre.prompt{white-space:pre-wrap;background:var(--encre);color:#f3f1ea;border-rad
 .ressources ul{margin:6px 0 0;padding-left:18px}
 .ressources li{margin-bottom:6px}
 .verbes td:first-child{font-weight:600;color:var(--encre);white-space:nowrap}
+.corrige{margin-top:16px;border:1.5px dashed #c9c2b4;border-radius:12px;padding:10px 14px;background:#fcfbf8}
+.corr-tete{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-weight:600;color:var(--encre)}
+.corr-form{display:flex;gap:6px}
+.corr-form input{font:inherit;font-size:.9rem;border:1px solid #d3cec3;border-radius:8px;padding:5px 9px;width:200px;text-transform:uppercase}
+.btn.mini{font-size:.85rem;padding:6px 12px}
+.corr-msg{font-size:.88rem;color:#b23b2e}
+.corrige.ouvert{border-style:solid;border-color:var(--vert);background:#fff}
+.corrige.ouvert .corr-form{display:none}
+.corr-corps{display:none;margin-top:8px}
+.corrige.ouvert .corr-corps{display:block}
+.horsligne{display:none;position:sticky;top:0;z-index:20;background:#fff4d6;color:#6e500c;text-align:center;font-size:.9rem;padding:6px 10px}
+.horsligne.vu{display:block}
 footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;border-top:1px solid var(--trait)}
 @media (max-width:600px){
   .prog li{grid-template-columns:1fr;gap:2px}
@@ -97,6 +112,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
 </head>
 <body>
 
+<div class="horsligne" id="horsligne">Hors connexion : le site et l'outil restent utilisables ; le Drive et les liens externes reviendront avec le réseau.</div>
 <header class="hero">
   <div class="wrap">
     <p class="sur">Suppléants 2nd degré · BFC · Journée 3</p>
@@ -189,6 +205,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
     </ol>
     <div class="prod"><b>Production :</b> la Partie 1 de votre dossier fil rouge.</div>
     <div class="boutons" data-liens="a1"></div>
+    <div class="corrige" data-corr="a1"><div class="corr-tete"><span>🔒 Corrigé de l'atelier 1</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
   </div>
 </section>
 
@@ -217,6 +234,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
     <p style="margin:0 0 10px">🛠 Pour aller plus vite : <a href="outil.html#prog">générez votre programmation avec l'outil</a>, puis recopiez-la ou joignez l'export Word à votre dossier.</p>
     <div class="prod"><b>Production :</b> la Partie 2 de votre dossier fil rouge : la programmation par période, jusqu'en juin. Gardez-le : la séquence de l'atelier 4 doit y trouver sa place.</div>
     <div class="boutons" data-liens="a2"></div>
+    <div class="corrige" data-corr="a2"><div class="corr-tete"><span>🔒 Corrigé de l'atelier 2</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
     <p style="margin:14px 0 0;font-size:.92rem">📅 <a href="https://www.education.gouv.fr/calendrier-scolaire-100148" target="_blank" rel="noopener">Calendrier scolaire officiel</a> : la région académique Bourgogne-Franche-Comté est en zone A.</p>
   </div>
 </section>
@@ -256,6 +274,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
     </table>
     <div class="prod"><b>Production :</b> la Partie 3 de votre dossier fil rouge : vos 3 objectifs opérationnels, relus et corrigés.</div>
     <div class="boutons" data-liens="a3"></div>
+    <div class="corrige" data-corr="a3"><div class="corr-tete"><span>🔒 Corrigé de l'atelier 3</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
   </div>
 </section>
 
@@ -285,6 +304,9 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
       <div class="explic">La progression <strong>spiralaire</strong> reprend une notion à plusieurs reprises en augmentant la difficulté à chaque fois.</div>
     </div>
   </div>
+  <div class="carte"><h3>Retour sur le vrai ou faux du matin</h3><p>Les cinq affirmations de l'accueil, et ce qu'il faut en retenir.</p>
+    <div class="corrige" data-corr="vf"><div class="corr-tete"><span>🔒 Corrigé du vrai ou faux</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
 </section>
 
 <section id="a4">
@@ -312,6 +334,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
     <p style="margin:0 0 10px">🛠 Vous pouvez aussi construire votre séquence dans <a href="outil.html#seq">l'outil</a> : il vérifie vos objectifs et l'alignement avec les séances.</p>
     <div class="prod"><b>Production :</b> la Partie 4 de votre dossier fil rouge. Elle sera lue en galerie à 15h50.</div>
     <div class="boutons" data-liens="a4"></div>
+    <div class="corrige" data-corr="a4"><div class="corr-tete"><span>🔒 Corrigé de l'atelier 4</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
   </div>
 </section>
 
@@ -380,6 +403,9 @@ Propose une séquence de [nombre] séances de [durée] min avec :
       </ul>
       <div class="boutons"><a class="btn plein" href="outil.html#cdt">Ouvrir le cahier de textes</a></div>
     </div>
+  </div>
+  <div class="carte">
+    <div class="corrige" data-corr="a5"><div class="corr-tete"><span>🔒 Corrigé des parcours A à E</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
   </div>
 </section>
 
@@ -453,7 +479,7 @@ Propose une séquence de [nombre] séances de [durée] min avec :
 </main>
 
 <footer>
-  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Journée 3 : Construire son enseignement.</div>
+  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Journée 3 : Construire son enseignement. · <a href="projection.html" style="color:inherit">Mode formateur</a></div>
 </footer>
 
 <script>
@@ -508,6 +534,33 @@ function copierPrompt(btn) {
   function fait() { btn.textContent = "Copié ✓"; setTimeout(function(){ btn.textContent = "Copier le prompt"; }, 2000); }
   if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(fait, function(){}); }
 }
+
+/* ===== Corrigés chiffrés : déverrouillés par code (AES-GCM) ===== */
+var CORRIGES = {"vf": {"s": "ydO9cRIGSEWySnkuwp/QCA==", "i": "nNvI3PFU2/EgDGl0", "c": "eSGUxWiswl4PshYkTlrAFpdajd2Lca/5lwtRpmGliQAx6LoDNLVt4Rh6KpVOOUGRBcu9TEfUa/HhbA23JvzYANwOPoKanQELz4k+8a7fRm9wsM5GRXrsksftI4YSme+By3bTniFWtba1G9WEgz6hkh2zNyxtADz+9iADBfWntX01mym1t2UzfG79qOXrQfF/9aSlSPBIPVzr5xDAcVcTEAuBamzB5rBkUrBL0vYWy+Fb2Ji0YYjoFte/qSmcuUfsyww+vI4WdJV2i6WMY5SwUY+GkuO7YOhlxuuCZhMFZf/MwMXPlwi5HHxPfLrEtW3RxVWDtwa6HaMzLBN95TwptfXV57QEL3l1w8oTVqbld3myA1u5TbedxFgFaf9n/jQ47i+ljWw/pdnNC58bZjDKCApkU4Mp4xOsYppknFpu3659fYHuQhcL0rjpbM9czKfdEscTKx3N5atlEXk5IeggRP5z9mfKJmuflVcmKc3xSi3eDH3OQ58CbwOOUkFbs+e2Rj2D1M6vDwXEyXLNIfqJ0HtYq7gYObNxzIVbs7JRDGgxHgOloxdjy28DyRoQdz3iKicmuTy14fsutVgItOc/j0FrtFdCzMSwCRv6DJwX07Xfnq27jYufOXH7m5o0kZGqGG6YzikUcFRPVQ574aJzAVVuy/e34+4yzkkefEAqfuh7doDLPw5rnWiBCVWsFBhwyT5K6hS69u/rQMzNp+j5EJS+/22AcMXvbL6uU3pZiNhZOw1GB+IwKQLUH71bPVzorRGZ1ztnzEZC5ICgNI4OEUXnsQfXIKaaDCo1UR+YCXRmSPViE7Ez3Ku9/mxh5KtEaLIqkZlXXLwVCNGX9W5RdMn4FhvPt+mutJq/+hFyn+uQBJnf9e02FMNOsOoUGacIdzy4LXFGXVwlxChYc5mG56Fs503OJhhztgbOxxAg+3O7EhY1XfFHc3bSsiD0w20kq4twR+xHYqDRN5ynULlqlO0BkDZl3fXi8BC51zRG2tq/Lz/+SWaLwMDagDKRivIm678gn499f+DaD3g5Cuec0i2DnnUGDt+uULyhjBuIpRENW81CbwR3tmHJPnUzWc+mxuC3Qk5+GSOClHNV93XSgrT7gzj3SIKTKkTWXrMTHpvuDID75LaWWzm/9BFV2qJ/zSb4X0+T00Y6VHprtq5xr7nXVeSgD7yWy/qnFi7KnjCUPrzLpjoBB3VV0LShK077JGlcdH0xwTnTcwkV9v4p2efGtQttKNomMgfT86/OYdur6o3dXV+n/6t5GKf3EmLc/bM9ShVtiRCW0rNkyl7JG+snY+NCKQGePVmbpEdBqvuFzG6pL4VWPzWxK52n9TDIHLevmmwsLVNCTx11/AH57sOrBlpQD5Nyishsq8dnO+uey6gixIjfpX5o9RlIhTVb+6jejior0WfyBcXEbTO4w3Yql7dxNA2hTUP+JOffmWFKGkhvDpsLvngGKSdfO/c4UpCFHLWlbS4vem9UIOPTfL4fHQpubLMWLXi6TIW1VN1LBjTo9EsHEu5sdAhuPrRHbW4CzF/jX8JQdm4tozq+osgdqef0LzeavC0k1+C4DT4Avz5Zb+XskhGeRwJ8cnWvql47VrNX5edBA2EnQ+YZI2upLBFMs+EOcJLtrFYhQHdzIaaTuxHhI8Rk/VjN6ajwGp71Y7apG9K1Wv52ci6ZVE+//ndyPzFuruzS1Rob53d0kAmHzYYO/aF0De5n0rfGqq28hjPc/5MYfWP7YXNmaDLjvRDKKGpx3MFPCvgtlEXpe+M/J3Yk0xyCcP64PAGpgZF/mAsHP2ACd0idnd2LRgxdFgJSoOHqf3d4mj2rXiAPasSf86PmHHjVvMV8xxq7R0ncyACBNHxMGsM="}, "a1": {"s": "R+1Igu459V0XKaBrrfOiWg==", "i": "N3VFoklXGBzykoPG", "c": "C9C9NNElpPYMOQfU/zVZ9VjZ42cxFEH8aJH6atwu4y9LazCKAtSFqlr6X58CDopfGL6rfscKt5SJEtcHrPieTZjq3CrbyY8RkCni51uxhdIIg0bjsf8U2iKXq0ebs6BTjkqIqzgCyx+sbf1SZ9gBWraLatO2mSsAI5A+/LQAohTCZ2EAEfUuoXQfXFPIO03ejvm5Kdie1XyK5cbn26MVjM5HhA2RMBwkmawAQpSX0/z6aaXWEQVMt/OoJvxQJlMbKCjAHyIlYuk/mVcWj5u+MTXakX7qOTso39XvJ6m9C67fcGmLeJe8oohYGp9gMj4tFmffOqNSrqYaUDZiGo4ohB4MM4BwicmPTpPaRLkoppiL4q3qq+FQWkuHDqMrnIwiIfc7lOGKR3NQ5vboF6atBxtaOK6XG2JB6od43vQo9LUMud66RUzSTBC7WGWBFo5ZE7nEOnKpg33haL2YukOW2xRO8Cm69LA23hGsrNGpHJ501vIwy+xaN15tYMEiG0Q9YLfkWoqHKFqfnX097sgTXxzWWm+hxcWPT4r7jzFmGtR0WwqqothI2KRN2PmEWlbgSF22AgVIR2hmwGqGlGLngHMeuQ7WB3IvGKvABTToL1POJHsVwLZV0Z8j1S9O0oVkNkrSnAdgjd+UoP6gcUAffzQliRopu7ORUWlDDgbjZqviy546e4YhnZ7O+7UvUqPsnqySjdwglVhzhtKIhn3l2rB3PbBUgBEgYFp1Rj2BPTXtdnPb5L1Z7NVo30f3mCk/QbYY3meUU9Iem/UGQbbGau9ccUwrJwYgax3DYrQQhtinZh/a/JjMTWWhTgsKdheUqmewo8jR/PTmO4+NbFTSOjGasxUebZf6CmJ7DGsk8eU/Jscr1hPcd3GDcX8amFGpXmd2ZjYZH3tOc47mXrbDNPXLeruzGW9t3IZ4ek9AUw3sUGl0nxMKW+E/URkRziN4WIacnh0UupomYEwXmHZltB6HgIJ7uhxovZ+TnY21NeWK/f40Nn+Wa20zt2ct+/8z03OrgLUkcMGOuNuOCoMOhY0LrSSeqq15w1awRSRvA897SLq+VNmBPXffZZrwPKwwn3r10cQ7OskHbug9GQhDoU7ab+Zp/21A3g745dxnsJ9gJMSc5/3RTdGWR6oL8Gy3LMUG9xA9LmiEcGE3/9F7sBridRvRXJdRnOzlzxMZfpxLoIo+VnXtTdgLJBBmW7QOxwFXC5/6pQH9iOA7YZ2d4ffKP3G0MUuAqVCGkvC7vXOhabLjc5+R5BogSQiWPQR/GIiNJdrAvPqfm0cAUWfPZhdCXZaM/l1nCusYVWv7D5Yb7drOActkwuYH4WoJqcX0+QicYeE0bk1pADRnjtY6R5rVXv9FrxnxR9PzxgXEStGKHHnp/u3EdcOU9/9MLIfQYsFoZhjgI1D9Zg3vB55NEVJVn/TgemY26lwdNk3HHLYN1TLJjiAN0uRq3ZxTgSnKFPSWiXH7UAzSjtJv6SjgZE1BJ8H4ToFSSOcTAbqvXxy6WEhxjR8y5yjm4C9SRZbLMvfZp31GecEZbjSDKr+hmiwWqP4toUFdS3VtpT8AmLgkIFzdCqcO06risLGGnjkYd3GBiTZlJJHTisMIBTE9UiX8DAMAc8XTHBTkOQFlQYh92/4FiAaDcA14Vjjq/g14vZa31CFTDdrsGvpJ615smSrhQVBvFfplWzA="}, "a2": {"s": "pR/PzaLShOyrtxyrEcYHEQ==", "i": "hwmtb7Rm8IVLF1RJ", "c": "kJ981plSdgcbDazQ/6XRKqY7kqCvZy8+7AhiPaRTBGOdEQosFxAKDJHIN8pHQsq3SPh7mxpBaYDjdYroauRqVJUItvjwlUk28DsQyqa37xTrOZfopfkTyakkbiXVAMl0pt31Hd6PbDGDeYyDrXuaIjOxaav481defjTmNOM4ln5f6H0XmYTSpNuTEjWYpC3ZQi+kzoJF6q0qPBfiPpfOwX84QNHyiy7ERQKRgY+YWDBm16zjAJupF2/pDCvcdw8AoBNSjPdCQ7lI2BK7KtdTaNpoiDUj4z1+nQHyZVHJx/aTXQTPlakzDttdoOGVN0BPHLXtcMV+AZM03tLRqRhov6xM3sPHeVkTVei6cJOqIqvtBLOso8Q2L9Aq+ksim/2c1RNhJ9RlDrdwywW3Qdsj0KI+5OrxVsyOl1g5Zry0bR85E9j2pvKcUuBmdiJkYG3LHMo19ANEXr89WLwKE8r1LYMoNHYnS9il7COjOIyBXtiSaeJXI+nONgMKhZd4LO7LzBqL1WqVefZ3yJZ9GIiB3AICfriMXfQo/8rofTZmoqKvNyPkXug3gsNbN56A2yEpB762dQgeXI/w8W2YCk7iRfEUoJFRF6FJOnG8Fy8Ls7/CTolVDxVVbmz4eUfzbRmU4RPVmfKPTqmDZJ4qYHgU3ptVBJdjvp5lFNFOa8poGZW+Pua2WINjZSxQR8Xt5BL1rCQfIigxaPOBNp2WpEiA84azBnABayYJv1J8wV9ZGjJgsb7iCMFm3NGx70anNYOf3aHTu2kQC01XnwikOm0KUhsJ2vnIJP4Ison69bVXOvTKdxk7oesuttfoiu3/Ao2rsB3R6yg5xCUvS/PEbT7B66n2/EE+oWH+O9CuSgCdR2DWA2Z9/hFH9Zd8YaveUwNX06vHl3xIUHHoyvpBVRtN3JbMS7ij+parS7edZYxFTd5kRPSxOyauHDq9A2rBfkj2sPmC+ZcRk+y1V17wfWU9+TdFya65L5+agBaJzGVkZlis+O7alk3I42kpdUIf7k3s5mieZjJLDbLFwkJHZ1R/eR6to1XCqxGqo+cqfl2HWwq3Ktvt+Yzi"}, "a3": {"s": "pwdBuSmRPCkBWqu8YVpPLg==", "i": "R/jk2OzTvFQgI1vS", "c": "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"}, "a4": {"s": "b+kZf8gGomrgvvA51Plqzw==", "i": "uM+0KoucQJy0IKQE", "c": "MdcBK2ftFeRf9YPtOyFo2Flz7TQ5BKdIfWoOABQBB/vH5jhiUSRwJej38VsLAnwwIevE84iO0+lb1qI7AakQD4I6LDx9fYTHlmtf5IfXZRuKj1VrTt90LK9elfR6m9uau1JQe6V6rkoH+5vh3TnsoGBHYRrMSBUp4HenQy1XhZcmhK8oEz+h2v+NVWZg2e5WUGxKqEVgfIJm2S+JRhEr+viwnqDOL/+NCYNY4LFV9UC+9ikj5Tyvk1gEoRaQVYF5g4eZsBvcET5k/io7PrFG+mfhiWq8qUn+C2kXSanb6FhNkSM94rW7wY3Mvy5LflTfTVEroxeX251lBMMhK4yJpTz4w0vTtWFU4dUfCZrkhx6LHAQwcoCWpaK76t0lhdRWKUL8pGUWXiifrTp75oE10EmgHqKKd8i58IlBTD1PO4xCZ1HsjqHC19klt56CTy9NJ/YSWQ71eNFFwwTGe8iyDjhAiV+MRshgIWHmrQg+EcD2GkcPlmxm93a0k56aimDRJ2NzZJE2YFwz/QgsPqpp9LqtGmBMPz4yGbR9ORmGOQRI4s6sbu3cQ66RNY7b51vm4r4XBcZNTTRZM+SwzEdi59BuwJJOfo0fXq2RQV/RRlKVh8I3XJLVfGKHpcNTRvbtKfUHf2OTBOrKyADTahV9U+Fty2imnyMrEw7XuvouPvSEFRUsjc4IQgXtVHw1hH7FSNQa/Ot0anNY6QwFeMOS94L3VanHNq1rEdqOOZMdrDOmCLg3qH7O4OpDrGubIe3HRdfDBCGQf8ptdUE1BOM4t2585C+G8r+BUMFNZhSg3q4ab6Shzd/YHWtG31Lk3P6PKdnWbkc0MJ56yDI8fY3eZhvFOlDoIgDag8pvG3CJcMyEDelG8x1hu1RGsYUP53xI7/p4m4Mna00L9z/J1iaQmRKihgMpZWguiZc5gJfxwsPJl1ctYtgAUqvmkEO46Fq9MCvsbphLmMnL/Br6bHM3heWOYAQi/9EbCaO2R8Z0BldGZZQrXtsGC3CU0TosIorHvk2Z/Dk0iwx3LRJMsL0I2a5DmyPWok5svNTDxTh63DGKBOq58J38n3uqftaRjS9w1vx3TrLjAt+7YmV1kSMRmLu/nO63UxFwzOpo+Zn8zu/MpeVan4CoPjEdw643rmo7iRiNjKmefvnIMEwUi7z6ZaN7WWV2BQ8o0mx/vtwHrjLv6vABW0817s3d145gMWMwlGQrcekqH/Ifuk6kfVDzvpqTOPi/tWw/MHuETOEAnkHXDxu28PV8pv1irNJyIH6+A6W+0LPxQ3AOLQ1IIQUW4nCZSNR/i0s65CBwafiZhjvMnfDU7MBRyEmkklgyzqkBfFg9VlNuTPpUEzfYxkArtPC2JHG8gp+/it4mPVUhIdWfSyjclEmi2Rexsl19w7zZalByR9w4iwP8Ew4dzHcTWK84yWIPyMXHUhTJS1BtNPQZZ2cWHvORW5m4/Xopdh40yu4stzv6kVaKXEuNZdsz1laIHwpMHsM72Oc+L9ll3xwV8R3+p6IuZB9+fXp6g2Fwr5gZ3bPsLRM0vBe8Uyyx+qtp+1gOFEstUrzetRSQjcc6MDgSk6oLi+Dh6Nik6oKVVcjgab3WknBjpAaju3mmDO+RUs0xLRhMyiMLw/FSQ2s+OA=="}, "a5": {"s": "rIFmea7NCig1gS1MZmZSJg==", "i": "gaK2ojecWYlfG3mD", "c": "Le8l96wFSHI/RExbew+HzJ7OdAS99xgYXSZavROPbOkMToNWNuJcEuxwCdtyD3aXBFfU85tII26tW74vPG8RG+qfgMuz+gVyD+hUsaeU9cIfFL8CoYPn3z0/Ad2iTzraTC1IlmCPWW7gRjQW4UIK+ryagNwJXwo9xmiyDujEY0h0V09HuKnWRq4cntgK3EzuMldP3RbB4Fj0VLI0mZ4NmJ+dWf8gUL2vk9gaaKzPEvD3lgUJR0suqsiZe8BthwPoy1u/0UZ/9K1j0QvgtblsschPRiM5pP6WPNGTX5x5hRM2G9TqOtYUl9idm2wN2rNPRRpw8tChCAm3R5BVZVPe3eYLFNsPGjDgF7DFHJBxnpqnC5bK4qOlwxVtfOhhX/aCtV+nd5e7kFuXFCwOJgHmTayI86ksztUxDIcXI2Yd2OQFii7hpAXa26PwrTS+4aGJYh1Kxb7bhKhOHBq5RbVdMwO2V8zbWxqO1SS6AAKdP91vL9/vkqS+UEz1zI+MUq5Amze3DlWjSSxkJ8wGRT+nDP7ZiO6ikc7Mfll/5eBqmShnwhW6I4sPxnwtH+H6CE8sHMzdZormC0PGL2dBu1nC78FB3b0uY2JQDMdUBa8fNwlNHGrMrm1KTdS2uFOnkdvBsZ0e45I86heA5ClNce9qhROOKj8uge/xaOV36Q0L8OootQBpBWbf2jqNOF528LVqZUjsNohJNheHo2cX/Z+ZUmfa4RqZP9xQOHdFaLmkY7HK/oFNPhGVWQunZ+3u3z7txvajORqazVIlXTSlmobfI6mXpgtWZ/n4W0SKCTDWikSQXgiE7eM33nhzneAhYHeVNHFBV21l3AeesD4anqF7GcaPQrd98WojYfKskOO5yOuJ9icPIN8y5DEphzvhY+aYVtB8QY2DNx1osDJeAMcwxDRF6zbvCg5v51t1n8aKpUL9y30tvuHgAuv6x84NNS07YXH6QOO4SPun2PiRdTSM6rvwbg6YjvMfgDqrqn9iwEoyzLDSbMQeUmufMW4CvCseV/BPAX0iYd+OSvfxIRyhSTT/ZATKfIVmt3qyVW6W+HaCG1WVI3ic1bUPmpNL0cayD5kIFY5dfxGrTY+THj8xYkoZZvTWji6tC2ZRJMZpctI3ETXvHcWlSchMHDqd3oj6GzRWAmBxECf+xf9b+xm+GAX8Llb6qFRbEdKMom8Y9FbvR83zGJN+bDEB/87JilialPBjQs3Goi2SOFQjEkt0FkBnbaeDrESQvMSSR7OACEXzYdidVntG2QLAaFZNT0Lz9RK7gKSeFyYpQ70InpgBbhN4KcJNnJS5nsigAn4sEvFH9JS421ywl0rmxDvRihjxiSmHea21QU4r3GXSZ0SDx6vx+w/8CJTV5gxK+PtNU4BGjgQbFedrfNZfm2Z9R23oBXtRXpW2rwSbaWR3kWb3a9q27Y1x1UcyCgS/MqztCub9rOEH6OdCiHRzIZc9C1e9q51+Uz8fx0+M2Rp80P/9UPixA7GhN4XFuMY4AypkD0H1Y6NJ/q1NDOPus0pN5FOMvCB788BrY70fz1zmLwHS7xHCRKP0OC/NR5MQ2PbEJCcAAcGqwQjS4AKElHy+9o1nQT6wQgfxHBE13q1CT6AejSvnH9iKJxULXrmyRPKeKzjJCBtXSum9meEM/6PJlMbk4aUdFdSROa3YAfVd7kuBgb5sYpz//EBDwcGrab21rIFk1MHCaT/UJcbaRXjt"}}; var CORR_ITER = 150000;
+function b64(x) { return Uint8Array.from(atob(x), function (c) { return c.charCodeAt(0); }); }
+async function dechiffrer(code, d) {
+  var base = await crypto.subtle.importKey("raw", new TextEncoder().encode(code.trim().toUpperCase()), "PBKDF2", false, ["deriveKey"]);
+  var cle = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(d.s), iterations: CORR_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  var clair = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(d.i) }, cle, b64(d.c));
+  return new TextDecoder().decode(clair);
+}
+async function ouvrirCorrige(zone, code, silencieux) {
+  var k = zone.getAttribute("data-corr"), msg = zone.querySelector(".corr-msg");
+  try {
+    zone.querySelector(".corr-corps").innerHTML = await dechiffrer(code, CORRIGES[k]);
+    zone.classList.add("ouvert"); msg.textContent = "";
+    try { localStorage.setItem("corr-" + k, code.trim().toUpperCase()); } catch (e) {}
+  } catch (e) { if (!silencieux) msg.textContent = (window.crypto && crypto.subtle) ? "Code incorrect." : "Votre navigateur ne permet pas d'afficher le corrigé."; }
+}
+document.querySelectorAll(".corrige").forEach(function (zone) {
+  zone.querySelector("form").addEventListener("submit", function (e) { e.preventDefault(); ouvrirCorrige(zone, zone.querySelector("input").value); });
+  try { var deja = localStorage.getItem("corr-" + zone.getAttribute("data-corr")); if (deja) ouvrirCorrige(zone, deja, true); } catch (e) {}
+});
+
+/* ===== Hors ligne ===== */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+function etatReseau() { document.getElementById("horsligne").classList.toggle("vu", !navigator.onLine); }
+window.addEventListener("online", etatReseau); window.addEventListener("offline", etatReseau); etatReseau();
 </script>
 </body>
 </html>

@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d2a44">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-192.png">
 <title>L'atelier du suppléant – Programmation, séquence, séance</title>
 <style>
 :root{
@@ -133,6 +137,9 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .modale pre{white-space:pre-wrap;background:var(--encre);color:#f3f1ea;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.5}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--encre);color:#fff;padding:9px 16px;border-radius:9px;font-size:.9rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
 .toast.vu{opacity:1}
+.horsligne{display:none;background:#fff4d6;color:#6e500c;text-align:center;font-size:.9rem;padding:6px 10px}
+.horsligne.vu{display:block}
+#btnInstaller{display:none}
 .guide{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:22px 26px;max-width:920px;grid-column:1/-1}
 .guide h2{font-family:Georgia,serif;color:var(--encre)}
 .guide li{margin-bottom:6px}
@@ -149,6 +156,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 </head>
 <body>
 
+<div class="horsligne" id="horsligne">Hors connexion : l'outil fonctionne normalement et votre travail est enregistré sur cet appareil. Les liens vers Éduscol reviendront avec le réseau.</div>
 <header class="haut">
   <div class="wrap">
     <div class="ligne">
@@ -173,6 +181,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   <div class="barre">
     <button class="btn discret" id="btnSauver" type="button">💾 Enregistrer mon travail (fichier)</button>
     <label class="btn discret" style="cursor:pointer">📂 Ouvrir un fichier<input type="file" id="fichierOuvrir" accept=".json,application/json" hidden></label>
+    <button class="btn discret" id="btnInstaller" type="button">📲 Installer l'outil</button>
     <button class="btn plein" id="btnToutExporter" type="button">⬇︎ Exporter tout mon travail (Word)</button>
     <span class="esp"></span>
     <span class="aide" id="etatSauvegarde">Votre travail est conservé dans ce navigateur.</span>
@@ -441,6 +450,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Exporter tout mon travail</b> (en haut) : un seul fichier Word avec la programmation, la séquence, la séance et le cahier de textes, à remettre au formateur ou à son tuteur.</li>
         <li><b>Télécharger en Word</b> (dans chaque onglet) : le fichier s'ouvre dans Word, LibreOffice ou Google Docs. La grille et la fiche séance sont en format paysage.</li>
         <li><b>Imprimer / PDF</b> : imprime le document affiché.</li>
+        <li><b>Sans connexion</b> : une fois ouvert une première fois, l'outil fonctionne même sans réseau. Sur ordinateur ou téléphone, le bouton « Installer l'outil » (quand il apparaît) l'ajoute comme une application.</li>
         <li>Le travail est conservé <b>dans ce navigateur</b>. Pour changer d'ordinateur ou transmettre votre travail, utilisez <b>Enregistrer mon travail</b>, puis <b>Ouvrir un fichier</b>.</li>
         <li><b>Prompt pour une IA</b> : rédige une demande complète à coller dans un outil d'IA autorisé par votre académie. Aucune donnée d'élève, et vérification systématique avec le texte officiel.</li>
       </ul>
@@ -1428,6 +1438,14 @@ function exemple(m) {
    ================================================================ */
 rendreListes(); rendreTout();
 var h0 = (location.hash || "").replace("#", ""); if (["prog", "seq", "sea", "cdt", "ress", "guide"].indexOf(h0) >= 0) ouvrirOnglet(h0);
+
+/* ===== Hors ligne et installation ===== */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+function etatReseau() { document.getElementById("horsligne").classList.toggle("vu", !navigator.onLine); }
+window.addEventListener("online", etatReseau); window.addEventListener("offline", etatReseau); etatReseau();
+var invitation = null;
+window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); invitation = e; document.getElementById("btnInstaller").style.display = "inline-flex"; });
+document.getElementById("btnInstaller").addEventListener("click", function () { if (invitation) { invitation.prompt(); invitation = null; this.style.display = "none"; } });
 </script>
 </body>
 </html>
