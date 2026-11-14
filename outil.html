@@ -197,6 +197,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li>Découper en séquences</li>
         <li class="ici">Planifier selon ses cours et le calendrier</li>
       </ul>
+      <div id="etapesProg"></div>
 
       <h3>Mon cadre</h3>
       <div class="duo">
@@ -213,7 +214,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <div><label class="ch">Marge de sécurité <small>(%)</small></label><input type="number" min="0" max="40" data-p="prog.marge"></div>
         <div><label class="ch">Alternance A / B</label><select data-p="prog.ab"><option value="A">1re semaine de cours = A</option><option value="B">1re semaine de cours = B</option></select></div>
       </div>
-      <label class="coche"><input type="checkbox" data-p="prog.tampon"> Semaine « tampon » avant chaque période de vacances</label>
 
       <h3>Mes types d'événements</h3>
       <p class="aide">Ils servent à marquer le calendrier (clic sur la grille) ou des périodes datées. Modifiez-les, créez les vôtres.</p>
@@ -224,6 +224,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       </div>
 
       <h3>Mes classes</h3>
+      <p class="aide">Pour chaque classe, dans cet ordre : ① ses créneaux, ② les <b>dates imposées</b> (stages, PFMP, examens, sorties, fin des cours), ③ les semaines tampon si vous le souhaitez, ④ enfin les séquences. Les séquences se placeront alors dans le temps qui reste vraiment.</p>
       <div id="listeClasses"></div>
       <button class="btn mini" type="button" data-action="ajoutClasse">+ Ajouter une classe</button>
     </div>
@@ -447,7 +448,10 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <ol>
         <li><b>Mon cadre</b> : choisissez votre type d'établissement, votre zone de vacances et votre discipline. Les vacances et les jours fériés de 2026-2027 sont intégrés.</li>
         <li><b>Mes classes</b> : pour chaque classe, créez vos <b>créneaux de cours</b> : jour, durée (55 min, 1 h, 1 h 30… ou toute autre durée) et semaine (toutes, A ou B). L'outil calcule votre volume horaire réel semaine par semaine, en retirant les jours fériés.</li>
+        <li><b>Dates imposées d'abord</b> : avant les séquences, placez ce qui ne bouge pas : stages et PFMP, examens blancs, sorties, date de fin des cours. Les séquences se répartissent ensuite dans le temps réellement disponible. L'encart « Ordre conseillé » coche les étapes faites.</li>
+        <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre avec une estimation en heures. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
+        <li><b>Disciplines bivalentes</b> (lettres-histoire avec l'EMC, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence, avec sa propre colonne dans la grille. Attribuez chaque créneau à une valence, ou laissez-le « Partagé » : il est alors réparti selon la part de chaque valence.</li>
         <li><b>Le calendrier</b> : choisissez un type d'événement dans la barre au-dessus de la grille (PFMP, stage, sortie, bac blanc…), puis <b>cliquez sur les semaines</b> concernées. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
       </ol>
@@ -549,11 +553,35 @@ function semaines(zone) {
    effet : off = pas de cours · demi = moitié des cours · rep = repère
    ================================================================ */
 var TYPES_DEFAUT = {
-  college: [["Stage d'observation (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
-  lgt: [["Stage de seconde", "#cfe0f3", "off"], ["Bac blanc", "#f6d6d1", "demi"], ["Épreuves / oraux", "#f8e3c4", "rep"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]],
-  lp: [["PFMP", "#cfe0f3", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
+  college: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage d'observation (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
+  lgt: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage de seconde", "#cfe0f3", "off"], ["Bac blanc", "#f6d6d1", "demi"], ["Épreuves / oraux", "#f8e3c4", "rep"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]],
+  lp: [["Semaine tampon", "#fff1cc", "tampon"], ["PFMP", "#cfe0f3", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
 };
-var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère" };
+var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère", tampon: "Semaine tampon" };
+/* Bivalence : une programmation par valence */
+var VALENCES = [
+  [/lettres.*histoire|histoire.*lettres/i, [["Français", 50], ["Histoire-géographie", 35], ["EMC", 15]]],
+  [/math.*physique|physique.*math/i, [["Mathématiques", 50], ["Physique-chimie", 50]]],
+  [/langues?.*lettres|lettres.*langues?|lettres.*anglais|lettres.*espagnol|lettres.*allemand/i, [["Français", 50], ["Langue vivante", 50]]]
+];
+function normaliserClasse(c) {
+  if (!c.valences) { c.valences = [{ nom: "", part: 100, seqs: c.seqs && c.seqs.length ? c.seqs : [{ t: "", h: "", col: "" }] }]; delete c.seqs; }
+  (c.creneaux || []).forEach(function (k) { if (k.v === undefined) k.v = ""; });
+  c.periodes = c.periodes || []; c.marques = c.marques || {};
+  return c;
+}
+function partValence(c, vi) {
+  var V = c.valences; if (V.length < 2) return 1;
+  var tot = V.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0);
+  return tot > 0 ? (Number(V[vi].part) || 0) / tot : 1 / V.length;
+}
+function partCreneau(c, k, vi) {
+  var V = c.valences; if (V.length < 2) return 1;
+  var dediee = k.v && V.some(function (v) { return v.nom === k.v; });
+  if (dediee) return k.v === V[vi].nom ? 1 : 0;
+  return partValence(c, vi);
+}
+function nomColonne(c, vi) { var v = c.valences[vi]; return (c.nom || "Classe") + (c.valences.length > 1 && v.nom ? " · " + v.nom : ""); }
 function nouvelId() { return "t" + Math.random().toString(36).slice(2, 8); }
 function typesPour(etab) { return (TYPES_DEFAUT[etab] || TYPES_DEFAUT.college).map(function (t) { return { id: nouvelId(), nom: t[0], col: t[1], effet: t[2] }; }); }
 
@@ -562,7 +590,7 @@ var NIVEAUX = {
   lgt: ["2nde GT", "1re générale", "1re technologique", "Tle générale", "Tle technologique"],
   lp: ["3e prépa-métiers", "CAP 1re année", "CAP 2e année", "2nde pro", "1re pro", "Tle pro"]
 };
-var DISCIPLINES = ["Français", "Mathématiques", "Histoire-géographie", "Enseignement moral et civique", "Anglais", "Espagnol", "Allemand", "Italien", "Physique-chimie", "Sciences de la vie et de la Terre", "Technologie", "Arts plastiques", "Éducation musicale", "Éducation physique et sportive", "Sciences économiques et sociales", "Philosophie", "Lettres – Histoire-géographie", "Mathématiques – Physique-chimie", "Langues – Lettres", "Économie-gestion", "Économie-droit", "Prévention santé environnement", "Arts appliqués", "Enseignement professionnel", "Biotechnologies", "Sciences et techniques sanitaires et sociales", "Sciences numériques et technologie", "Documentation"];
+var DISCIPLINES = ["Français", "Mathématiques", "Histoire-géographie", "Enseignement moral et civique", "Anglais", "Espagnol", "Allemand", "Italien", "Physique-chimie", "Sciences de la vie et de la Terre", "Technologie", "Arts plastiques", "Éducation musicale", "Éducation physique et sportive", "Sciences économiques et sociales", "Philosophie", "Lettres – Histoire-géographie et EMC", "Mathématiques – Physique-chimie", "Langues – Lettres", "Économie-gestion", "Économie-droit", "Prévention santé environnement", "Arts appliqués", "Enseignement professionnel", "Biotechnologies", "Sciences et techniques sanitaires et sociales", "Sciences numériques et technologie", "Documentation"];
 var COULEURS = ["#dcebd9", "#f9e2cf", "#dfe4f4", "#f3dde6", "#e6f0d0", "#d8ecef", "#f5ecc7", "#e9ddf1", "#d9e9e0", "#f4dcd5"];
 
 /* ================================================================
@@ -642,7 +670,7 @@ function rechercheOfficielle(q) { return "https://www.google.com/search?q=" + en
    ÉTAT ET SAUVEGARDE
    ================================================================ */
 var CLE = "atelier-suppleant-v2";
-function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }], seqs: [{ t: "", h: "", col: "" }], periodes: [], marques: {} }; }
+function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T", v: "" }, { j: 4, d: 55, s: "T", v: "" }], valences: [{ nom: "", part: 100, seqs: [{ t: "", h: "", col: "" }] }], periodes: [], marques: {} }; }
 function etatVide() {
   return {
     prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
@@ -660,7 +688,8 @@ if (!E) {
   E = etatVide();
   try { var ancien = JSON.parse(localStorage.getItem("atelier-suppleant-v1")); if (ancien && ancien.seq) { E.seq = Object.assign(E.seq, ancien.seq); if (ancien.sea) E.sea = Object.assign(E.sea, ancien.sea); } } catch (e) {}
 }
-function completer() { var v = etatVide(); ["prog", "seq", "sea", "cdt"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); E.prog.classes.forEach(function (c) { var cv = classeVide(); Object.keys(cv).forEach(function (k) { if (c[k] === undefined) c[k] = cv[k]; }); }); }
+function completer() { var v = etatVide(); ["prog", "seq", "sea", "cdt"].forEach(function (k) { if (!E[k]) E[k] = v[k]; else Object.keys(v[k]).forEach(function (c) { if (E[k][c] === undefined) E[k][c] = v[k][c]; }); }); E.prog.classes.forEach(function (c) { normaliserClasse(c); var cv = classeVide(); Object.keys(cv).forEach(function (k) { if (c[k] === undefined) c[k] = cv[k]; }); });
+  if (!E.prog.types.some(function (t) { return t.effet === "tampon"; })) E.prog.types.unshift({ id: nouvelId(), nom: "Semaine tampon", col: "#fff1cc", effet: "tampon" }); }
 completer();
 
 var minuteur;
@@ -758,7 +787,7 @@ function profilsDetectes(d) {
 function profilsActifs() {
   var q = E.seq;
   if (q.profil && q.profil !== "auto") return q.profil === "aucun" ? [] : [q.profil];
-  return profilsDetectes(q.discipline || E.prog.discipline).slice(0, 2);
+  return profilsDetectes(q.valence || q.discipline || E.prog.discipline).slice(0, 2);
 }
 
 /* ================================================================
@@ -788,41 +817,43 @@ function pucesObjectif(t, garde) {
 /* ================================================================
    CALCUL D'UNE CLASSE
    ================================================================ */
-function minutesHebdo(c, ab) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) : 0); }, 0); }
+function minutesHebdo(c, ab, vi) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) * (vi == null ? 1 : partCreneau(c, k, vi)) : 0); }, 0); }
 function lettreAB(w) { return ((w.idx % 2 === 0) === (E.prog.ab !== "B")) ? "A" : "B"; }
-function calculerClasse(c) {
-  var P = E.prog, SEM = semaines(P.zone), fin = c.fin || CAL.finAnnee;
+function calculerClasse(c, vi) {
+  normaliserClasse(c); vi = vi || 0;
+  var P = E.prog, SEM = semaines(P.zone), fin = c.fin || CAL.finAnnee, V = c.valences[vi] || c.valences[0];
   var cases = SEM.map(function (w) {
     if (w.vac) return { type: "vac" };
     if (w.lundi > fin) return { type: "fin" };
     var ab = lettreAB(w);
     var jours = w.jours.filter(function (j) { return j <= fin; });
     var marque = c.marques[w.lundi] ? typeParId(c.marques[w.lundi]) : null;
-    var evts = [], demi = false, offLib = null;
-    if (marque) { if (marque.effet === "off") offLib = marque; else { evts.push(marque); if (marque.effet === "demi") demi = true; } }
+    var evts = [], demi = false, offLib = null, tampon = null;
+    if (marque) { if (marque.effet === "off") offLib = marque; else if (marque.effet === "tampon") tampon = marque; else { evts.push(marque); if (marque.effet === "demi") demi = true; } }
     (c.periodes || []).forEach(function (p) {
       var t = typeParId(p.ty); if (!t || !p.d) return;
       var f = p.f || p.d; if (f < w.lundi || p.d > w.dim) return;
       if (t.effet === "off") { jours = jours.filter(function (j) { return j < p.d || j > f; }); if (!jours.length) offLib = t; else if (evts.indexOf(t) < 0) evts.push(t); }
+      else if (t.effet === "tampon") tampon = t;
       else { if (evts.indexOf(t) < 0) evts.push(t); if (t.effet === "demi") demi = true; }
     });
     if (marque && marque.effet === "off") jours = [];
     var min = 0, nb = 0;
     c.creneaux.forEach(function (k) {
       if (!(k.s === "T" || k.s === ab)) return;
-      jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += Number(k.d) || 0; nb++; } });
+      var part = partCreneau(c, k, vi); if (!part) return;
+      jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += (Number(k.d) || 0) * part; nb += part; } });
     });
-    if (demi) { min /= 2; nb = Math.ceil(nb / 2); }
+    if (demi) { min /= 2; nb = nb / 2; }
+    nb = Math.round(nb * 10) / 10;
     if (!jours.length && offLib) return { type: "off", t: offLib, ab: ab };
+    if (tampon) return { type: "tampon", t: tampon, cap: min / 60, nb: nb, evts: evts, ab: ab };
     return { type: "cours", cap: min / 60, nb: nb, evts: evts, ab: ab };
   });
-  if (P.tampon) {
-    for (var wi = 1; wi < SEM.length; wi++) if (SEM[wi].vac && !SEM[wi - 1].vac)
-      for (var k = wi - 1; k >= 0 && !SEM[k].vac; k--) if (cases[k].type === "cours") { cases[k].type = "tampon"; break; }
-  }
   var total = 0, nbTot = 0; cases.forEach(function (x) { if (x.type === "cours") { total += x.cap; nbTot += x.nb; } });
+  nbTot = Math.round(nbTot);
   var reserve = total * (Number(P.marge) || 0) / 100, utile = total - reserve;
-  var seqs = c.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
+  var seqs = V.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
   var coef = utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1;
   var idx = 0, reste = seqs.length ? (Number(seqs[0].h) || 0) : 0;
   cases.forEach(function (x) {
@@ -838,6 +869,11 @@ function calculerClasse(c) {
   });
   return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
 }
+function colonnesProg() {
+  var cols = [];
+  E.prog.classes.forEach(function (c, i) { normaliserClasse(c); c.valences.forEach(function (v, vi) { if (c.nom || v.seqs.some(function (s) { return s.t; })) cols.push({ c: c, i: i, vi: vi }); }); });
+  return cols;
+}
 
 /* ================================================================
    FORMULAIRES DYNAMIQUES
@@ -849,41 +885,58 @@ function rendreListes() {
   var P = E.prog, h = "";
   P.types.forEach(function (t, i) {
     var b = "prog.types." + i;
-    h += '<div class="lg typ"><input type="color" data-p="' + b + '.col"><input type="text" data-p="' + b + '.nom">' + sel(b + ".effet", [["off", EFFETS.off], ["demi", EFFETS.demi], ["rep", EFFETS.rep]], t.effet) + '<button class="suppr" type="button" title="Supprimer" data-action="supprType" data-i="' + i + '">✕</button></div>';
+    h += '<div class="lg typ"><input type="color" data-p="' + b + '.col"><input type="text" data-p="' + b + '.nom">' + sel(b + ".effet", [["off", EFFETS.off], ["demi", EFFETS.demi], ["rep", EFFETS.rep], ["tampon", EFFETS.tampon]], t.effet) + '<button class="suppr" type="button" title="Supprimer" data-action="supprType" data-i="' + i + '">✕</button></div>';
   });
   document.getElementById("listeTypes").innerHTML = h;
 
   h = "";
   var optsTypes = P.types.map(function (t) { return [t.id, t.nom]; });
   P.classes.forEach(function (c, i) {
-    var b = "prog.classes." + i, mA = minutesHebdo(c, "A"), mB = minutesHebdo(c, "B");
+    normaliserClasse(c);
+    var b = "prog.classes." + i, mA = minutesHebdo(c, "A"), mB = minutesHebdo(c, "B"), bi = c.valences.length > 1;
     h += '<div class="bloc"><div class="tete"><b>Classe ' + (i + 1) + (c.nom ? " · " + esc(c.nom) : "") + '</b><span><button class="btn mini discret" type="button" data-action="dupliquerClasse" data-i="' + i + '" title="Dupliquer la classe">⧉ dupliquer</button> <button class="suppr" type="button" title="Supprimer la classe" data-action="supprClasse" data-i="' + i + '">✕</button></span></div>';
     h += '<div class="trio"><div><label class="ch">Nom de la classe</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 4eB, 2nde MRC…"></div><div><label class="ch">Niveau</label><input type="text" data-p="' + b + '.niveau" list="dlNiv"></div><div><label class="ch">Fin des cours</label><input type="date" data-p="' + b + '.fin" title="Vide = 2 juillet 2027"></div></div>';
-    h += '<label class="ch">Mes créneaux de cours <small>(jour · durée en minutes · semaine)</small></label>';
+    /* ① créneaux */
+    h += '<label class="ch">① Créneaux de cours <small>(jour · durée en minutes · semaine' + (bi ? " · valence" : "") + ')</small></label>';
+    var optsV = [["", bi ? "Partagé" : "—"]].concat(c.valences.map(function (v) { return [v.nom, v.nom]; }));
     c.creneaux.forEach(function (k, j) {
       var bk = b + ".creneaux." + j;
-      h += '<div class="lg cren">' + sel(bk + ".j", [[1, "Lundi"], [2, "Mardi"], [3, "Mercredi"], [4, "Jeudi"], [5, "Vendredi"], [6, "Samedi"]], k.j) + '<input type="number" min="5" max="480" step="5" data-p="' + bk + '.d" list="dlDurees" title="Durée en minutes">' + sel(bk + ".s", [["T", "Toutes"], ["A", "Sem. A"], ["B", "Sem. B"]], k.s) + '<button class="suppr" type="button" data-action="supprCren" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
+      h += '<div class="lg cren"' + (bi ? ' style="grid-template-columns:1fr 70px 1fr 1.2fr 22px"' : "") + '>' + sel(bk + ".j", [[1, "Lundi"], [2, "Mardi"], [3, "Mercredi"], [4, "Jeudi"], [5, "Vendredi"], [6, "Samedi"]], k.j) + '<input type="number" min="5" max="480" step="5" data-p="' + bk + '.d" list="dlDurees" title="Durée en minutes">' + sel(bk + ".s", [["T", "Toutes"], ["A", "Sem. A"], ["B", "Sem. B"]], k.s) + (bi ? sel(bk + ".v", optsV, k.v) : "") + '<button class="suppr" type="button" data-action="supprCren" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
     });
     h += '<button class="btn mini" type="button" data-action="ajoutCren" data-i="' + i + '">+ créneau</button>';
-    h += '<div class="vol">Volume : <b>' + hm(mA) + '</b> par semaine' + (mA !== mB ? " en semaine A, <b>" + hm(mB) + "</b> en semaine B" : "") + " · " + c.creneaux.length + " créneau(x)</div>";
-    h += '<label class="ch">Séquences, dans l\'ordre <small>(couleur · titre · heures estimées)</small></label>';
-    c.seqs.forEach(function (s, j) {
-      var bs = b + ".seqs." + j;
-      if (!s.col) s.col = COULEURS[j % COULEURS.length];
-      h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" placeholder="h"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
-    });
-    h += '<button class="btn mini" type="button" data-action="ajoutSeqProg" data-i="' + i + '">+ séquence</button>';
-    h += '<label class="ch">Périodes datées <small>(au jour près : type · du · au)</small></label>';
+    h += '<div class="vol">Volume : <b>' + hm(mA) + '</b> par semaine' + (mA !== mB ? " en semaine A, <b>" + hm(mB) + "</b> en semaine B" : "") + " · " + c.creneaux.length + " créneau(x)" + (bi ? "<br>" + c.valences.map(function (v, vi) { return esc(v.nom || "Valence " + (vi + 1)) + " : " + hm(minutesHebdo(c, "A", vi)); }).join(" · ") : "") + "</div>";
+    /* ② dates imposées */
+    h += '<label class="ch">② Dates imposées <small>(stages, PFMP, examens, sorties… au jour près)</small></label>';
     c.periodes.forEach(function (p, j) {
       var bp = b + ".periodes." + j;
       h += '<div class="lg per">' + sel(bp + ".ty", optsTypes, p.ty) + '<input type="date" data-p="' + bp + '.d"><input type="date" data-p="' + bp + '.f"><button class="suppr" type="button" data-action="supprPer" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
     });
-    h += '<button class="btn mini" type="button" data-action="ajoutPer" data-i="' + i + '">+ période datée</button>';
+    h += '<button class="btn mini" type="button" data-action="ajoutPer" data-i="' + i + '">+ date imposée</button> <span class="aide">ou cliquez sur la grille (③ semaines tampon aussi)</span>';
     var nbM = Object.keys(c.marques).length;
-    if (nbM) h += ' <button class="btn mini discret" type="button" data-action="effacerMarques" data-i="' + i + '">Effacer les ' + nbM + ' marque(s) de la grille</button>';
+    if (nbM) h += '<br><button class="btn mini discret" type="button" data-action="effacerMarques" data-i="' + i + '" style="margin-top:4px">Effacer les ' + nbM + ' marque(s) de la grille</button>';
+    /* ④ valences et séquences */
+    if (!bi) h += '<div style="margin-top:10px"><button class="btn mini discret" type="button" data-action="activerBivalence" data-i="' + i + '">⇆ Discipline bivalente : une programmation par valence</button></div>';
+    c.valences.forEach(function (v, vi) {
+      var bv = b + ".valences." + vi;
+      if (bi) h += '<div class="bloc" style="background:#fff;margin-top:10px"><div class="tete"><b>Valence</b><span><button class="suppr" type="button" title="Retirer cette valence" data-action="supprValence" data-i="' + i + '" data-v="' + vi + '">✕</button></span></div><div class="duo"><div><label class="ch">Nom</label><input type="text" data-p="' + bv + '.nom" data-rerender="1" placeholder="ex. Français"></div><div><label class="ch">Part des créneaux partagés <small>(%)</small></label><input type="number" min="0" max="100" data-p="' + bv + '.part"></div></div>';
+      h += '<label class="ch">④ Séquences' + (bi && v.nom ? " de " + esc(v.nom) : "") + ', dans l\'ordre <small>(couleur · titre · heures estimées)</small></label>';
+      v.seqs.forEach(function (sq, j) {
+        var bs = bv + ".seqs." + j;
+        if (!sq.col) sq.col = COULEURS[j % COULEURS.length];
+        h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" placeholder="h"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">✕</button></div>';
+      });
+      h += '<button class="btn mini" type="button" data-action="ajoutSeqProg" data-i="' + i + '" data-v="' + vi + '">+ séquence</button>';
+      if (bi) h += "</div>";
+    });
+    if (bi) h += '<button class="btn mini" type="button" data-action="ajoutValence" data-i="' + i + '" style="margin-top:6px">+ valence</button><p class="aide">Un créneau « Partagé » est réparti entre les valences selon leur part. Attribuez un créneau à une valence pour le lui réserver.</p>';
     h += "</div>";
   });
   document.getElementById("listeClasses").innerHTML = h;
+  var C0 = P.classes, aCren = C0.some(function (c) { return c.creneaux.length; }), aDates = C0.some(function (c) { return c.fin || c.periodes.some(function (p) { return p.d; }) || Object.keys(c.marques).some(function (k) { var t = typeParId(c.marques[k]); return t && t.effet !== "tampon"; }); });
+  var aTampon = C0.some(function (c) { return Object.keys(c.marques).some(function (k) { var t = typeParId(c.marques[k]); return t && t.effet === "tampon"; }) || c.periodes.some(function (p) { var t = typeParId(p.ty); return t && t.effet === "tampon"; }); });
+  var aSeq = C0.some(function (c) { return c.valences.some(function (v) { return v.seqs.some(function (s) { return s.t; }); }); });
+  var et = [["Mon cadre", !!P.discipline], ["Classes et créneaux", aCren && C0.some(function (c) { return c.nom; })], ["Dates imposées", aDates], ["Semaines tampon (conseillé)", aTampon], ["Séquences", aSeq]];
+  document.getElementById("etapesProg").innerHTML = '<div class="encart" style="margin-top:0"><b>Ordre conseillé</b><ol style="margin:4px 0 0;padding-left:20px">' + et.map(function (e) { return "<li>" + (e[1] ? "✅ " : "") + e[0] + "</li>"; }).join("") + "</ol></div>";
 
   h = "<b>Marquer le calendrier :</b>";
   P.types.forEach(function (t) { h += '<button type="button" class="outil' + (outilActif === t.id ? " sel" : "") + '" data-outil="' + t.id + '" style="background:' + esc(t.col) + '">' + esc(t.nom) + "</button>"; });
@@ -968,7 +1021,7 @@ function rendreListes() {
 
 function majListesDeroulantes() {
   document.getElementById("dlClasses").innerHTML = E.prog.classes.filter(function (c) { return c.nom; }).map(function (c) { return '<option value="' + esc(c.nom) + '">'; }).join("");
-  var seqs = []; E.prog.classes.forEach(function (c) { c.seqs.forEach(function (s) { if (s.t && seqs.indexOf(s.t) < 0) seqs.push(s.t); }); });
+  var seqs = []; E.prog.classes.forEach(function (c) { normaliserClasse(c); c.valences.forEach(function (v) { v.seqs.forEach(function (s) { if (s.t && seqs.indexOf(s.t) < 0) seqs.push(s.t); }); }); });
   document.getElementById("dlSeqs").innerHTML = seqs.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("");
   document.getElementById("dlDisc").innerHTML = DISCIPLINES.map(function (d) { return '<option value="' + esc(d) + '">'; }).join("");
   document.getElementById("dlNiv").innerHTML = (NIVEAUX[E.prog.etab] || []).map(function (n) { return '<option value="' + esc(n) + '">'; }).join("");
@@ -981,20 +1034,21 @@ function majListesDeroulantes() {
 }
 
 function remplirDepuisProg() {
-  E.prog.classes.forEach(function (c) {
-    var liste = c.seqs.filter(function (x) { return x.t; });
+  E.prog.classes.forEach(function (c) { normaliserClasse(c); c.valences.forEach(function (V, vi) {
+    var liste = V.seqs.filter(function (x) { return x.t; });
     liste.forEach(function (s, j) {
       if (s.t !== E.seq.titre) return;
       if (!E.seq.classe) E.seq.classe = c.nom;
-      if (!E.seq.discipline) E.seq.discipline = E.prog.discipline;
-      var cr = c.creneaux.map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
+      E.seq.valence = c.valences.length > 1 ? V.nom : "";
+      if (!E.seq.discipline) E.seq.discipline = E.seq.valence || E.prog.discipline;
+      var cr = c.creneaux.filter(function (k) { return partCreneau(c, k, vi) > 0; }).map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
       if (cr.length) E.seq.duree = Math.round(cr.reduce(function (a, b) { return a + b; }, 0) / cr.length);
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
       if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / E.seq.duree));
       lierChamps(document.getElementById("p-seq"));
       toast("Classe, place, durée et nombre de séances repris de la programmation");
     });
-  });
+  }); });
 }
 
 /* ================================================================
@@ -1012,7 +1066,7 @@ document.addEventListener("click", function (ev) {
   if (b.hasAttribute("data-onglet")) { ouvrirOnglet(b.getAttribute("data-onglet")); return; }
   if (b.hasAttribute("data-export")) { exporterWord(b.getAttribute("data-export")); return; }
   if (b.hasAttribute("data-ia")) { ouvrirIA(b.getAttribute("data-ia")); return; }
-  if (b.hasAttribute("data-exemple")) { var m = b.getAttribute("data-exemple"); if (confirm("Remplacer votre saisie de cet onglet par un exemple" + (m === "prog" ? " adapté à votre type d'établissement" : "") + " ?")) { E[m] = exemple(m); apres(); } return; }
+  if (b.hasAttribute("data-exemple")) { var m = b.getAttribute("data-exemple"); if (confirm("Remplacer votre saisie de cet onglet par un exemple" + (m === "prog" ? " adapté à votre type d'établissement" : "") + " ?")) { E[m] = exemple(m); completer(); apres(); } return; }
   if (b.hasAttribute("data-vider")) { var m2 = b.getAttribute("data-vider"); if (confirm("Effacer toute la saisie de cet onglet ?")) { var keep = E.prog.etab, z = E.prog.zone; E[m2] = etatVide()[m2]; if (m2 === "prog") { E.prog.etab = keep; E.prog.zone = z; E.prog.types = typesPour(keep); } apres(); } return; }
   switch (a) {
     case "ajoutType": E.prog.types.push({ id: nouvelId(), nom: "Nouvel événement", col: "#f0e0c0", effet: "rep" }); break;
@@ -1021,12 +1075,20 @@ document.addEventListener("click", function (ev) {
     case "ajoutClasse": C.push(classeVide()); break;
     case "dupliquerClasse": var cp = JSON.parse(JSON.stringify(C[i])); cp.nom = (cp.nom || "Classe") + " (copie)"; C.splice(i + 1, 0, cp); break;
     case "supprClasse": if (C.length > 1 && confirm("Supprimer cette classe ?")) C.splice(i, 1); break;
-    case "ajoutCren": var dern = C[i].creneaux[C[i].creneaux.length - 1]; C[i].creneaux.push({ j: dern ? Math.min(6, Number(dern.j) + 1) : 1, d: dern ? dern.d : 55, s: "T" }); break;
+    case "ajoutCren": var dern = C[i].creneaux[C[i].creneaux.length - 1]; C[i].creneaux.push({ j: dern ? Math.min(6, Number(dern.j) + 1) : 1, d: dern ? dern.d : 55, s: "T", v: "" }); break;
     case "supprCren": C[i].creneaux.splice(j, 1); break;
-    case "ajoutSeqProg": C[i].seqs.push({ t: "", h: "", col: COULEURS[C[i].seqs.length % COULEURS.length] }); break;
-    case "supprSeqProg": C[i].seqs.splice(j, 1); break;
-    case "monterSeq": if (j > 0) { var t1 = C[i].seqs[j]; C[i].seqs[j] = C[i].seqs[j - 1]; C[i].seqs[j - 1] = t1; } break;
-    case "descendreSeq": if (j < C[i].seqs.length - 1) { var t2 = C[i].seqs[j]; C[i].seqs[j] = C[i].seqs[j + 1]; C[i].seqs[j + 1] = t2; } break;
+    case "ajoutSeqProg": var SQ = C[i].valences[+b.getAttribute("data-v")].seqs; SQ.push({ t: "", h: "", col: COULEURS[SQ.length % COULEURS.length] }); break;
+    case "supprSeqProg": C[i].valences[+b.getAttribute("data-v")].seqs.splice(j, 1); break;
+    case "monterSeq": var S1 = C[i].valences[+b.getAttribute("data-v")].seqs; if (j > 0) { var t1 = S1[j]; S1[j] = S1[j - 1]; S1[j - 1] = t1; } break;
+    case "descendreSeq": var S2 = C[i].valences[+b.getAttribute("data-v")].seqs; if (j < S2.length - 1) { var t2 = S2[j]; S2[j] = S2[j + 1]; S2[j + 1] = t2; } break;
+    case "activerBivalence":
+      var preset = null, dsc = E.prog.discipline || ""; VALENCES.forEach(function (x) { if (!preset && x[0].test(dsc)) preset = x[1]; });
+      preset = preset || [["Valence 1", 50], ["Valence 2", 50]];
+      var anciennes = C[i].valences[0].seqs;
+      C[i].valences = preset.map(function (p, k) { return { nom: p[0], part: p[1], seqs: k === 0 && anciennes.some(function (s) { return s.t; }) ? anciennes : [{ t: "", h: "", col: "" }] }; });
+      toast(preset.length + " valences créées : ajustez leurs noms et la répartition des créneaux"); break;
+    case "ajoutValence": C[i].valences.push({ nom: "Valence " + (C[i].valences.length + 1), part: 20, seqs: [{ t: "", h: "", col: "" }] }); break;
+    case "supprValence": var vv2 = +b.getAttribute("data-v"); if (!confirm("Retirer cette valence et ses séquences ?")) return; var nomV = C[i].valences[vv2].nom; C[i].valences.splice(vv2, 1); C[i].creneaux.forEach(function (k) { if (k.v === nomV) k.v = ""; }); if (C[i].valences.length === 1) C[i].valences[0].part = 100; break;
     case "ajoutPer": C[i].periodes.push({ ty: (E.prog.types[0] || {}).id, d: "", f: "" }); break;
     case "supprPer": C[i].periodes.splice(j, 1); break;
     case "effacerMarques": C[i].marques = {}; break;
@@ -1107,7 +1169,7 @@ function importerSeance() {
 function entreeVide(d) { return { date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
 function frLong(s) { if (!s) return ""; return s2d(s).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); }
 /* Créneaux réels d'une classe à partir d'une date */
-function creneauxDates(c, debut) {
+function creneauxDates(c, debut, vnom) {
   var P = E.prog, SEM = semaines(P.zone), fin = c.fin || CAL.finAnnee, res = [];
   SEM.forEach(function (w) {
     if (w.vac || w.dim < debut || w.lundi > fin) return;
@@ -1118,7 +1180,7 @@ function creneauxDates(c, debut) {
       if (j < debut || j > fin) return;
       var off = (c.periodes || []).some(function (p) { var t = typeParId(p.ty); return t && t.effet === "off" && p.d && j >= p.d && j <= (p.f || p.d); });
       if (off) return;
-      c.creneaux.forEach(function (k) { if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55 }); });
+      c.creneaux.forEach(function (k) { if (vnom && k.v && k.v !== vnom) return; if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55 }); });
     });
   });
   return res.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
@@ -1129,7 +1191,7 @@ function genererCdt() {
   var c = E.prog.classes.filter(function (x) { return x.nom && x.nom === nom; })[0];
   if (!E.cdt.debut) { toast("Indiquez la date de la première séance"); return; }
   if (E.cdt.entrees.length && !confirm("Remplacer les entrées existantes ?")) return;
-  var slots = c ? creneauxDates(c, E.cdt.debut) : [];
+  var slots = c ? creneauxDates(c, E.cdt.debut, E.seq.valence || "") : [];
   if (!c) toast("Classe « " + (nom || "?") + " » absente de la programmation : dates à compléter à la main");
   E.cdt.classe = nom; E.cdt.discipline = E.cdt.discipline || q.discipline;
   E.cdt.entrees = q.seances.map(function (s, i) {
@@ -1197,32 +1259,38 @@ function telecharger(blob, nom) { var a = document.createElement("a"); a.href = 
    ================================================================ */
 function docProg(pourWord) {
   var P = E.prog, al = [], SEM = semaines(P.zone);
-  var classes = P.classes.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) { return x.c.nom || x.c.seqs.some(function (s) { return s.t; }); });
+  var classes = colonnesProg();
   if (!classes.length) return { html: '<p class="vide-msg">Saisissez une classe, ses créneaux et ses séquences à gauche, ou chargez un exemple.</p>', al: al };
-  var calc = classes.map(function (x) { return calculerClasse(x.c); });
+  var calc = classes.map(function (x) { return calculerClasse(x.c, x.vi); });
   var etabLib = { college: "Collège", lgt: "Lycée général et technologique", lp: "Lycée professionnel" }[P.etab];
-  var h = "<h2>Programmation annuelle 2026-2027</h2><p class=\"sous\">" + esc([P.discipline, P.nomEtab || etabLib].filter(Boolean).join(" · ")) + " · Zone " + P.zone + " · marge " + (Number(P.marge) || 0) + " %" + (P.tampon ? " · semaine tampon avant chaque vacances" : "") + "</p>";
+  var h = "<h2>Programmation annuelle 2026-2027</h2><p class=\"sous\">" + esc([P.discipline, P.nomEtab || etabLib].filter(Boolean).join(" · ")) + " · Zone " + P.zone + " · marge " + (Number(P.marge) || 0) + " %</p>";
   h += '<div class="resume">';
+  var tampons = 0, dates = 0;
+  P.classes.forEach(function (c) { Object.keys(c.marques).forEach(function (k) { var t = typeParId(c.marques[k]); if (t && t.effet === "tampon") tampons++; else dates++; }); c.periodes.forEach(function (p) { var t = typeParId(p.ty); if (t && t.effet === "tampon") tampons++; else if (p.d) dates++; }); if (c.fin) dates++; });
   calc.forEach(function (r, n) {
-    var c = classes[n].c, nom = c.nom || "Classe " + (classes[n].i + 1), libre = r.total - r.besoin;
-    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (" + r.nbTot + " cours) · " + r.besoin + " h prévues<br>" +
+    var c = classes[n].c, nom = nomColonne(c, classes[n].vi), libre = r.total - r.besoin;
+    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (≈ " + r.nbTot + " cours) · " + r.besoin + " h prévues<br>" +
       (libre >= r.reserve ? "<span style='color:#3f7d58'>Marge : " + hm(libre * 60) + "</span>" : libre >= 0 ? "<span style='color:#8a6410'>Marge faible : " + hm(libre * 60) + "</span>" : "<span style='color:#b23b2e'>Dépassement : " + hm(-libre * 60) + "</span>") + "</div>";
     if (!c.creneaux.length) al.push(["ko", nom + " : ajoutez vos créneaux de cours (jour et durée)."]);
     if (r.nonPlace.length) al.push(["ko", nom + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou travaillez une notion en spirale."]);
     else if (r.besoin > r.total - r.reserve && r.besoin <= r.total) al.push(["mo", nom + " : la marge est inférieure à " + P.marge + " %. Gardez du temps pour les imprévus."]);
-    r.seqs.forEach(function (s) { if (!Number(s.h)) al.push(["mo", "« " + s.t + " » : estimez sa durée en heures pour la placer."]); });
+    r.seqs.forEach(function (sq) { if (!Number(sq.h)) al.push(["mo", "« " + sq.t + " » : estimez sa durée en heures pour la placer."]); });
     if (!r.nonPlace.length && r.besoin && r.besoin <= r.total - r.reserve) al.push(["ok", nom + " : toutes les séquences sont placées, avec une marge suffisante."]);
   });
   h += "</div>";
-  h += '<div class="legende">' + P.types.map(function (t) { return '<span style="background:' + esc(t.col) + '">' + esc(t.nom) + " · " + EFFETS[t.effet].toLowerCase() + "</span>"; }).join("") + '<span style="background:#fff1cc">tampon</span><span style="background:#ece9e2">vacances</span></div>';
+  var aSeq = calc.some(function (r) { return r.seqs.length; });
+  if (aSeq && !dates) al.unshift(["mo", "Ordre conseillé : placez d'abord les dates imposées (stages, PFMP, examens blancs, sorties, date de fin des cours). Les séquences se répartiront alors dans le temps réellement disponible."]);
+  if (!tampons) al.push(["mo", "Pensez aux semaines tampon : une semaine avant chaque période de vacances absorbe retards, absences et imprévus. Choisissez « Semaine tampon » dans la barre, puis cliquez sur les semaines voulues."]);
+  P.classes.forEach(function (c) { if (c.valences.length > 1) { var tp = c.valences.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0); if (c.creneaux.some(function (k) { return !k.v; }) && tp !== 100) al.push(["mo", (c.nom || "Classe") + " : les parts des valences font " + tp + " % ; elles sont recalculées sur 100 % pour répartir les créneaux partagés."]); } });
+  h += '<div class="legende">' + P.types.map(function (t) { return '<span style="background:' + esc(t.col) + '">' + esc(t.nom) + " · " + EFFETS[t.effet].toLowerCase() + "</span>"; }).join("") + '<span style="background:#ece9e2">vacances</span></div>';
   if (!pourWord) h += '<p class="aide-doc" style="margin:0 0 6px">Choisissez un type d\'événement dans la barre ci-dessus, puis cliquez sur les semaines de la grille.</p>';
 
   var col = calc.map(function (r, n) {
-    var c = classes[n].c, seqsC = c.seqs.filter(function (x) { return x.t; });
+    var seqsC = r.seqs;
     return r.cases.map(function (x) {
       if (x.type === "vac") return { vac: 1, cle: "vac" };
       if (x.type === "fin") return { cls: "fin", txt: "", cle: "fin" };
-      if (x.type === "tampon") return { cls: "tampon", txt: "tampon", cle: "tampon" + Math.random() };
+      if (x.type === "tampon") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "tampon" + Math.random(), evts: x.evts };
       if (x.type === "off") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "off" + x.t.id };
       var lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join(" → ");
       var dern = x.seqs[x.seqs.length - 1];
@@ -1230,7 +1298,7 @@ function docProg(pourWord) {
     });
   });
   var avecAB = P.classes.some(function (c) { return c.creneaux.some(function (k) { return k.s !== "T"; }); });
-  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (x) { return "<th>" + esc(x.c.nom || "Classe") + "<br><span style='font-weight:400;font-size:.74rem'>" + hm(minutesHebdo(x.c, "A")) + "/sem.</span></th>"; }).join("") + "</tr></thead><tbody>";
+  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (x) { return "<th>" + esc(nomColonne(x.c, x.vi)) + "<br><span style='font-weight:400;font-size:.74rem'>" + (function () { var a = minutesHebdo(x.c, "A", x.vi), bb = minutesHebdo(x.c, "B", x.vi); return a === bb ? hm(a) + "/sem." : hm(a) + " (A) · " + hm(bb) + " (B)"; })() + "</span></th>"; }).join("") + "</tr></thead><tbody>";
   var fusion = classes.map(function () { return 0; });
   SEM.forEach(function (w, wi) {
     if (w.vac) {
@@ -1252,7 +1320,7 @@ function docProg(pourWord) {
         h += '<td class="' + x.cls + '"' + (n > 1 ? ' rowspan="' + n + '"' : "") + style + ">" + esc(x.txt) + evts + "</td>";
       } else {
         var prec = cc[wi - 1], suite = prec && !SEM[wi - 1].vac && prec.cle === x.cle && x.txt;
-        var nbc = x.seq ? '<span class="nbc">' + x.nb + " cours</span>" : (x.nb === 0 && !x.cls && !x.txt ? '<span class="nbc">pas de cours</span>' : "");
+        var nbc = x.seq ? '<span class="nbc">' + (x.nb % 1 ? "≈ " + x.nb : x.nb) + " cours</span>" : (x.nb === 0 && !x.cls && !x.txt ? '<span class="nbc">pas de cours</span>' : "");
         h += '<td class="clic ' + x.cls + '" data-c="' + classes[ci].i + '" data-w="' + w.lundi + '"' + style + ' title="Cliquer pour marquer cette semaine">' + (suite ? '<span class="suite">↓</span>' : esc(x.txt)) + evts + nbc + "</td>";
       }
     });
@@ -1416,7 +1484,7 @@ function exporterWord(m) {
 }
 function exporterTout() {
   var parts = [], saut = "<br clear='all' style='page-break-before:always'>";
-  var r1 = docProg(true); if (E.prog.classes.some(function (c) { return c.nom || c.seqs.some(function (s) { return s.t; }); })) parts.push(htmlPourWord(r1.html));
+  var r1 = docProg(true); if (colonnesProg().length) parts.push(htmlPourWord(r1.html));
   if (E.seq.titre || E.seq.seances.length) parts.push(htmlPourWord(docSeq().html));
   if (E.sea.titre || E.sea.moments.some(function (m) { return m.t; })) parts.push(htmlPourWord(docSea().html));
   if (E.cdt.entrees.length) parts.push(htmlPourWord(docCdt().html));
@@ -1433,8 +1501,9 @@ function promptIA(m) {
   if (m === "prog") {
     var P = E.prog, t = "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à améliorer ma programmation annuelle 2026-2027 (" + etab + ", zone " + P.zone + ").\nDiscipline : " + (P.discipline || "?") + "\n";
     P.classes.forEach(function (c) {
-      var r = calculerClasse(c);
-      t += "\nClasse : " + (c.nom || "?") + (c.niveau ? " (" + c.niveau + ")" : "") + " · créneaux : " + c.creneaux.map(function (k) { return JOURS[k.j] + " " + k.d + " min" + (k.s !== "T" ? " (sem. " + k.s + ")" : ""); }).join(", ") + " · environ " + Math.round(r.total) + " h de cours disponibles dans l'année" + (c.fin ? ", fin des cours le " + c.fin : "") + "\nSéquences prévues : " + c.seqs.filter(function (s) { return s.t; }).map(function (s) { return s.t + " (" + (s.h || "?") + " h)"; }).join(" ; ");
+      normaliserClasse(c);
+      t += "\nClasse : " + (c.nom || "?") + (c.niveau ? " (" + c.niveau + ")" : "") + " · créneaux : " + c.creneaux.map(function (k) { return JOURS[k.j] + " " + k.d + " min" + (k.s !== "T" ? " (sem. " + k.s + ")" : "") + (k.v ? " [" + k.v + "]" : ""); }).join(", ") + (c.fin ? ", fin des cours le " + c.fin : "");
+      c.valences.forEach(function (V, vi) { var r = calculerClasse(c, vi); t += "\n" + (c.valences.length > 1 ? "Valence " + (V.nom || vi + 1) + " : " : "") + "environ " + Math.round(r.total) + " h de cours disponibles · séquences prévues : " + V.seqs.filter(function (s) { return s.t; }).map(function (s) { return s.t + " (" + (s.h || "?") + " h)"; }).join(" ; "); });
       var ev = []; Object.keys(c.marques).forEach(function (k) { var ty = typeParId(c.marques[k]); if (ty) ev.push(ty.nom + " semaine du " + k); }); c.periodes.forEach(function (p) { var ty = typeParId(p.ty); if (ty) ev.push(ty.nom + " du " + p.d + " au " + (p.f || p.d)); });
       if (ev.length) t += "\nÉvénements : " + ev.join(" ; ");
     });
@@ -1475,24 +1544,29 @@ document.getElementById("fichierOuvrir").addEventListener("change", function (e)
 function exemple(m) {
   var etab = E.prog.etab;
   if (m === "prog") {
-    var P = { etab: etab, zone: E.prog.zone || "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour(etab), classes: [] };
+    var P = { etab: etab, zone: E.prog.zone || "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: false, types: typesPour(etab), classes: [] };
     var T = function (nom) { return (P.types.filter(function (t) { return t.nom.indexOf(nom) === 0; })[0] || {}).id; };
     if (etab === "lp") {
-      P.discipline = "Lettres – Histoire-géographie";
-      var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }], seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 11, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }, { t: "Projet : concours d'éloquence", h: 5, col: "#f3dde6" }], periodes: [{ ty: T("PFMP"), d: "2027-01-18", f: "2027-02-12" }], marques: {} };
-      a.marques["2027-03-15"] = T("Sortie"); a.marques["2027-06-07"] = T("PFMP"); a.marques["2027-06-14"] = T("PFMP");
+      P.discipline = "Lettres – Histoire-géographie et EMC";
+      var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T", v: "Français" }, { j: 2, d: 55, s: "T", v: "Histoire-géographie" }, { j: 4, d: 55, s: "T", v: "Français" }, { j: 4, d: 55, s: "A", v: "Histoire-géographie" }, { j: 4, d: 55, s: "B", v: "EMC" }],
+        valences: [
+          { nom: "Français", part: 50, seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 11, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }] },
+          { nom: "Histoire-géographie", part: 35, seqs: [{ t: "H · L'expansion du monde connu (XVe-XVIIIe s.)", h: 9, col: "#f3dde6" }, { t: "G · Thème 1 du programme de géographie", h: 9, col: "#e6f0d0" }, { t: "H · L'Amérique et l'Europe en révolution", h: 9, col: "#d8ecef" }] },
+          { nom: "EMC", part: 15, seqs: [{ t: "EMC · Thème 1 (programme du BO du 13 juin 2024)", h: 4, col: "#f5ecc7" }, { t: "EMC · Thème 2 (programme du BO du 13 juin 2024)", h: 3, col: "#e9ddf1" }] }
+        ], periodes: [{ ty: T("PFMP"), d: "2027-01-18", f: "2027-02-12" }], marques: {} };
+      a.marques["2027-03-15"] = T("Sortie"); a.marques["2027-06-07"] = T("PFMP"); a.marques["2027-06-14"] = T("PFMP"); a.marques["2026-12-14"] = T("Semaine tampon"); a.marques["2027-04-05"] = T("Semaine tampon");
       var b = { nom: "Tle MRC", niveau: "Tle pro", fin: "2027-05-28", creneaux: [{ j: 1, d: 110, s: "T" }], seqs: [{ t: "Vivre aujourd'hui (1) : lire l'œuvre du programme limitatif", h: 11, col: "#e6f0d0" }, { t: "Vivre aujourd'hui (2) : débattre des sciences et techniques", h: 11, col: "#d8ecef" }, { t: "Préparation à l'épreuve écrite", h: 4, col: "#f5ecc7" }], periodes: [{ ty: T("PFMP"), d: "2026-11-16", f: "2026-12-11" }, { ty: T("PFMP"), d: "2027-03-08", f: "2027-04-02" }], marques: {} };
       b.marques["2027-01-25"] = T("Examen blanc");
       P.classes = [a, b];
     } else if (etab === "lgt") {
       P.discipline = "Mathématiques";
       var c = { nom: "2nde 3", niveau: "2nde GT", fin: "2027-06-11", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 3, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }, { j: 5, d: 55, s: "A" }], seqs: [{ t: "Nombres et calculs", h: 14, col: "#dcebd9" }, { t: "Fonctions : généralités", h: 16, col: "#f9e2cf" }, { t: "Géométrie : vecteurs", h: 16, col: "#dfe4f4" }, { t: "Statistiques et probabilités", h: 14, col: "#f3dde6" }, { t: "Algorithmique et programmation", h: 10, col: "#e6f0d0" }], periodes: [{ ty: T("Stage"), d: "2027-06-14", f: "2027-06-25" }], marques: {} };
-      c.marques["2027-01-18"] = T("Bac blanc");
+      c.marques["2027-01-18"] = T("Bac blanc"); c.marques["2026-12-14"] = T("Semaine tampon");
       P.classes = [c];
     } else {
       P.discipline = "Histoire-géographie";
       var d = { nom: "4eB", niveau: "4e", fin: "", creneaux: [{ j: 1, d: 55, s: "T" }, { j: 3, d: 55, s: "T" }, { j: 5, d: 55, s: "A" }], seqs: [{ t: "H1 · Le XVIIIe siècle : expansions, Lumières et révolutions", h: 12, col: "#dcebd9" }, { t: "G1 · L'urbanisation du monde", h: 10, col: "#f9e2cf" }, { t: "H2 · L'Europe et le monde au XIXe siècle", h: 12, col: "#dfe4f4" }, { t: "G2 · Les mobilités humaines transnationales", h: 10, col: "#f3dde6" }, { t: "EMC · Libertés et droits", h: 6, col: "#e6f0d0" }, { t: "H3 · Société, culture et politique dans la France du XIXe siècle", h: 10, col: "#d8ecef" }], periodes: [], marques: {} };
-      d.marques["2027-03-22"] = T("Sortie");
+      d.marques["2027-03-22"] = T("Sortie"); d.marques["2026-12-14"] = T("Semaine tampon");
       var f = { nom: "3eA", niveau: "3e", fin: "2027-06-18", creneaux: [{ j: 2, d: 55, s: "T" }, { j: 4, d: 55, s: "T" }, { j: 5, d: 55, s: "B" }], seqs: [{ t: "H1 · L'Europe, un théâtre majeur des guerres totales", h: 14, col: "#dcebd9" }, { t: "G1 · Dynamiques territoriales de la France", h: 12, col: "#f9e2cf" }, { t: "H2 · Le monde depuis 1945", h: 14, col: "#dfe4f4" }, { t: "EMC · La République et la citoyenneté", h: 8, col: "#e6f0d0" }, { t: "Révisions du brevet", h: 6, col: "#f5ecc7" }], periodes: [{ ty: T("Stage"), d: "2026-12-07", f: "2026-12-11" }], marques: {} };
       f.marques["2027-01-25"] = T("Brevet blanc"); f.marques["2027-04-26"] = T("Brevet blanc");
       P.classes = [d, f];
