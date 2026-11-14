@@ -273,6 +273,17 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <label class="ch">Socle commun <small>(composantes visées)</small></label>
       <div id="listeSocle"></div>
 
+      <h3>Spécificités de ma discipline</h3>
+      <label class="ch">Profil disciplinaire <small>(détecté d'après la discipline, modifiable)</small></label>
+      <select data-p="seq.profil" data-rerender="1">
+        <option value="auto">Automatique</option><option value="lv">Langues vivantes</option><option value="eps">Éducation physique et sportive</option>
+        <option value="sci">Sciences, mathématiques, technologie</option><option value="pro">Enseignement professionnel</option>
+        <option value="arts">Enseignements artistiques</option><option value="lettres">Lettres et sciences humaines</option><option value="aucun">Aucun profil particulier</option>
+      </select>
+      <div id="blocSpec"></div>
+      <label class="ch">Élèves à besoins particuliers <small>(PAP, PPS, ULIS, allophones… sans nom d'élève)</small></label><textarea data-p="seq.adapt" style="min-height:44px"></textarea>
+      <label class="ch">Autres précisions propres à ma discipline</label><textarea data-p="seq.autres" style="min-height:44px" placeholder="Tout ce que les rubriques ne prévoient pas : rien n'est obligatoire."></textarea>
+
       <h3>Problématique et objectifs</h3>
       <label class="ch">Problématique de la séquence</label><input type="text" data-p="seq.probl" placeholder="La question à laquelle la séquence répond">
       <label class="ch">Objectif général <small>(être capable de…)</small></label><input type="text" data-p="seq.og">
@@ -301,6 +312,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <button class="btn discret" type="button" data-exemple="seq">Charger un exemple</button>
         <button class="btn discret" type="button" data-vider="seq">Vider</button>
       </div>
+      <p class="aide" style="margin:-4px 0 8px">Les alertes sont des conseils : elles n'empêchent jamais d'enregistrer ni d'exporter.</p>
       <ul class="alertes" id="alertes-seq"></ul>
       <div class="doc" id="doc-seq"></div>
     </div>
@@ -441,6 +453,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       </ol>
       <h3>② Séquence</h3>
       <p>Tapez le titre d'une séquence de votre programmation : la classe, la place et le nombre de séances se remplissent. L'encart « Textes officiels » propose les liens qui correspondent à votre établissement et à votre discipline. Cochez les composantes du socle visées. Chaque objectif est vérifié en direct : verbe observable, conditions, critère de réussite. L'outil vérifie aussi que chaque objectif est travaillé dans au moins une séance.</p>
+      <h3>Chaque discipline a ses spécificités</h3>
+      <p>L'onglet ② détecte le profil de votre discipline et ajoute des rubriques facultatives : <b>langues</b> (niveau du CECRL, activités langagières, axe ou thème culturel, tâche finale, faits de langue), <b>EPS</b> (champ d'apprentissage, APSA, attendus, rôles sociaux, sécurité), <b>sciences</b> (démarche, situation-problème, matériel, sécurité en TP), <b>enseignement professionnel</b> (blocs et compétences du référentiel, situation professionnelle, lieu, sécurité, liens PFMP), <b>arts</b> et <b>lettres</b>. Vous pouvez changer de profil ou n'en choisir aucun. Aucune rubrique n'est obligatoire, et les alertes ne bloquent jamais : si une formulation vous convient, cochez « Je garde cette formulation ».</p>
       <h3>③ Séance</h3>
       <p>La fiche reprend la trame « étape introductive, développement, conclusion ». Importez une séance de votre séquence, puis détaillez chaque moment : durée, déroulé, modalité, supports, connaissances, compétences et différenciation. L'outil vérifie le total des durées.</p>
       <h3>④ Cahier de textes</h3>
@@ -632,13 +646,13 @@ function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1
 function etatVide() {
   return {
     prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
-    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [] },
+    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [] },
     sea: seanceVide(),
     cdt: { classe: "", discipline: "", debut: "", entrees: [] }
   };
 }
 function seanceVide() { return { titre: "", place: "", duree: 55, classe: "", date: "", prereq: "", probl: "", objs: "", tissage: { t: "", d: 5 }, accroche: { t: "", d: 5, sup: "" }, problPhase: { t: "", d: 5 }, moments: [momentVide()], synthese: { d: 10, t: "", trace: "", ouv: "" } }; }
-function momentVide() { return { titre: "", d: 15, t: "", modal: "", sup: "", conn: "", comp: "", diff: "" }; }
+function momentVide() { return { titre: "", d: 15, t: "", modal: "", prec: "", sup: "", conn: "", comp: "", diff: "" }; }
 
 var E;
 try { E = JSON.parse(localStorage.getItem(CLE)); } catch (e) { E = null; }
@@ -673,6 +687,7 @@ document.addEventListener("input", function (ev) {
   var v = el.type === "checkbox" ? el.checked : (el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value);
   ecrire(p, v);
   if (p === "seq.titre") remplirDepuisProg();
+  if ((p === "seq.discipline" || p === "prog.discipline") && E.seq.profil === "auto") { clearTimeout(window._rp); window._rp = setTimeout(rendreListes, 600); }
   if (p === "prog.etab") proposerTypes();
   if (el.getAttribute("data-rerender")) rendreListes();
   clearTimeout(minuteur); minuteur = setTimeout(function () { sauver(); rendreTout(); }, 220);
@@ -687,19 +702,84 @@ function proposerTypes() {
 }
 
 /* ================================================================
+   SPÉCIFICITÉS DISCIPLINAIRES
+   ================================================================ */
+var SPEC = {
+  lv: { titre: "Langues vivantes", champs: [
+    { k: "cecrl", lab: "Niveau du CECRL visé", type: "select", opts: ["", "A1", "A1 → A2", "A2", "A2 → B1", "B1", "B1 → B2", "B2", "B2 → C1", "C1"] },
+    { k: "activites", lab: "Activités langagières travaillées", type: "multi", opts: ["Compréhension de l'oral", "Compréhension de l'écrit", "Expression orale en continu", "Interaction orale", "Expression écrite", "Médiation"] },
+    { k: "axe", lab: "Axe, thème culturel ou notion du programme", type: "text", ph: "ex. Collège : Voyages et migrations · Lycée : Identités et échanges" },
+    { k: "tache", lab: "Tâche finale ou projet", type: "text", ph: "ex. enregistrer un podcast de 2 minutes présentant…" },
+    { k: "langue", lab: "Faits de langue (lexique, grammaire, phonologie)", type: "area" } ] },
+  eps: { titre: "Éducation physique et sportive", champs: [
+    { k: "champ", lab: "Champ d'apprentissage", type: "text", list: ["CA1 · Réaliser une performance motrice maximale mesurable à une échéance donnée", "CA2 · Adapter ses déplacements à des environnements variés et/ou incertains", "CA3 · Réaliser une prestation corporelle destinée à être vue et appréciée", "CA4 · Conduire et maîtriser un affrontement individuel ou collectif pour gagner", "CA5 · Réaliser et orienter son activité physique pour développer ses ressources et s'entretenir"] },
+    { k: "apsa", lab: "Activité physique (APSA) et nombre de leçons", type: "text", ph: "ex. Badminton, 8 leçons de 2 h" },
+    { k: "attendus", lab: "Attendus de fin de cycle ou de fin de lycée", type: "area" },
+    { k: "roles", lab: "Rôles sociaux", type: "text", ph: "arbitre, juge, observateur, coach…" },
+    { k: "secu", lab: "Sécurité et organisation matérielle", type: "area" } ] },
+  sci: { titre: "Sciences, mathématiques, technologie", champs: [
+    { k: "demarche", lab: "Démarche dominante", type: "select", opts: ["", "Démarche d'investigation", "Résolution de problème", "Démarche de projet", "Modélisation", "Démarche expérimentale (TP)", "Observation et analyse de documents"] },
+    { k: "situation", lab: "Situation-problème de départ", type: "area" },
+    { k: "materiel", lab: "Matériel, logiciels, salle", type: "text" },
+    { k: "secu", lab: "Sécurité en TP", type: "text", ph: "équipements de protection, produits, consignes" } ] },
+  pro: { titre: "Enseignement professionnel", champs: [
+    { k: "ref", lab: "Blocs et compétences du référentiel visés", type: "area", ph: "ex. Bloc 2 · C2.3 Réaliser…" },
+    { k: "situation", lab: "Situation professionnelle de référence", type: "area" },
+    { k: "lieu", lab: "Lieu et organisation", type: "text", ph: "atelier, plateau technique, salle informatique, demi-groupe…" },
+    { k: "secu", lab: "Santé, sécurité, équipements de protection", type: "text" },
+    { k: "liens", lab: "Liens avec les PFMP, la co-intervention, le chef-d'œuvre", type: "text" } ] },
+  arts: { titre: "Enseignements artistiques", champs: [
+    { k: "question", lab: "Questionnement ou compétence du programme", type: "text" },
+    { k: "pratique", lab: "Pratique et production attendue", type: "area" },
+    { k: "refs", lab: "Œuvres et références (parcours d'éducation artistique et culturelle)", type: "area" } ] },
+  lettres: { titre: "Lettres et sciences humaines", champs: [
+    { k: "corpus", lab: "Œuvres, corpus ou documents étudiés", type: "area" },
+    { k: "reperes", lab: "Repères (chronologiques, spatiaux, culturels)", type: "text" },
+    { k: "capacites", lab: "Capacités et méthodes travaillées", type: "text", ph: "ex. analyser un document, construire un raisonnement…" } ] }
+};
+var PREC = {
+  lv: { lab: "Activité langagière", ph: "ex. Compréhension de l'oral", list: SPEC.lv.champs[1].opts },
+  eps: { lab: "Organisation, sécurité, rôles", ph: "ex. 4 terrains, rotation toutes les 6 min, arbitre et observateur" },
+  sci: { lab: "Démarche, sécurité", ph: "ex. investigation · blouse et lunettes" },
+  pro: { lab: "Poste de travail, sécurité", ph: "ex. poste 3 · EPI : gants, lunettes" },
+  arts: { lab: "Production, référence", ph: "ex. esquisse au fusain · référence : …" },
+  lettres: { lab: "Document ou texte support", ph: "ex. extrait p. 42" }
+};
+function profilsDetectes(d) {
+  d = (d || "").toLowerCase(); var p = [];
+  if (/anglais|espagnol|allemand|italien|portugais|chinois|arabe|russe|néerlandais|japonais|hébreu|occitan|breton|basque|corse|catalan|créole|alsacien|langues? vivantes?|langues? –|\blv\d?\b|dnl/.test(d)) p.push("lv");
+  if (/\beps\b|éducation physique|sport/.test(d)) p.push("eps");
+  if (/math|physique|chimie|svt|sciences de la vie|technolog|\bsnt\b|\bnsi\b|biotech|informatique|sciences (et|de l'ingénieur)|\bsti/.test(d)) p.push("sci");
+  if (/enseignement professionnel|professionnel|atelier|métier|\bpse\b|prévention santé/.test(d)) p.push("pro");
+  if (/arts|musique|musicale|plastiques|cinéma|théâtre|danse|histoire des arts/.test(d)) p.push("arts");
+  if (/français|lettres|histoire|géographie|\bemc\b|moral et civique|philosophie|\bses\b|économiques et sociales|documentation|latin|grec|\blca\b/.test(d)) p.push("lettres");
+  return p;
+}
+function profilsActifs() {
+  var q = E.seq;
+  if (q.profil && q.profil !== "auto") return q.profil === "aucun" ? [] : [q.profil];
+  return profilsDetectes(q.discipline || E.prog.discipline).slice(0, 2);
+}
+
+/* ================================================================
    ANALYSE D'UN OBJECTIF (Mager)
    ================================================================ */
 var VERBES_FLOUS = ["connaître", "connaitre", "savoir", "comprendre", "maîtriser", "maitriser", "découvrir", "decouvrir", "être sensibilisé", "etre sensibilise", "sensibiliser", "apprendre", "appréhender", "prendre conscience", "aborder", "étudier", "s'approprier", "s’approprier", "acquérir", "assimiler"];
-function analyseObjectif(t) {
+function analyseObjectif(t, prof) {
   if (!t || !t.trim()) return null;
   var s = " " + t.toLowerCase() + " ";
   var flous = VERBES_FLOUS.filter(function (v) { return s.indexOf(" " + v) >= 0 || s.indexOf("'" + v) >= 0 || s.indexOf("’" + v) >= 0; });
-  var cond = /(à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
+  /* Langues : « comprendre » est le verbe des descripteurs du CECRL ; on l'accepte s'il est rendu observable par une tâche */
+  var lv = (prof || profilsActifs()).indexOf("lv") >= 0;
+  var tache = /(repérer|relever|restituer|répondre|identifier|cocher|compléter|reformuler|résumer|associer|classer|retrouver|prendre des notes|en français|en anglais|en espagnol|en allemand|en italien)/.test(s);
+  if (lv && tache) flous = flous.filter(function (v) { return v !== "comprendre"; });
+  var cond = /( après | apres |^ après|lors d|au cours d|pendant |à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
   var crit = /(\d|sans erreur|au moins|tous les|toutes les|correctement|en respectant|conforme|critère|grille|%|\/\d)/.test(s);
   return { flous: flous, cond: cond, crit: crit };
 }
-function pucesObjectif(t) {
+function pucesObjectif(t, garde) {
   var a = analyseObjectif(t); if (!a) return "";
+  if (garde) return '<span class="puce ok">Formulation conservée</span>';
   return (a.flous.length ? '<span class="puce ko">Verbe flou : « ' + esc(a.flous[0].trim()) + ' »</span>' : '<span class="puce ok">Verbe observable</span>') +
     (a.cond ? '<span class="puce ok">Conditions</span>' : '<span class="puce mo">Conditions ?</span>') +
     (a.crit ? '<span class="puce ok">Critère de réussite</span>' : '<span class="puce mo">Critère de réussite ?</span>');
@@ -814,9 +894,28 @@ function rendreListes() {
   h = SOCLE.map(function (s) { var on = (E.seq.socle || []).indexOf(s[0]) >= 0; return '<label class="coche" style="margin:3px 0;align-items:flex-start"><input type="checkbox" data-action="basculeSocle" data-k="' + s[0] + '"' + (on ? " checked" : "") + '><span style="font-size:.84rem"><b>' + s[0] + "</b> " + esc(s[1].split("· ")[1]) + "</span></label>"; }).join("");
   document.getElementById("listeSocle").innerHTML = h;
 
+  /* Spécificités disciplinaires */
+  var profs = profilsActifs(); E.seq.spec = E.seq.spec || {};
+  h = profs.length ? "" : '<p class="aide">Aucun profil particulier : utilisez la rubrique « Autres précisions » ci-dessous si besoin.</p>';
+  profs.forEach(function (p) {
+    var d = SPEC[p]; if (!d) return; E.seq.spec[p] = E.seq.spec[p] || {};
+    h += '<div class="bloc"><div class="tete"><b>' + esc(d.titre) + '</b><span class="aide">facultatif</span></div>';
+    d.champs.forEach(function (c) {
+      var ch = "seq.spec." + p + "." + c.k, v = E.seq.spec[p][c.k];
+      h += '<label class="ch">' + esc(c.lab) + "</label>";
+      if (c.type === "select") h += sel(ch, c.opts.map(function (o) { return [o, o || "—"]; }), v || "");
+      else if (c.type === "area") h += '<textarea data-p="' + ch + '" style="min-height:44px" placeholder="' + esc(c.ph || "") + '"></textarea>';
+      else if (c.type === "multi") h += '<div class="puces">' + c.opts.map(function (o) { var on = (v || []).indexOf(o) >= 0; return '<label class="puce' + (on ? " ok" : "") + '" style="cursor:pointer"><input type="checkbox" data-action="basculeSpec" data-pr="' + p + '" data-k="' + c.k + '" data-v="' + esc(o) + '"' + (on ? " checked" : "") + ' style="margin:0 4px 0 0;vertical-align:-1px">' + esc(o) + "</label>"; }).join("") + "</div>";
+      else h += '<input type="text" data-p="' + ch + '" placeholder="' + esc(c.ph || "") + '"' + (c.list ? ' list="dl-' + p + c.k + '"' : "") + ">" + (c.list ? '<datalist id="dl-' + p + c.k + '">' + c.list.map(function (o) { return '<option value="' + esc(o) + '">'; }).join("") + "</datalist>" : "");
+    });
+    h += "</div>";
+  });
+  if (profs.indexOf("lv") >= 0) h += '<p class="aide">En langues, formulez vos objectifs à partir des descripteurs du CECRL, en les rendant observables par une tâche. Exemple : « Après deux écoutes d\'un document de 1 min 30, repérer au moins 4 informations sur 5 et les restituer en français. »</p>';
+  document.getElementById("blocSpec").innerHTML = h;
+
   h = "";
   E.seq.objs.forEach(function (o, i) {
-    h += '<div class="bloc" style="padding:8px 10px"><div class="lg" style="grid-template-columns:26px 1fr 22px;margin:0"><b style="color:var(--accent)">O' + (i + 1) + '</b><textarea data-p="seq.objs.' + i + '" style="min-height:44px" placeholder="ex. À partir d\'un schéma muet, légender… avec au moins 4 éléments sur 5 corrects"></textarea><button class="suppr" type="button" data-action="supprObj" data-i="' + i + '">✕</button></div><div class="puces" data-puces="seq.objs.' + i + '">' + pucesObjectif(o) + "</div></div>";
+    h += '<div class="bloc" style="padding:8px 10px"><div class="lg" style="grid-template-columns:26px 1fr 22px;margin:0"><b style="color:var(--accent)">O' + (i + 1) + '</b><textarea data-p="seq.objs.' + i + '" style="min-height:44px" placeholder="ex. À partir d\'un schéma muet, légender… avec au moins 4 éléments sur 5 corrects"></textarea><button class="suppr" type="button" data-action="supprObj" data-i="' + i + '">✕</button></div><div class="puces" data-puces="seq.objs.' + i + '" data-garde="' + i + '">' + pucesObjectif(o, (E.seq.objsOk || [])[i]) + '</div><label class="coche" style="font-size:.78rem;margin:4px 0 0;color:var(--doux)"><input type="checkbox" data-action="garderObj" data-i="' + i + '"' + ((E.seq.objsOk || [])[i] ? " checked" : "") + '> Je garde cette formulation (les conseils ne s\'affichent plus)</label></div>';
   });
   document.getElementById("listeObjs").innerHTML = h;
 
@@ -838,9 +937,13 @@ function rendreListes() {
     h += '<div class="bloc"><div class="tete"><b>Moment ' + (i + 1) + '</b><span><input type="number" min="0" data-p="' + b + '.d" style="width:62px" title="minutes"> min <button class="suppr" type="button" data-action="supprMoment" data-i="' + i + '">✕</button></span></div>';
     h += '<div class="duo"><div><label class="ch">Intitulé</label><input type="text" data-p="' + b + '.titre" placeholder="ex. Recherche en binômes"></div><div><label class="ch">Modalité</label>' + sel(b + ".modal", MO, m.modal) + "</div></div>";
     h += '<label class="ch">Déroulé <small>(activité, consigne, ce que font les élèves)</small></label><textarea data-p="' + b + '.t"></textarea>';
+    var pr = PREC[profilsActifs()[0]] || { lab: "Précision propre à ma discipline", ph: "facultatif" };
+    h += '<label class="ch">' + esc(pr.lab) + ' <small>(facultatif)</small></label><input type="text" data-p="' + b + '.prec" placeholder="' + esc(pr.ph) + '"' + (pr.list ? ' list="dlPrec"' : "") + ">";
     h += '<div class="duo"><div><label class="ch">Supports</label><input type="text" data-p="' + b + '.sup"></div><div><label class="ch">Connaissances</label><input type="text" data-p="' + b + '.conn"></div></div>';
     h += '<div class="duo"><div><label class="ch">Notions / compétences</label><input type="text" data-p="' + b + '.comp"></div><div><label class="ch">Différenciation</label><input type="text" data-p="' + b + '.diff" placeholder="coup de pouce / défi"></div></div></div>';
   });
+  var prl = PREC[profilsActifs()[0]];
+  h += prl && prl.list ? '<datalist id="dlPrec">' + prl.list.map(function (o) { return '<option value="' + esc(o) + '">'; }).join("") + "</datalist>" : "";
   document.getElementById("listeMoments").innerHTML = h;
 
   h = "";
@@ -928,8 +1031,10 @@ document.addEventListener("click", function (ev) {
     case "supprPer": C[i].periodes.splice(j, 1); break;
     case "effacerMarques": C[i].marques = {}; break;
     case "basculeSocle": var code = b.getAttribute("data-k"), sl = E.seq.socle = E.seq.socle || [], ps = sl.indexOf(code); if (ps >= 0) sl.splice(ps, 1); else sl.push(code); break;
+    case "garderObj": E.seq.objsOk = E.seq.objsOk || []; E.seq.objsOk[i] = !E.seq.objsOk[i]; break;
+    case "basculeSpec": var pp = b.getAttribute("data-pr"), kk = b.getAttribute("data-k"), vv = b.getAttribute("data-v"); E.seq.spec[pp] = E.seq.spec[pp] || {}; var arr = E.seq.spec[pp][kk] = E.seq.spec[pp][kk] || []; var ix = arr.indexOf(vv); if (ix >= 0) arr.splice(ix, 1); else arr.push(vv); break;
     case "ajoutObj": E.seq.objs.push(""); break;
-    case "supprObj": E.seq.objs.splice(i, 1); E.seq.seances.forEach(function (s) { s.objs = (s.objs || []).filter(function (k) { return k !== i; }).map(function (k) { return k > i ? k - 1 : k; }); }); break;
+    case "supprObj": E.seq.objs.splice(i, 1); if (E.seq.objsOk) E.seq.objsOk.splice(i, 1); E.seq.seances.forEach(function (s) { s.objs = (s.objs || []).filter(function (k) { return k !== i; }).map(function (k) { return k > i ? k - 1 : k; }); }); break;
     case "ajoutSeance": E.seq.seances.push({ type: "Apprentissage", titre: "", probl: "", act: "", objs: [] }); break;
     case "supprSeance": E.seq.seances.splice(i, 1); break;
     case "basculeObj": var s = E.seq.seances[i], k = +b.getAttribute("data-k"); s.objs = s.objs || []; var pos = s.objs.indexOf(k); if (pos >= 0) s.objs.splice(pos, 1); else s.objs.push(k); s.objs.sort(); break;
@@ -1169,6 +1274,12 @@ function docSeq() {
   [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
   [["Pré-requis", q.prereq], ["Vérification des pré-requis", q.verif], ["Savoirs associés", q.savoirs], ["Représentations et obstacles prévisibles", q.obstacles]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
+  profilsActifs().forEach(function (p) {
+    var d = SPEC[p], v = (q.spec || {})[p] || {};
+    d.champs.forEach(function (c) { var x = v[c.k]; if (Array.isArray(x)) x = x.join(" · "); if (x) h += '<tr><td class="lab">' + esc(c.lab) + "</td><td>" + nl(x) + "</td></tr>"; });
+  });
+  if (q.adapt) h += '<tr><td class="lab">Élèves à besoins particuliers</td><td>' + nl(q.adapt) + "</td></tr>";
+  if (q.autres) h += '<tr><td class="lab">Autres précisions</td><td>' + nl(q.autres) + "</td></tr>";
   h += "</table>";
   if (q.seances.length) {
     h += "<h3 style='color:#c8692c;margin:6px 0'>Déroulé des séances</h3><table><thead><tr><th style='width:5%'>N°</th><th style='width:15%'>Type</th><th style='width:24%'>Titre et problématique</th><th>Activités et supports</th><th style='width:10%'>Objectifs</th></tr></thead><tbody>";
@@ -1177,10 +1288,10 @@ function docSeq() {
   }
   if (!q.attendus) al.push(["mo", "Recopiez les attendus du programme : l'encart « Textes officiels » vous donne les liens."]);
   if (!q.probl) al.push(["mo", "Formulez une problématique : elle donne du sens à la séquence pour les élèves."]);
-  var objs = q.objs.map(function (o, i) { return { i: i, a: analyseObjectif(o) }; }).filter(function (x) { return x.a; });
+  var objs = q.objs.map(function (o, i) { return { i: i, a: (q.objsOk || [])[i] ? { flous: [], cond: true, crit: true } : analyseObjectif(o) }; }).filter(function (x) { return x.a; });
   if (!objs.length) al.push(["mo", "Ajoutez des objectifs opérationnels : ce que l'élève saura FAIRE à la fin."]);
   objs.forEach(function (x) {
-    if (x.a.flous.length) al.push(["ko", "O" + (x.i + 1) + " : « " + x.a.flous[0].trim() + " » n'est pas observable. Préférez un verbe d'action (citer, identifier, comparer, rédiger, justifier…)."]);
+    if (x.a.flous.length) al.push([profilsActifs().indexOf("lv") >= 0 && x.a.flous[0].trim() === "comprendre" ? "mo" : "ko", "O" + (x.i + 1) + " : « " + x.a.flous[0].trim() + " » n'est pas observable. " + (profilsActifs().indexOf("lv") >= 0 && x.a.flous[0].trim() === "comprendre" ? "En langues, associez-le à une tâche : repérer, relever, restituer, répondre…" : "Préférez un verbe d'action (citer, identifier, comparer, rédiger, justifier…), ou cochez « Je garde cette formulation ».")]);
     else if (!x.a.crit) al.push(["mo", "O" + (x.i + 1) + " : ajoutez un critère de réussite."]);
   });
   if (q.seances.length) {
@@ -1207,7 +1318,7 @@ function docSea() {
   h += ligne("Étape introductive", 3, s.tissage.d, "Tissage", s.tissage.t, "", "", "", "", "");
   h += ligne("", 0, s.accroche.d, "Phase d'accroche", s.accroche.t, "", s.accroche.sup, "", "", "");
   h += ligne("", 0, s.problPhase.d, "Phase de problématisation", s.problPhase.t, "", "", "", "", "");
-  s.moments.forEach(function (m, i) { h += ligne(i === 0 ? "Étape de développement" : "", s.moments.length, m.d, "Moment " + (i + 1) + (m.titre ? " · " + esc(m.titre) : ""), m.t, m.modal, m.sup, m.conn, m.comp, m.diff); });
+  s.moments.forEach(function (m, i) { h += ligne(i === 0 ? "Étape de développement" : "", s.moments.length, m.d, "Moment " + (i + 1) + (m.titre ? " · " + esc(m.titre) : ""), m.t + (m.prec ? "\n(" + m.prec + ")" : ""), m.modal, m.sup, m.conn, m.comp, m.diff); });
   h += ligne("Étape de conclusion", 1, s.synthese.d, "Phase de synthèse", (s.synthese.t || "") + (s.synthese.trace ? "\nTrace écrite : " + s.synthese.trace : "") + (s.synthese.ouv ? "\nOuverture : " + s.synthese.ouv : ""), "", "", "", "", "");
   h += "</tbody></table>";
   var tot = [s.tissage.d, s.accroche.d, s.problPhase.d, s.synthese.d].concat(s.moments.map(function (m) { return m.d; })).reduce(function (a, x) { return a + (Number(x) || 0); }, 0);
@@ -1266,7 +1377,7 @@ function rendreTout() {
     document.getElementById("doc-" + m).innerHTML = r.html;
     document.getElementById("alertes-" + m).innerHTML = r.al.map(function (x) { return '<li class="' + x[0] + '">' + (x[0] === "ko" ? "⛔ " : x[0] === "mo" ? "💡 " : "✅ ") + esc(x[1]) + "</li>"; }).join("");
   });
-  document.querySelectorAll("[data-puces]").forEach(function (z) { z.innerHTML = pucesObjectif(lire(z.getAttribute("data-puces"))); });
+  document.querySelectorAll("[data-puces]").forEach(function (z) { var g = z.getAttribute("data-garde"); z.innerHTML = pucesObjectif(lire(z.getAttribute("data-puces")), g !== null && (E.seq.objsOk || [])[+g]); });
   var l1 = (E.sea.objs || "").split("\n").filter(function (x) { return x.trim(); })[0];
   document.getElementById("chkObjSea").innerHTML = l1 ? pucesObjectif(l1) : "";
   rendreRessources();
@@ -1331,7 +1442,7 @@ function promptIA(m) {
   }
   if (m === "seq") {
     var q = E.seq;
-    return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à compléter et améliorer cette séquence (" + etab + ").\n\nClasse : " + (q.classe || "?") + " · Discipline : " + (q.discipline || "?") + "\nTitre : " + (q.titre || "?") + "\nNombre de séances : " + q.nb + " de " + q.duree + " min\nProgramme et attendus : " + (q.attendus || "à préciser") + (q.referentiel ? "\nRéférentiel : " + q.referentiel : "") + "\nCompétences : " + (q.comp || "à préciser") + ((q.socle || []).length ? "\nSocle commun : " + q.socle.join(", ") : "") + "\nProblématique : " + (q.probl || "à proposer") + "\nObjectif général : " + (q.og || "à proposer") + "\nObjectifs opérationnels :\n" + q.objs.filter(Boolean).map(function (o, i) { return "  O" + (i + 1) + ". " + o; }).join("\n") + "\nPré-requis : " + (q.prereq || "?") + "\nSavoirs associés : " + (q.savoirs || "?") + "\nObstacles prévus : " + (q.obstacles || "?") + (q.seances.length ? "\nSéances prévues :\n" + q.seances.map(function (s, i) { return "  " + (i + 1) + ". [" + s.type + "] " + (s.titre || "") + (s.act ? " – " + s.act : ""); }).join("\n") : "") +
+    return "Tu es un formateur expérimenté d'enseignants du second degré en France.\nAide-moi à compléter et améliorer cette séquence (" + etab + ").\n\nClasse : " + (q.classe || "?") + " · Discipline : " + (q.discipline || "?") + "\nTitre : " + (q.titre || "?") + "\nNombre de séances : " + q.nb + " de " + q.duree + " min\nProgramme et attendus : " + (q.attendus || "à préciser") + (q.referentiel ? "\nRéférentiel : " + q.referentiel : "") + "\nCompétences : " + (q.comp || "à préciser") + ((q.socle || []).length ? "\nSocle commun : " + q.socle.join(", ") : "") + "\nProblématique : " + (q.probl || "à proposer") + "\nObjectif général : " + (q.og || "à proposer") + "\nObjectifs opérationnels :\n" + q.objs.filter(Boolean).map(function (o, i) { return "  O" + (i + 1) + ". " + o; }).join("\n") + (function () { var t = ""; profilsActifs().forEach(function (p) { var v = (q.spec || {})[p] || {}; SPEC[p].champs.forEach(function (c) { var x = v[c.k]; if (Array.isArray(x)) x = x.join(", "); if (x) t += "\n" + c.lab + " : " + x; }); }); if (q.adapt) t += "\nÉlèves à besoins particuliers : " + q.adapt; if (q.autres) t += "\nAutres précisions : " + q.autres; return t; })() + "\nPré-requis : " + (q.prereq || "?") + "\nSavoirs associés : " + (q.savoirs || "?") + "\nObstacles prévus : " + (q.obstacles || "?") + (q.seances.length ? "\nSéances prévues :\n" + q.seances.map(function (s, i) { return "  " + (i + 1) + ". [" + s.type + "] " + (s.titre || "") + (s.act ? " – " + s.act : ""); }).join("\n") : "") +
       "\n\nPropose : 1) une reformulation des objectifs opérationnels si besoin ; 2) le déroulé détaillé des séances (problématique, activités, modalités, supports, différenciation, trace écrite) ; 3) les représentations et erreurs fréquentes des élèves sur ce sujet, avec une façon de les travailler ; 4) une séance d'évaluation alignée sur les objectifs." + regles;
   }
   var s = E.sea;
