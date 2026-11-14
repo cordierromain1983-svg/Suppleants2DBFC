@@ -345,16 +345,16 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 
       <h3>Étape introductive</h3>
       <div class="bloc">
-        <div class="tete"><b>Tissage</b><span><input type="number" min="0" data-p="sea.tissage.d" style="width:62px" title="minutes"> min</span></div>
+        <div class="tete"><b id="labTissage">Tissage</b><span><input type="number" min="0" data-p="sea.tissage.d" style="width:62px" title="minutes"> min</span></div>
         <input type="text" data-p="sea.tissage.t" placeholder="ex. 3 questions flash sur la séance précédente">
       </div>
       <div class="bloc">
-        <div class="tete"><b>Phase d'accroche</b><span><input type="number" min="0" data-p="sea.accroche.d" style="width:62px" title="minutes"> min</span></div>
+        <div class="tete"><b id="labAccroche">Phase d'accroche</b><span><input type="number" min="0" data-p="sea.accroche.d" style="width:62px" title="minutes"> min</span></div>
         <textarea data-p="sea.accroche.t" placeholder="De quoi parle-t-on ? Document, actualité, situation proche des élèves…"></textarea>
         <input type="text" data-p="sea.accroche.sup" placeholder="Support utilisé" style="margin-top:6px">
       </div>
       <div class="bloc">
-        <div class="tete"><b>Phase de problématisation</b><span><input type="number" min="0" data-p="sea.problPhase.d" style="width:62px" title="minutes"> min</span></div>
+        <div class="tete"><b id="labProbl">Phase de problématisation</b><span><input type="number" min="0" data-p="sea.problPhase.d" style="width:62px" title="minutes"> min</span></div>
         <textarea data-p="sea.problPhase.t" placeholder="Quelles questions, quels problèmes sont posés ?"></textarea>
       </div>
 
@@ -364,9 +364,9 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 
       <h3>Étape de conclusion</h3>
       <div class="bloc">
-        <div class="tete"><b>Phase de synthèse</b><span><input type="number" min="0" data-p="sea.synthese.d" style="width:62px" title="minutes"> min</span></div>
+        <div class="tete"><b id="labSynth">Phase de synthèse</b><span><input type="number" min="0" data-p="sea.synthese.d" style="width:62px" title="minutes"> min</span></div>
         <label class="ch">Que retenir ? Réponse à la problématique</label><textarea data-p="sea.synthese.t"></textarea>
-        <label class="ch">Trace écrite</label><textarea data-p="sea.synthese.trace"></textarea>
+        <label class="ch" id="labTrace">Trace écrite</label><textarea data-p="sea.synthese.trace"></textarea>
         <label class="ch">Ouverture vers la séance suivante</label><input type="text" data-p="sea.synthese.ouv">
       </div>
     </div>
@@ -766,6 +766,14 @@ var SPEC = {
     { k: "reperes", lab: "Repères (chronologiques, spatiaux, culturels)", type: "text" },
     { k: "capacites", lab: "Capacités et méthodes travaillées", type: "text", ph: "ex. analyser un document, construire un raisonnement…" } ] }
 };
+var LIB_SEANCE = {
+  defaut: { tissage: "Tissage", accroche: "Phase d'accroche", probl: "Phase de problématisation", synth: "Phase de synthèse", trace: "Trace écrite", traceAlerte: "Quelle trace écrite les élèves garderont-ils ?" },
+  eps: { tissage: "Accueil, rappel et échauffement", accroche: "Mise en activité (situation de référence)", probl: "Problématisation : ce qu'il faut réussir", synth: "Retour au calme et bilan", trace: "Trace (fiche d'observation, carnet d'entraînement, vidéo…)", traceAlerte: "Quelle trace du bilan : fiche d'observation, carnet d'entraînement, vidéo ?" },
+  pro: { tissage: "Tissage et consignes de sécurité", accroche: "Mise en situation professionnelle", probl: "Problématisation", synth: "Synthèse et rangement du poste", trace: "Trace (fiche de procédure, fiche de synthèse…)", traceAlerte: "Quelle trace garderont-ils : fiche de procédure, fiche de synthèse ?" },
+  lv: { tissage: "Tissage (rebrassage en langue)", accroche: "Phase d'accroche (anticipation)", probl: "Phase de problématisation", synth: "Phase de synthèse", trace: "Trace écrite (lexique, structures, prononciation)", traceAlerte: "Quelle trace : lexique, structures, points de prononciation ?" },
+  arts: { tissage: "Tissage", accroche: "Incitation", probl: "Phase de problématisation", synth: "Verbalisation et bilan", trace: "Trace (carnet de bord, références, photo des productions)", traceAlerte: "Quelle trace : carnet de bord, références, photo des productions ?" }
+};
+function libSeance() { var p = profilsActifs(); for (var i = 0; i < p.length; i++) if (LIB_SEANCE[p[i]]) return Object.assign({}, LIB_SEANCE.defaut, LIB_SEANCE[p[i]]); return LIB_SEANCE.defaut; }
 var PREC = {
   lv: { lab: "Activité langagière", ph: "ex. Compréhension de l'oral", list: SPEC.lv.champs[1].opts },
   eps: { lab: "Organisation, sécurité, rôles", ph: "ex. 4 terrains, rotation toutes les 6 min, arbitre et observateur" },
@@ -793,7 +801,7 @@ function profilsActifs() {
 /* ================================================================
    ANALYSE D'UN OBJECTIF (Mager)
    ================================================================ */
-var VERBES_FLOUS = ["connaître", "connaitre", "savoir", "comprendre", "maîtriser", "maitriser", "découvrir", "decouvrir", "être sensibilisé", "etre sensibilise", "sensibiliser", "apprendre", "appréhender", "prendre conscience", "aborder", "étudier", "s'approprier", "s’approprier", "acquérir", "assimiler"];
+var VERBES_FLOUS = ["connaître", "connaitre", "savoir", "comprendre", "maîtriser", "maitriser", "découvrir", "decouvrir", "être sensibilisé", "etre sensibilise", "sensibiliser", "apprendre", "appréhender", "prendre conscience", "aborder", "étudier", "s'approprier", "s’approprier", "acquérir", "assimiler", "apprécier", "se familiariser", "s'initier", "s’initier", "prendre goût", "réfléchir", "s'interroger", "s’interroger", "s'intéresser", "s’intéresser", "percevoir", "ressentir", "être conscient"];
 function analyseObjectif(t, prof) {
   if (!t || !t.trim()) return null;
   var s = " " + t.toLowerCase() + " ";
@@ -802,14 +810,20 @@ function analyseObjectif(t, prof) {
   var lv = (prof || profilsActifs()).indexOf("lv") >= 0;
   var tache = /(repérer|relever|restituer|répondre|identifier|cocher|compléter|reformuler|résumer|associer|classer|retrouver|prendre des notes|en français|en anglais|en espagnol|en allemand|en italien)/.test(s);
   if (lv && tache) flous = flous.filter(function (v) { return v !== "comprendre"; });
-  var cond = /( après | apres |^ après|lors d|au cours d|pendant |à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
+  var cond = /( après | apres |lors d|au cours d|pendant |en situation|dans \d|dans les |dans le |dans la |dans l'|en utilisant|à l'oral|à l'écrit|par écrit|au tableau|sur une |sur un |sur le |sur la |sous l'|sous la |en temps limité|en \d+ ?(min|minutes|s|secondes|h)|à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
   var crit = /(\d|sans erreur|au moins|tous les|toutes les|correctement|en respectant|conforme|critère|grille|%|\/\d)/.test(s);
-  return { flous: flous, cond: cond, crit: crit };
+  var capable = /(être|etre) capable (de |d'|d’)/.test(s);
+  if (capable) {
+    var apres = s.replace(/.*?(être|etre) capable (de |d'|d’)/, " ");
+    flous = flous.concat(VERBES_FLOUS.filter(function (v) { return apres.indexOf(" " + v) === 0 && flous.indexOf(v) < 0; }));
+  }
+  return { flous: flous, cond: cond, crit: crit, capable: capable };
 }
 function pucesObjectif(t, garde) {
   var a = analyseObjectif(t); if (!a) return "";
   if (garde) return '<span class="puce ok">Formulation conservée</span>';
   return (a.flous.length ? '<span class="puce ko">Verbe flou : « ' + esc(a.flous[0].trim()) + ' »</span>' : '<span class="puce ok">Verbe observable</span>') +
+    (a.capable ? '<span class="puce mo">« Être capable de » : inutile, commencez par le verbe</span>' : '') +
     (a.cond ? '<span class="puce ok">Conditions</span>' : '<span class="puce mo">Conditions ?</span>') +
     (a.crit ? '<span class="puce ok">Critère de réussite</span>' : '<span class="puce mo">Critère de réussite ?</span>');
 }
@@ -998,6 +1012,7 @@ function rendreListes() {
   var prl = PREC[profilsActifs()[0]];
   h += prl && prl.list ? '<datalist id="dlPrec">' + prl.list.map(function (o) { return '<option value="' + esc(o) + '">'; }).join("") + "</datalist>" : "";
   document.getElementById("listeMoments").innerHTML = h;
+  var L = libSeance(); ["Tissage", "Accroche", "Probl", "Synth", "Trace"].forEach(function (k) { var el = document.getElementById("lab" + k); if (el) el.textContent = L[k.toLowerCase()]; });
 
   h = "";
   E.cdt.entrees.forEach(function (x, i) {
@@ -1008,7 +1023,7 @@ function rendreListes() {
     h += '<label class="ch">Contenu de la séance <small>(objectif, notions, activités : l\'essentiel, pas toute la trace écrite)</small></label><textarea data-p="' + b + '.contenu"></textarea>';
     h += '<label class="ch">Documents et ressources <small>(titres, liens, pièces jointes)</small></label><input type="text" data-p="' + b + '.docs">';
     h += '<label class="ch">Travail à effectuer</label><textarea data-p="' + b + '.taf" style="min-height:44px" placeholder="ex. Lire l\'extrait p. 42 et répondre aux questions 1 à 3"></textarea>';
-    h += '<div class="trio"><div><label class="ch">Pour le</label><input type="date" data-p="' + b + '.pour"></div><div><label class="ch">Temps estimé</label><input type="number" min="0" data-p="' + b + '.tafDuree" placeholder="min"></div><div><label class="ch">Type</label>' + sel(b + ".tafType", [["", "—"], ["À faire", "À faire"], ["À apprendre", "À apprendre"], ["À rendre", "À rendre"], ["À préparer", "À préparer"]], x.tafType) + '</div></div>';
+    h += '<div class="trio"><div><label class="ch">Pour le</label><input type="date" data-p="' + b + '.pour" title="' + (x.pourSugg ? "Proposé si vous donnez un travail : prochaine séance" : "") + '"></div><div><label class="ch">Temps estimé</label><input type="number" min="0" data-p="' + b + '.tafDuree" placeholder="min"></div><div><label class="ch">Type</label>' + sel(b + ".tafType", [["", "—"], ["À faire", "À faire"], ["À apprendre", "À apprendre"], ["À rendre", "À rendre"], ["À préparer", "À préparer"]], x.tafType) + '</div></div>';
     h += '<label class="coche"><input type="checkbox" data-p="' + b + '.eval"> Évaluation ou devoir annoncé</label>';
     if (x.eval) h += '<label class="ch">Texte du devoir ou du contrôle <small>(ou nom du fichier joint)</small></label><textarea data-p="' + b + '.evalTxt" style="min-height:44px"></textarea>';
     h += "</div>";
@@ -1144,29 +1159,45 @@ function genererTrameSeances() {
     if (i === 0) { x.type = "Lancement et diagnostic"; x.titre = "Entrer dans la séquence"; x.probl = E.seq.probl || ""; x.act = "Accroche à partir d'un document proche des élèves · vérification des pré-requis" + (E.seq.verif ? " (" + E.seq.verif + ")" : "") + " · recueil des représentations · présentation des objectifs et de la production finale"; }
     else if (i === n - 1) { x.type = "Évaluation"; x.titre = "Évaluer les acquis"; x.probl = "Suis-je capable de… ?"; x.act = "Évaluation des objectifs opérationnels, avec les critères travaillés · bilan de la séquence avec les élèves"; for (var k = 0; k < nobj; k++) x.objs.push(k); }
     else if (i === n - 2 && n >= 4) { x.type = "Réinvestissement / remédiation"; x.titre = "S'entraîner et consolider"; x.act = "Exercices différenciés à partir des erreurs repérées · groupes de besoin · auto-évaluation avec la grille de critères"; for (var k2 = 0; k2 < nobj; k2++) x.objs.push(k2); }
-    else if (nobj) x.objs.push((i - 1) % nobj);
+    else if (nobj) {
+      var nApp = n - (n >= 4 ? 3 : 2), rang = i - 1;
+      var k3 = Math.min(nobj - 1, Math.floor(rang * nobj / Math.max(1, nApp)));
+      x.objs.push(k3);
+      if (nApp < nobj && rang === nApp - 1) for (var k4 = k3 + 1; k4 < nobj; k4++) x.objs.push(k4);
+      var debutBloc = rang === 0 || Math.min(nobj - 1, Math.floor((rang - 1) * nobj / Math.max(1, nApp))) !== k3;
+      x.titre = (debutBloc ? "Découvrir et comprendre" : "S'entraîner") + " · O" + (k3 + 1);
+    }
     t.push(x);
   }
-  E.seq.seances = t; toast("Trame de " + n + " séances générée");
+  E.seq.seances = t; toast("Trame de " + n + " séances générée" + (n > 10 ? " : c'est beaucoup, pensez à scinder la séquence ou à réduire le nombre de séances" : ""));
 }
 
 function importerSeance() {
   var i = document.getElementById("choixSeance").value; if (i === "") { toast("Créez d'abord des séances dans l'onglet ②"); return; }
   i = +i; var s = E.seq.seances[i], q = E.seq;
-  E.sea.titre = s.titre || s.type;
+  E.sea.titre = s.titre || (s.type + ((s.objs || []).length ? " · O" + (s.objs[0] + 1) : ""));
   E.sea.place = "Séance " + (i + 1) + "/" + q.seances.length + (q.titre ? " de « " + q.titre + " »" : "");
   E.sea.classe = q.classe; E.sea.duree = q.duree || E.sea.duree; E.sea.probl = s.probl || "";
   E.sea.prereq = i === 0 ? q.prereq : "Séance " + i + (q.seances[i - 1] && q.seances[i - 1].titre ? " : " + q.seances[i - 1].titre : "") + (q.prereq ? "\n" + q.prereq : "");
   E.sea.objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean).join("\n");
   if (s.act && !E.sea.moments.some(function (m) { return m.t; })) E.sea.moments[0].t = s.act;
   var suiv = q.seances[i + 1]; E.sea.synthese.ouv = suiv ? "Séance suivante : " + (suiv.titre || suiv.type) : "Fin de la séquence";
-  toast("Séance importée");
+  /* ajuster les moments à la durée réelle de la séance */
+  var fixe = (Number(E.sea.tissage.d) || 0) + (Number(E.sea.accroche.d) || 0) + (Number(E.sea.problPhase.d) || 0) + (Number(E.sea.synthese.d) || 0);
+  var vides = E.sea.moments.every(function (m) { return !m.titre && !m.sup && !m.conn; });
+  if (vides && E.sea.duree) {
+    var reste = Math.max(10, E.sea.duree - fixe), nbM = E.sea.duree >= 150 ? 4 : E.sea.duree >= 90 ? 3 : E.sea.moments.length > 1 ? E.sea.moments.length : 2;
+    var t0 = E.sea.moments[0] ? E.sea.moments[0].t : "";
+    E.sea.moments = []; for (var m = 0; m < nbM; m++) { var mo = momentVide(); mo.d = Math.round(reste / nbM / 5) * 5 || 5; E.sea.moments.push(mo); }
+    E.sea.moments[0].t = t0; var ecart = reste - E.sea.moments.reduce(function (a, x) { return a + x.d; }, 0); E.sea.moments[nbM - 1].d += ecart;
+  }
+  toast("Séance importée : " + E.sea.moments.length + " moments répartis sur " + E.sea.duree + " min");
 }
 
 /* ================================================================
    CAHIER DE TEXTES
    ================================================================ */
-function entreeVide(d) { return { date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
+function entreeVide(d) { return { date: "", duree: d || 55, disp: "Classe entière", titre: "", contenu: "", docs: "", taf: "", pour: "", pourSugg: "", tafDuree: "", tafType: "", eval: false, evalTxt: "" }; }
 function frLong(s) { if (!s) return ""; return s2d(s).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }); }
 /* Créneaux réels d'une classe à partir d'une date */
 function creneauxDates(c, debut, vnom) {
@@ -1174,11 +1205,11 @@ function creneauxDates(c, debut, vnom) {
   SEM.forEach(function (w) {
     if (w.vac || w.dim < debut || w.lundi > fin) return;
     var m = c.marques[w.lundi] ? typeParId(c.marques[w.lundi]) : null;
-    if (m && m.effet === "off") return;
+    if (m && (m.effet === "off" || m.effet === "tampon")) return;
     var ab = lettreAB(w);
     w.jours.forEach(function (j) {
       if (j < debut || j > fin) return;
-      var off = (c.periodes || []).some(function (p) { var t = typeParId(p.ty); return t && t.effet === "off" && p.d && j >= p.d && j <= (p.f || p.d); });
+      var off = (c.periodes || []).some(function (p) { var t = typeParId(p.ty); return t && (t.effet === "off" || t.effet === "tampon") && p.d && j >= p.d && j <= (p.f || p.d); });
       if (off) return;
       c.creneaux.forEach(function (k) { if (vnom && k.v && k.v !== vnom) return; if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55 }); });
     });
@@ -1200,7 +1231,7 @@ function genererCdt() {
     e.titre = (q.titre ? q.titre + " · " : "") + "Séance " + (i + 1) + (s.titre ? " : " + s.titre : "");
     var objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean);
     e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + (objs.length ? "Objectif : " + objs.join(" ; ") + "\n" : "") + (s.act ? "Activités : " + s.act : "");
-    e.pour = slots[i + 1] ? slots[i + 1].date : "";
+    e.pourSugg = slots[i + 1] ? slots[i + 1].date : "";
     if (s.type === "Évaluation") { e.eval = true; e.evalTxt = "Évaluation : " + (q.titre || "") + " (sujet joint)"; }
     return e;
   });
@@ -1229,6 +1260,7 @@ function docCdt() {
     var nomE = e.date ? frLong(e.date) : "Entrée " + (i + 1);
     if (!e.date) al.push(["ko", nomE + " : indiquez la date de la séance."]);
     if (!e.contenu && !e.titre) al.push(["ko", nomE + " : le contenu de la séance est obligatoire."]);
+    if (e.taf && !e.pour && e.pourSugg) e.pour = e.pourSugg;
     if (e.taf && !e.pour) al.push(["ko", nomE + " : indiquez la date pour laquelle le travail doit être fait ou rendu."]);
     if (e.pour && e.date && e.pour <= e.date) al.push(["ko", nomE + " : la date de remise doit être postérieure à la séance."]);
     if (e.eval && !e.evalTxt) al.push(["ko", nomE + " : le texte du devoir ou du contrôle doit figurer (texte ou fichier joint)."]);
@@ -1242,7 +1274,10 @@ function docCdt() {
     h += "<h3 style='color:#c8692c;margin:10px 0 4px'>Charge de travail</h3><table><thead><tr><th>Pour le</th><th>Travaux</th><th>Temps estimé</th></tr></thead><tbody>" + lignes.map(function (d) { var x = charge[d]; return "<tr><td>" + esc(frLong(d)) + "</td><td>" + x.n + "</td><td>" + (x.min ? x.min + " min" : "—") + "</td></tr>"; }).join("") + "</tbody></table>";
     lignes.forEach(function (d) { if (charge[d].n > 1) al.push(["mo", "Plusieurs travaux pour le " + frLong(d) + " : vérifiez la charge de travail des élèves."]); });
   }
-  if (!al.some(function (x) { return x[0] === "ko"; })) al.push(["ok", "Les éléments obligatoires sont présents : contenu, travail à effectuer, dates de remise, textes des évaluations."]);
+  var nbTaf = C.entrees.filter(function (e) { return e.taf; }).length, sansContenu = C.entrees.filter(function (e) { return !e.contenu; }).length;
+  if (C.entrees.length && !nbTaf) al.push(["mo", "Aucun travail à effectuer n'est noté. C'est possible, mais si vous en donnez en classe, il doit figurer ici avec sa date de remise."]);
+  if (sansContenu) al.push(["mo", sansContenu + " séance(s) sans contenu : le contenu de chaque séance est obligatoire."]);
+  if (C.entrees.length && !sansContenu && !al.some(function (x) { return x[0] === "ko"; })) al.push(["ok", "Contenu de chaque séance renseigné" + (nbTaf ? ", " + nbTaf + " travail(aux) avec date de remise" : "") + (C.entrees.some(function (e) { return e.eval; }) ? ", évaluation signalée" : "") + "."]);
   al.push(["mo", "Rappel : aucune information personnelle sur un élève dans le cahier de textes ; il est consulté par les élèves, les familles, la direction et l'inspection."]);
   return { html: h, al: al };
 }
@@ -1274,6 +1309,8 @@ function docProg(pourWord) {
     if (!c.creneaux.length) al.push(["ko", nom + " : ajoutez vos créneaux de cours (jour et durée)."]);
     if (r.nonPlace.length) al.push(["ko", nom + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou travaillez une notion en spirale."]);
     else if (r.besoin > r.total - r.reserve && r.besoin <= r.total) al.push(["mo", nom + " : la marge est inférieure à " + P.marge + " %. Gardez du temps pour les imprévus."]);
+    if (!r.seqs.length && (c.valences || []).length > 1) al.push(["mo", nom + " : aucune séquence prévue pour cette valence. Chaque valence a sa propre programmation."]);
+    else if (!r.seqs.length) al.push(["mo", nom + " : ajoutez vos séquences (étape ④)."]);
     r.seqs.forEach(function (sq) { if (!Number(sq.h)) al.push(["mo", "« " + sq.t + " » : estimez sa durée en heures pour la placer."]); });
     if (!r.nonPlace.length && r.besoin && r.besoin <= r.total - r.reserve) al.push(["ok", nom + " : toutes les séquences sont placées, avec une marge suffisante."]);
   });
@@ -1360,7 +1397,9 @@ function docSeq() {
   if (!objs.length) al.push(["mo", "Ajoutez des objectifs opérationnels : ce que l'élève saura FAIRE à la fin."]);
   objs.forEach(function (x) {
     if (x.a.flous.length) al.push([profilsActifs().indexOf("lv") >= 0 && x.a.flous[0].trim() === "comprendre" ? "mo" : "ko", "O" + (x.i + 1) + " : « " + x.a.flous[0].trim() + " » n'est pas observable. " + (profilsActifs().indexOf("lv") >= 0 && x.a.flous[0].trim() === "comprendre" ? "En langues, associez-le à une tâche : repérer, relever, restituer, répondre…" : "Préférez un verbe d'action (citer, identifier, comparer, rédiger, justifier…), ou cochez « Je garde cette formulation ».")]);
-    else if (!x.a.crit) al.push(["mo", "O" + (x.i + 1) + " : ajoutez un critère de réussite."]);
+    else if (!x.a.crit) al.push(["mo", "O" + (x.i + 1) + " : ajoutez un critère de réussite (combien, quelle précision, quel seuil ?)."]);
+    if (x.a.capable) al.push(["mo", "O" + (x.i + 1) + " : « être capable de » n'apporte rien ; commencez directement par le verbe d'action."]);
+    if (!x.a.flous.length && !x.a.cond) al.push(["mo", "O" + (x.i + 1) + " : dans quelles conditions ? (support, matériel, aide autorisée, durée, situation…)"]);
   });
   if (q.seances.length) {
     objs.forEach(function (x) { if (!q.seances.some(function (s) { return (s.objs || []).indexOf(x.i) >= 0; })) al.push(["ko", "O" + (x.i + 1) + " n'est travaillé dans aucune séance."]); });
@@ -1369,7 +1408,9 @@ function docSeq() {
     if (q.seances.length > 10) al.push(["mo", q.seances.length + " séances : pouvez-vous scinder la séquence pour que les élèves gardent le fil ?"]);
   }
   if (!q.obstacles) al.push(["mo", "Éclairage didactique : quelles erreurs ou représentations attendez-vous chez les élèves ?"]);
-  if (objs.length && !al.some(function (x) { return x[0] === "ko"; })) al.push(["ok", "Les objectifs sont observables et alignés sur les séances."]);
+  var alObj = al.some(function (x) { return x[0] === "ko" || /^O\d/.test(x[1]); });
+  if (objs.length && !alObj) al.push(["ok", "Les objectifs sont observables, complets et alignés sur les séances."]);
+  else if (objs.length && !al.some(function (x) { return x[0] === "ko"; }) && q.seances.length) al.push(["ok", "Chaque objectif est travaillé dans au moins une séance. Il reste à préciser certains objectifs (voir ci-dessus)."]);
   return { html: h, al: al };
 }
 
@@ -1383,11 +1424,12 @@ function docSea() {
   h += "<table><tr><td class='lab'>Titre de la séance</td><td>" + esc(s.titre) + "</td><td class='lab'>Place dans la séquence</td><td>" + esc(s.place) + "</td></tr><tr><td class='lab'>Problématique</td><td>" + esc(s.probl) + "</td><td class='lab'>Pré-requis</td><td>" + nl(s.prereq) + "</td></tr><tr><td class='lab'>Objectifs</td><td colspan='3'><i>À l'issue de la séance, mon élève est capable de :</i><br>" + nl(s.objs) + "</td></tr></table>";
   h += "<table class='fiche-sea'><thead><tr><th style='width:10%'>Étape</th><th style='width:6%'>Durée</th><th style='width:32%'>Déroulé de la séance</th><th style='width:9%'>Modalité</th><th style='width:11%'>Supports</th><th style='width:10%'>Connaissances</th><th style='width:10%'>Notions / compétences</th><th style='width:12%'>Différenciation</th></tr></thead><tbody>";
   function ligne(et, rs, d, ph, txt, mo, sup, conn, comp, diff) { return "<tr>" + (et ? "<td class='etape' rowspan='" + rs + "'>" + et + "</td>" : "") + "<td>" + (d !== "" && d != null ? d + " min" : "") + "</td><td><span class='phase'>" + ph + "</span><br>" + nl(txt) + "</td><td>" + esc(mo) + "</td><td>" + esc(sup) + "</td><td>" + esc(conn) + "</td><td>" + esc(comp) + "</td><td>" + esc(diff) + "</td></tr>"; }
-  h += ligne("Étape introductive", 3, s.tissage.d, "Tissage", s.tissage.t, "", "", "", "", "");
-  h += ligne("", 0, s.accroche.d, "Phase d'accroche", s.accroche.t, "", s.accroche.sup, "", "", "");
-  h += ligne("", 0, s.problPhase.d, "Phase de problématisation", s.problPhase.t, "", "", "", "", "");
+  var L = libSeance();
+  h += ligne("Étape introductive", 3, s.tissage.d, L.tissage, s.tissage.t, "", "", "", "", "");
+  h += ligne("", 0, s.accroche.d, L.accroche, s.accroche.t, "", s.accroche.sup, "", "", "");
+  h += ligne("", 0, s.problPhase.d, L.probl, s.problPhase.t, "", "", "", "", "");
   s.moments.forEach(function (m, i) { h += ligne(i === 0 ? "Étape de développement" : "", s.moments.length, m.d, "Moment " + (i + 1) + (m.titre ? " · " + esc(m.titre) : ""), m.t + (m.prec ? "\n(" + m.prec + ")" : ""), m.modal, m.sup, m.conn, m.comp, m.diff); });
-  h += ligne("Étape de conclusion", 1, s.synthese.d, "Phase de synthèse", (s.synthese.t || "") + (s.synthese.trace ? "\nTrace écrite : " + s.synthese.trace : "") + (s.synthese.ouv ? "\nOuverture : " + s.synthese.ouv : ""), "", "", "", "", "");
+  h += ligne("Étape de conclusion", 1, s.synthese.d, L.synth, (s.synthese.t || "") + (s.synthese.trace ? "\n" + L.trace.split(" (")[0] + " : " + s.synthese.trace : "") + (s.synthese.ouv ? "\nOuverture : " + s.synthese.ouv : ""), "", "", "", "", "");
   h += "</tbody></table>";
   var tot = [s.tissage.d, s.accroche.d, s.problPhase.d, s.synthese.d].concat(s.moments.map(function (m) { return m.d; })).reduce(function (a, x) { return a + (Number(x) || 0); }, 0);
   if (s.duree) {
@@ -1396,8 +1438,13 @@ function docSea() {
     else al.push(["ok", "Durées : " + tot + " min sur " + s.duree + " min."]);
   }
   if (!s.probl) al.push(["mo", "Une séance répond à une problématique : formulez-la."]);
-  (s.objs || "").split("\n").filter(function (x) { return x.trim(); }).forEach(function (o) { var a = analyseObjectif(o); if (a && a.flous.length) al.push(["ko", "Objectif « " + o.slice(0, 50) + (o.length > 50 ? "…" : "") + " » : « " + a.flous[0].trim() + " » n'est pas observable."]); });
-  if (!s.synthese.trace) al.push(["mo", "Quelle trace écrite les élèves garderont-ils ?"]);
+  (s.objs || "").split("\n").filter(function (x) { return x.trim(); }).forEach(function (o) {
+    var k = E.seq.objs.indexOf(o.trim()); if (k >= 0 && (E.seq.objsOk || [])[k]) return;
+    var a = analyseObjectif(o); if (!a || !a.flous.length) return;
+    var lvC = profilsActifs().indexOf("lv") >= 0 && a.flous[0].trim() === "comprendre";
+    al.push([lvC ? "mo" : "ko", "Objectif « " + o.slice(0, 50) + (o.length > 50 ? "…" : "") + " » : « " + a.flous[0].trim() + " » n'est pas observable" + (lvC ? " ; associez-le à une tâche (repérer, relever, restituer…)." : ". Reformulez-le dans l'onglet ②, ou cochez « Je garde cette formulation ».")]);
+  });
+  if (!s.synthese.trace) al.push(["mo", L.traceAlerte]);
   if (!s.moments.some(function (m) { return m.diff; })) al.push(["mo", "Différenciation : prévoyez au moins un coup de pouce ou un défi."]);
   return { html: h, al: al };
 }
@@ -1581,9 +1628,10 @@ function exemple(m) {
       e.date = d2s(d); e.titre = q.titre + " · Séance " + (i + 1) + " : " + s.titre;
       e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + "Activités : " + s.act; return e;
     });
-    ent.forEach(function (e, i) { e.pour = ent[i + 1] ? ent[i + 1].date : ""; });
+    ent.forEach(function (e, i) { e.pourSugg = ent[i + 1] ? ent[i + 1].date : ""; });
     if (ent[1]) { ent[1].taf = "Relire les 3 extraits et surligner un indice de l'écriture de soi par texte"; ent[1].tafType = "À faire"; ent[1].tafDuree = 15; ent[1].docs = "Corpus de 3 extraits (PDF joint)"; }
     if (ent[2]) { ent[2].taf = "Terminer le premier jet du récit (10 lignes minimum)"; ent[2].tafType = "À rendre"; ent[2].tafDuree = 30; }
+    ent.forEach(function (e) { if (e.taf) e.pour = e.pourSugg; });
     if (ent[4]) { ent[4].taf = "Réviser la grille d'oral et s'entraîner à lire son texte à voix haute"; ent[4].tafType = "À préparer"; ent[4].tafDuree = 20; ent[4].disp = "Groupes de besoin"; }
     var last = ent[ent.length - 1]; if (last) { last.eval = true; last.evalTxt = "Évaluation finale : texte autobiographique et lecture orale (grilles jointes)"; }
     return { classe: q.classe, discipline: q.discipline, debut: ent[0] ? ent[0].date : "", entrees: ent };
