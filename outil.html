@@ -54,7 +54,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .bloc .tete b{color:var(--encre);font-size:.92rem}
 .lg{display:grid;gap:6px;margin:5px 0;align-items:center}
 .lg.seq{grid-template-columns:34px 1fr 64px 22px 22px 22px}
-.lg.cren{grid-template-columns:1fr 1fr 1fr 22px}
+.lg.cren{grid-template-columns:1fr 64px 1fr 1.15fr 22px}
 .lg.per{grid-template-columns:1fr 118px 118px 22px}
 .lg.typ{grid-template-columns:34px 1fr 130px 22px}
 .suppr,.fl{border:0;background:none;color:var(--rouge);font-size:1.05rem;cursor:pointer;padding:0;line-height:1}
@@ -466,7 +466,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <h3>① Programmation annuelle</h3>
       <ol>
         <li><b>Mon cadre</b> : choisissez votre type d'établissement, votre zone de vacances et votre discipline. Les vacances et les jours fériés de 2026-2027 sont intégrés.</li>
-        <li><b>Mes classes</b> : pour chaque classe, créez vos <b>créneaux de cours</b> : jour, durée (55 min, 1 h, 1 h 30… ou toute autre durée) et semaine (toutes, A ou B). L'outil calcule votre volume horaire réel semaine par semaine, en retirant les jours fériés.</li>
+        <li><b>Mes classes</b> : pour chaque classe, créez vos <b>créneaux de cours</b> : jour, durée (55 min, 1 h, 1 h 30… ou toute autre durée) et semaine (toutes, A ou B). Pour une classe dédoublée, indiquez si chaque créneau est en <b>classe entière</b> ou pour le <b>groupe 1, 2 ou 3</b> : l'outil compte le temps de chaque élève (une séance en groupe est faite à chaque groupe) et votre propre temps de service. Dans le cahier de textes, une séance en groupes est notée pour chaque groupe, à sa date. L'outil calcule votre volume horaire réel semaine par semaine, en retirant les jours fériés.</li>
         <li><b>Dates imposées d'abord</b> : avant les séquences, placez ce qui ne bouge pas : stages et PFMP, examens blancs, sorties, date de fin des cours. Les séquences se répartissent ensuite dans le temps réellement disponible. L'encart « Ordre conseillé » coche les étapes faites.</li>
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre avec une estimation en heures. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
@@ -607,6 +607,9 @@ function partValence(c, vi) {
   var tot = V.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0);
   return tot > 0 ? (Number(V[vi].part) || 0) / tot : 1 / V.length;
 }
+function nbGroupes(c) { var g = {}; c.creneaux.forEach(function (k) { if (k.g) g[k.g] = 1; }); return Object.keys(g).length; }
+/* un créneau en groupe n'est suivi que par une partie de la classe : pour l'élève, il compte pour 1 / nombre de groupes */
+function partGroupe(c, k) { return k.g ? 1 / Math.max(1, nbGroupes(c)) : 1; }
 function partCreneau(c, k, vi) {
   var V = c.valences; if (V.length < 2) return 1;
   var dediee = k.v && V.some(function (v) { return v.nom === k.v; });
@@ -867,7 +870,7 @@ function pucesObjectif(t, garde) {
 /* ================================================================
    CALCUL D'UNE CLASSE
    ================================================================ */
-function minutesHebdo(c, ab, vi) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) * (vi == null ? 1 : partCreneau(c, k, vi)) : 0); }, 0); }
+function minutesHebdo(c, ab, vi, prof) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) * (vi == null ? 1 : partCreneau(c, k, vi)) * (prof ? 1 : partGroupe(c, k)) : 0); }, 0); }
 function lettreAB(w) { return ((w.idx % 2 === 0) === (E.prog.ab !== "B")) ? "A" : "B"; }
 function calculerClasse(c, vi) {
   normaliserClasse(c); vi = vi || 0;
@@ -891,7 +894,7 @@ function calculerClasse(c, vi) {
     var min = 0, nb = 0;
     c.creneaux.forEach(function (k) {
       if (!(k.s === "T" || k.s === ab)) return;
-      var part = partCreneau(c, k, vi); if (!part) return;
+      var part = partCreneau(c, k, vi) * partGroupe(c, k); if (!part) return;
       jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += (Number(k.d) || 0) * part; nb += part; } });
     });
     if (demi) { min /= 2; nb = nb / 2; }
@@ -947,14 +950,15 @@ function rendreListes() {
     h += '<div class="bloc"><div class="tete"><b>Classe ' + (i + 1) + (c.nom ? " · " + esc(c.nom) : "") + '</b><span><button class="btn mini discret" type="button" data-action="dupliquerClasse" data-i="' + i + '" title="Dupliquer la classe">⧉ dupliquer</button> <button class="suppr" type="button" title="Supprimer la classe" data-action="supprClasse" data-i="' + i + '">✕</button></span></div>';
     h += '<div class="trio"><div><label class="ch">Nom de la classe</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 4eB, 2nde MRC…"></div><div><label class="ch">Niveau</label><input type="text" data-p="' + b + '.niveau" list="dlNiv"></div><div><label class="ch">Fin des cours</label><input type="date" data-p="' + b + '.fin" title="Vide = 2 juillet 2027"></div></div>';
     /* ① créneaux */
-    h += '<label class="ch">① Créneaux de cours <small>(jour · durée en minutes · semaine' + (bi ? " · valence" : "") + ')</small></label>';
+    h += '<label class="ch">① Créneaux de cours <small>(jour · durée en minutes · semaine · classe entière ou groupe' + (bi ? " · valence" : "") + ')</small></label>';
     var optsV = [["", bi ? "Partagé" : "—"]].concat(c.valences.map(function (v) { return [v.nom, v.nom]; }));
     c.creneaux.forEach(function (k, j) {
       var bk = b + ".creneaux." + j;
-      h += '<div class="lg cren"' + (bi ? ' style="grid-template-columns:1fr 70px 1fr 1.2fr 22px"' : "") + '>' + sel(bk + ".j", [[1, "Lundi"], [2, "Mardi"], [3, "Mercredi"], [4, "Jeudi"], [5, "Vendredi"], [6, "Samedi"]], k.j) + '<input type="number" min="5" max="480" step="5" data-p="' + bk + '.d" list="dlDurees" title="Durée en minutes">' + sel(bk + ".s", [["T", "Toutes"], ["A", "Sem. A"], ["B", "Sem. B"]], k.s) + (bi ? sel(bk + ".v", optsV, k.v) : "") + '<button class="suppr" type="button" data-action="supprCren" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
+      h += '<div class="lg cren"' + (bi ? ' style="grid-template-columns:1fr 64px 1fr 1.15fr 1.15fr 22px"' : "") + '>' + sel(bk + ".j", [[1, "Lundi"], [2, "Mardi"], [3, "Mercredi"], [4, "Jeudi"], [5, "Vendredi"], [6, "Samedi"]], k.j) + '<input type="number" min="5" max="480" step="5" data-p="' + bk + '.d" list="dlDurees" title="Durée en minutes">' + sel(bk + ".s", [["T", "Toutes"], ["A", "Sem. A"], ["B", "Sem. B"]], k.s) + sel(bk + ".g", [["", "Classe entière"], ["G1", "Groupe 1"], ["G2", "Groupe 2"], ["G3", "Groupe 3"]], k.g || "") + (bi ? sel(bk + ".v", optsV, k.v) : "") + '<button class="suppr" type="button" data-action="supprCren" data-i="' + i + '" data-j="' + j + '">✕</button></div>';
     });
     h += '<button class="btn mini" type="button" data-action="ajoutCren" data-i="' + i + '">+ créneau</button>';
-    h += '<div class="vol">Volume : <b>' + hm(mA) + '</b> par semaine' + (mA !== mB ? " en semaine A, <b>" + hm(mB) + "</b> en semaine B" : "") + " · " + c.creneaux.length + " créneau(x)" + (bi ? "<br>" + c.valences.map(function (v, vi) { return esc(v.nom || "Valence " + (vi + 1)) + " : " + hm(minutesHebdo(c, "A", vi)); }).join(" · ") : "") + "</div>";
+    var ng = nbGroupes(c), pA = minutesHebdo(c, "A", null, true);
+    h += '<div class="vol">Volume ' + (ng ? "pour chaque élève" : "") + ' : <b>' + hm(mA) + '</b> par semaine' + (mA !== mB ? " en semaine A, <b>" + hm(mB) + "</b> en semaine B" : "") + " · " + c.creneaux.length + " créneau(x)" + (ng ? "<br>Classe dédoublée en " + ng + " groupe" + (ng > 1 ? "s" : "") + " : vous assurez " + hm(pA) + " de cours par semaine" + (mA !== mB ? " (semaine A)" : "") + ", chaque séance en groupe étant faite à chaque groupe." + (ng === 1 ? " <b>Ajoutez le créneau de l'autre groupe.</b>" : "") : "") + (bi ? "<br>" + c.valences.map(function (v, vi) { return esc(v.nom || "Valence " + (vi + 1)) + " : " + hm(minutesHebdo(c, "A", vi)); }).join(" · ") : "") + "</div>";
     /* ② dates imposées */
     h += '<label class="ch">② Dates imposées <small>(stages, PFMP, examens, sorties… au jour près)</small></label>';
     c.periodes.forEach(function (p, j) {
@@ -1056,7 +1060,7 @@ function rendreListes() {
   E.cdt.entrees.forEach(function (x, i) {
     var b = "cdt.entrees." + i;
     h += '<div class="bloc"><div class="tete"><b>Entrée ' + (i + 1) + '</b><button class="suppr" type="button" data-action="supprCdt" data-i="' + i + '">✕</button></div>';
-    h += '<div class="trio"><div><label class="ch">Date</label><input type="date" data-p="' + b + '.date"></div><div><label class="ch">Durée</label><input type="number" min="5" data-p="' + b + '.duree" list="dlDurees"></div><div><label class="ch">Dispositif</label>' + sel(b + ".disp", [["Classe entière", "Classe entière"], ["Demi-groupe", "Demi-groupe"], ["Groupes de besoin", "Groupes de besoin"], ["Co-intervention", "Co-intervention"], ["AP / consolidation", "AP / consolidation"], ["Autre", "Autre"]], x.disp) + '</div></div>';
+    h += '<div class="trio"><div><label class="ch">Date</label><input type="date" data-p="' + b + '.date"></div><div><label class="ch">Durée</label><input type="number" min="5" data-p="' + b + '.duree" list="dlDurees"></div><div><label class="ch">Dispositif</label>' + sel(b + ".disp", [["Classe entière", "Classe entière"], ["Groupe 1", "Groupe 1"], ["Groupe 2", "Groupe 2"], ["Groupe 3", "Groupe 3"], ["Demi-groupe", "Demi-groupe"], ["Groupes de besoin", "Groupes de besoin"], ["Co-intervention", "Co-intervention"], ["AP / consolidation", "AP / consolidation"], ["Autre", "Autre"]], x.disp) + '</div></div>';
     h += '<label class="ch">Titre de la séance</label><input type="text" data-p="' + b + '.titre">';
     h += '<label class="ch">Contenu de la séance <small>(objectif, notions, activités : l\'essentiel, pas toute la trace écrite)</small></label><textarea data-p="' + b + '.contenu"></textarea>';
     h += '<label class="ch">Documents et ressources <small>(titres, liens, pièces jointes)</small></label><input type="text" data-p="' + b + '.docs">';
@@ -1268,7 +1272,7 @@ function creneauxDates(c, debut, vnom) {
       if (j < debut || j > fin) return;
       var off = (c.periodes || []).some(function (p) { var t = typeParId(p.ty); return t && (t.effet === "off" || t.effet === "tampon") && p.d && j >= p.d && j <= (p.f || p.d); });
       if (off) return;
-      c.creneaux.forEach(function (k) { if (vnom && k.v && k.v !== vnom) return; if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55 }); });
+      c.creneaux.forEach(function (k) { if (vnom && k.v && k.v !== vnom) return; if ((k.s === "T" || k.s === ab) && s2d(j).getDay() === Number(k.j)) res.push({ date: j, duree: Number(k.d) || 55, g: k.g || "", sem: w.lundi }); });
     });
   });
   return res.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
@@ -1282,21 +1286,38 @@ function genererCdt() {
   var slots = c ? creneauxDates(c, E.cdt.debut, E.seq.valence || "") : [];
   if (!c) toast("Classe « " + (nom || "?") + " » absente de la programmation : dates à compléter à la main");
   E.cdt.classe = nom; E.cdt.discipline = E.cdt.discipline || q.discipline; var ecarts = [];
-  E.cdt.entrees = q.seances.map(function (s, i) {
-    var e = entreeVide(slots[i] ? slots[i].duree : dureeSeance(s, q));
-    if (slots[i] && s.duree && Number(s.duree) !== slots[i].duree) ecarts.push(i + 1);
-    e.date = slots[i] ? slots[i].date : "";
-    e.titre = (q.titre ? q.titre + " · " : "") + "Séance " + (i + 1) + (s.titre ? " : " + s.titre : "");
-    var objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean);
-    e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + (objs.length ? "Objectif : " + objs.join(" ; ") + "\n" : "") + (s.act ? "Activités : " + s.act : "");
-    e.pourSugg = slots[i + 1] ? slots[i + 1].date : "";
-    if (s.type === "Évaluation") { e.eval = true; e.evalTxt = "Évaluation : " + (q.titre || "") + " (sujet joint)"; }
-    return e;
+  /* regrouper les créneaux en « pas » : un cours en classe entière, ou le même cours fait à chaque groupe */
+  var pas = [], ouverts = {}, rang = {};
+  slots.forEach(function (sl) {
+    if (!sl.g) { pas.push([sl]); return; }
+    var kr = sl.sem + "|" + sl.g; rang[kr] = (rang[kr] || 0) + 1;
+    var cle = sl.sem + "|" + rang[kr];
+    if (ouverts[cle]) ouverts[cle].push(sl); else { ouverts[cle] = [sl]; pas.push(ouverts[cle]); }
   });
-  /* l'évaluation est annoncée dans l'entrée précédente */
-  E.cdt.entrees.forEach(function (e, i) { if (E.cdt.entrees[i + 1] && E.cdt.entrees[i + 1].eval && !e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)"; e.tafType = "À apprendre"; } });
+  pas.sort(function (a, b) { return a[0].date < b[0].date ? -1 : 1; });
+  function prochaineDate(i, g) { for (var j = i + 1; j < pas.length; j++) for (var k = 0; k < pas[j].length; k++) if (!pas[j][k].g || !g || pas[j][k].g === g) return pas[j][k].date; return ""; }
+  var parSeance = [];
+  E.cdt.entrees = [];
+  q.seances.forEach(function (s, i) {
+    var p = pas[i] || [null], liste = [];
+    if (p[0] && s.duree && Number(s.duree) !== p[0].duree) ecarts.push(i + 1);
+    var objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean);
+    p.forEach(function (sl) {
+      var e = entreeVide(sl ? sl.duree : dureeSeance(s, q));
+      e.date = sl ? sl.date : "";
+      if (sl && sl.g) e.disp = "Groupe " + sl.g.slice(1);
+      e.titre = (q.titre ? q.titre + " · " : "") + "Séance " + (i + 1) + (s.titre ? " : " + s.titre : "");
+      e.contenu = (s.probl ? "Problématique : " + s.probl + "\n" : "") + (s.obj ? "Objectif : " + s.obj + "\n" : objs.length ? "Objectif : " + objs.join(" ; ") + "\n" : "") + (s.act ? "Activités : " + s.act : "");
+      e.pourSugg = sl ? prochaineDate(i, sl.g) : "";
+      if (s.type === "Évaluation") { e.eval = true; e.evalTxt = "Évaluation : " + (q.titre || "") + " (sujet joint)"; }
+      E.cdt.entrees.push(e); liste.push(e);
+    });
+    parSeance.push(liste);
+  });
+  /* l'évaluation est annoncée dans la séance précédente */
+  parSeance.forEach(function (liste, i) { if (parSeance[i + 1] && parSeance[i + 1][0].eval) liste.forEach(function (e) { if (!e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)"; e.tafType = "À apprendre"; } }); });
   E.cdt.ecarts = ecarts;
-  toast(E.cdt.entrees.length + " entrées créées" + (c && slots.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : ""));
+  toast(E.cdt.entrees.length + " entrées créées" + (c && pas.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : "") + (pas.some(function (p) { return p[0].g; }) ? " · les séances en groupes sont notées pour chaque groupe" : ""));
 }
 function texteCdt(e, k) {
   if (k === "titre") return e.titre || "";
@@ -1333,7 +1354,7 @@ function docCdt() {
     if ((e.contenu || "").length > 900) al.push(["mo", nomE + " : le cahier de textes n'est pas la trace écrite complète. Gardez l'essentiel pour que les élèves continuent à prendre des notes."]);
   });
   /* charge de travail */
-  var charge = {}; C.entrees.forEach(function (e) { if (e.taf && e.pour) { charge[e.pour] = charge[e.pour] || { n: 0, min: 0 }; charge[e.pour].n++; charge[e.pour].min += Number(e.tafDuree) || 0; } });
+  var charge = {}, vus = {}; C.entrees.forEach(function (e) { if (e.taf && e.pour) { var cle = e.pour + "|" + e.taf.trim(); if (vus[cle]) return; vus[cle] = 1; /* même travail donné à chaque groupe : compté une fois */ charge[e.pour] = charge[e.pour] || { n: 0, min: 0 }; charge[e.pour].n++; charge[e.pour].min += Number(e.tafDuree) || 0; } });
   var lignes = Object.keys(charge).sort();
   if (lignes.length) {
     h += "<h3 style='color:#c8692c;margin:10px 0 4px'>Charge de travail</h3><table><thead><tr><th>Pour le</th><th>Travaux</th><th>Temps estimé</th></tr></thead><tbody>" + lignes.map(function (d) { var x = charge[d]; return "<tr><td>" + esc(frLong(d)) + "</td><td>" + x.n + "</td><td>" + (x.min ? x.min + " min" : "—") + "</td></tr>"; }).join("") + "</tbody></table>";
