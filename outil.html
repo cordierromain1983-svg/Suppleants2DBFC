@@ -471,7 +471,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Mes classes</b> : pour chaque classe, créez vos <b>créneaux de cours</b> : jour, durée (55 min, 1 h, 1 h 30… ou toute autre durée) et semaine (toutes, A ou B). Pour une classe dédoublée, indiquez si chaque créneau est en <b>classe entière</b> ou pour le <b>groupe 1, 2 ou 3</b> : l'outil compte le temps de chaque élève (une séance en groupe est faite à chaque groupe) et votre propre temps de service. Dans le cahier de textes, une séance en groupes est notée pour chaque groupe, à sa date. L'outil calcule votre volume horaire réel semaine par semaine, en retirant les jours fériés.</li>
         <li><b>Dates imposées d'abord</b> : avant les séquences, placez ce qui ne bouge pas : stages et PFMP, examens blancs, sorties, date de fin des cours. Les séquences se répartissent ensuite dans le temps réellement disponible. L'encart « Ordre conseillé » coche les étapes faites.</li>
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
-        <li><b>Séquences</b> : listez-les dans l'ordre avec une estimation en heures. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
+        <li><b>Séquences</b> : listez-les dans l'ordre. La durée en heures est <b>facultative</b> : sans durée, l'outil partage le temps disponible (après la marge et les séquences dont vous avez fixé la durée) et place chaque séquence ; la durée calculée s'affiche en gris (≈ 13). Saisissez une durée dès que vous la connaissez. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
         <li><b>Disciplines bivalentes</b> (lettres-histoire avec l'EMC, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence, avec sa propre colonne dans la grille. Attribuez chaque créneau à une valence, ou laissez-le « Partagé » : il est alors réparti selon la part de chaque valence.</li>
         <li><b>Le calendrier</b> : choisissez un type d'événement dans la barre au-dessus de la grille (PFMP, stage, sortie, bac blanc…), puis <b>cliquez sur les semaines</b> concernées. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
@@ -587,9 +587,9 @@ function semaines(zone) {
    effet : off = pas de cours · demi = moitié des cours · rep = repère
    ================================================================ */
 var TYPES_DEFAUT = {
-  college: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage d'observation (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
+  college: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage en entreprise (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
   lgt: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage de seconde", "#cfe0f3", "off"], ["Bac blanc", "#f6d6d1", "demi"], ["Épreuves / oraux", "#f8e3c4", "rep"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]],
-  lp: [["Semaine tampon", "#fff1cc", "tampon"], ["PFMP", "#cfe0f3", "off"], ["Stage (3e prépa-métiers)", "#d6e6f7", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
+  lp: [["Semaine tampon", "#fff1cc", "tampon"], ["PFMP", "#cfe0f3", "off"], ["Stage en entreprise (3e prépa-métiers)", "#d6e6f7", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
 };
 var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère", tampon: "Semaine tampon" };
 /* Bivalence : une programmation par valence */
@@ -910,23 +910,35 @@ function calculerClasse(c, vi) {
   var total = 0, nbTot = 0; cases.forEach(function (x) { if (x.type === "cours") { total += x.cap; nbTot += x.nb; } });
   nbTot = Math.round(nbTot);
   var reserve = total * (Number(P.marge) || 0) / 100, utile = total - reserve;
-  var seqs = V.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
+  var seqs = V.seqs.filter(function (s) { return s.t; });
   var parSemaine = P.debutSemaine !== false;
-  var coef = parSemaine ? 1 : (utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1);
-  var idx = 0, reste = seqs.length ? (Number(seqs[0].h) || 0) : 0;
-  cases.forEach(function (x) {
-    if (x.type !== "cours") return;
-    x.seqs = []; x.parts = []; x.libre = 0;
-    if (idx >= seqs.length || x.cap <= 0) return;
-    var cap = x.cap * coef + 1e-9;
-    while (cap > 1e-6 && idx < seqs.length) {
-      if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
-      var pris = Math.min(cap, reste); cap -= pris; reste -= pris; x.parts.push({ k: idx, h: pris });
-      if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? (Number(seqs[idx].h) || 0) : 0; if (parSemaine) break; }
-    }
-    if (parSemaine && idx < seqs.length) x.libre = cap > 0.05 ? cap : 0;
-  });
-  return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
+  /* heures facultatives : les séquences sans durée se partagent le temps restant (après la marge et les durées fixées) */
+  var fixe = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0), nAuto = seqs.filter(function (s) { return !Number(s.h); }).length;
+  var auto = nAuto ? Math.max(0, Math.floor((utile - fixe) / nAuto * 2) / 2) : 0;
+  function heff() { return seqs.map(function (s) { return Number(s.h) || auto; }); }
+  function placer(H) {
+    var b = H.reduce(function (a, x) { return a + x; }, 0);
+    var coef = parSemaine ? 1 : (utile > 0 && b > 0 ? Math.min(1, b / utile) : 1);
+    var idx = 0, reste = seqs.length ? H[0] : 0;
+    cases.forEach(function (x) {
+      if (x.type !== "cours") return;
+      x.seqs = []; x.parts = []; x.libre = 0;
+      if (idx >= seqs.length || x.cap <= 0) return;
+      var cap = x.cap * coef + 1e-9;
+      while (cap > 1e-6 && idx < seqs.length) {
+        if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
+        var pris = Math.min(cap, reste); cap -= pris; reste -= pris; x.parts.push({ k: idx, h: pris });
+        if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? H[idx] : 0; if (parSemaine) break; }
+      }
+      if (parSemaine && idx < seqs.length) x.libre = cap > 0.05 ? cap : 0;
+    });
+    return idx;
+  }
+  var H = heff(), idx = placer(H), essais = 0;
+  /* en début de semaine, des heures se perdent aux transitions : on réduit la durée calculée jusqu'à ce que tout rentre */
+  while (nAuto && idx < seqs.length && auto > 0.5 && essais++ < 80) { auto -= 0.5; H = heff(); idx = placer(H); }
+  var besoin = H.reduce(function (a, x) { return a + x; }, 0);
+  return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, heff: H, nAuto: nAuto, auto: auto, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
 }
 function colonnesProg() {
   var cols = [];
@@ -979,11 +991,11 @@ function rendreListes() {
     c.valences.forEach(function (v, vi) {
       var bv = b + ".valences." + vi;
       if (bi) h += '<div class="bloc" style="background:#fff;margin-top:10px"><div class="tete"><b>Valence</b><span><button class="suppr" type="button" title="Retirer cette valence" data-action="supprValence" data-i="' + i + '" data-v="' + vi + '">✕</button></span></div><div class="duo"><div><label class="ch">Nom</label><input type="text" data-p="' + bv + '.nom" data-rerender="1" placeholder="ex. Français"></div><div><label class="ch">Part des créneaux partagés <small>(%)</small></label><input type="number" min="0" max="100" data-p="' + bv + '.part"></div></div>';
-      h += '<label class="ch">④ Séquences' + (bi && v.nom ? " de " + esc(v.nom) : "") + ', dans l\'ordre <small>(couleur · titre · heures estimées)</small></label>';
+      h += '<label class="ch">④ Séquences' + (bi && v.nom ? " de " + esc(v.nom) : "") + ', dans l\'ordre <small>(couleur · titre · heures : facultatif)</small></label><p class="aide" style="margin:0 0 4px">Vous pouvez saisir seulement les titres : l\'outil partage le temps disponible entre les séquences sans durée et les place. Indiquez une durée quand vous la connaissez.</p>';
       v.seqs.forEach(function (sq, j) {
         var bs = bv + ".seqs." + j;
         if (!sq.col) sq.col = COULEURS[j % COULEURS.length];
-        h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" placeholder="h"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">✕</button></div>';
+        h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" data-hauto="' + i + '|' + vi + '" placeholder="auto" title="Heures : vide = calculé automatiquement"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">✕</button></div>';
       });
       h += '<button class="btn mini" type="button" data-action="ajoutSeqProg" data-i="' + i + '" data-v="' + vi + '">+ séquence</button>';
       if (bi) h += "</div>";
@@ -1107,7 +1119,8 @@ function remplirDepuisProg() {
       var cr = c.creneaux.filter(function (k) { return partCreneau(c, k, vi) > 0; }).map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
       if (cr.length) { var freq = {}; cr.forEach(function (d) { freq[d] = (freq[d] || 0) + 1; }); E.seq.duree = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b - a; })[0]; }
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
-      if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / dureeComptee(E.seq.duree)));
+      var hS = Number(s.h) || heuresEffectives(c, vi, s.t);
+      if (hS && E.seq.duree) E.seq.nb = Math.max(1, Math.round(hS * 60 / dureeComptee(E.seq.duree)));
       lierChamps(document.getElementById("p-seq"));
       toast("Classe, place, durée et nombre de séances repris de la programmation");
     });
@@ -1212,8 +1225,9 @@ function ouvrirOnglet(o) {
   window.scrollTo(0, 0);
 }
 
+function heuresEffectives(c, vi, titre) { var r = calculerClasse(c, vi), k = r.seqs.map(function (s) { return s.t; }).indexOf(titre); return k >= 0 ? r.heff[k] : null; }
 function heuresProgSeq(q) {
-  var r = null; (E.prog.classes || []).forEach(function (c) { if (c.nom !== q.classe) return; (c.valences || []).forEach(function (V) { if (q.valence && V.nom && V.nom !== q.valence) return; V.seqs.forEach(function (x) { if (x.t && x.t === q.titre && Number(x.h)) r = Number(x.h); }); }); });
+  var r = null; (E.prog.classes || []).forEach(function (c) { if (c.nom !== q.classe) return; (c.valences || []).forEach(function (V, vi) { if (q.valence && V.nom && V.nom !== q.valence) return; if (V.seqs.some(function (x) { return x.t === q.titre; })) r = heuresEffectives(c, vi, q.titre); }); });
   return r;
 }
 function dureeSeance(s, q) { return Number(s.duree) || Number((q || E.seq).duree) || 55; }
@@ -1397,14 +1411,14 @@ function docProg(pourWord) {
   P.classes.forEach(function (c) { Object.keys(c.marques).forEach(function (k) { var t = typeParId(c.marques[k]); if (t && t.effet === "tampon") tampons++; else dates++; }); c.periodes.forEach(function (p) { var t = typeParId(p.ty); if (t && t.effet === "tampon") tampons++; else if (p.d) dates++; }); if (c.fin) dates++; });
   calc.forEach(function (r, n) {
     var c = classes[n].c, nom = nomColonne(c, classes[n].vi), libre = r.total - r.besoin;
-    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (≈ " + r.nbTot + " cours) · " + r.besoin + " h prévues<br>" +
+    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (≈ " + r.nbTot + " cours) · " + hm(r.besoin * 60) + " prévues" + (r.nAuto ? " (dont " + r.nAuto + " séquence(s) à ≈ " + hm(r.auto * 60) + ", calculées)" : "") + "<br>" +
       (libre >= r.reserve ? "<span style='color:#3f7d58'>Marge : " + hm(libre * 60) + "</span>" : libre >= 0 ? "<span style='color:#8a6410'>Marge faible : " + hm(libre * 60) + "</span>" : "<span style='color:#b23b2e'>Dépassement : " + hm(-libre * 60) + "</span>") + "</div>";
     if (!c.creneaux.length) al.push(["ko", nom + " : ajoutez vos créneaux de cours (jour et durée)."]);
     if (r.nonPlace.length) al.push(["ko", nom + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou travaillez une notion en spirale."]);
     else if (r.besoin > r.total - r.reserve && r.besoin <= r.total) al.push(["mo", nom + " : la marge est inférieure à " + P.marge + " %. Gardez du temps pour les imprévus."]);
     if (!r.seqs.length && (c.valences || []).length > 1) al.push(["mo", nom + " : aucune séquence prévue pour cette valence. Chaque valence a sa propre programmation."]);
     else if (!r.seqs.length) al.push(["mo", nom + " : ajoutez vos séquences (étape ④)."]);
-    r.seqs.forEach(function (sq) { if (!Number(sq.h)) al.push(["mo", "« " + sq.t + " » : estimez sa durée en heures pour la placer."]); });
+    if (r.nAuto) al.push(["mo", nom + " : " + (r.nAuto === r.seqs.length ? "aucune durée saisie" : r.nAuto + " séquence(s) sans durée") + ". L'outil leur attribue environ " + hm(r.auto * 60) + " chacune, en partageant le temps disponible. Indiquez une durée là où une séquence demande plus ou moins de temps."]);
     if (!r.nonPlace.length && r.besoin && r.besoin <= r.total - r.reserve) al.push(["ok", nom + " : toutes les séquences sont placées, avec une marge suffisante."]);
   });
   h += "</div>";
@@ -1600,6 +1614,15 @@ function rendreTout() {
   document.getElementById("chkObjSea").innerHTML = l1 ? pucesObjectif(l1) : "";
   rendreRessources();
   majListesDeroulantes();
+  majHeuresAuto();
+}
+function majHeuresAuto() {
+  var cache = {};
+  document.querySelectorAll("[data-hauto]").forEach(function (el) {
+    var k = el.getAttribute("data-hauto"), p = k.split("|"), c = E.prog.classes[+p[0]]; if (!c) return;
+    if (!cache[k]) cache[k] = calculerClasse(c, +p[1]);
+    var r = cache[k]; el.placeholder = r.nAuto && r.auto ? "≈ " + String(r.auto).replace(".", ",") : "auto";
+  });
 }
 document.addEventListener("input", function (e) { if (e.target.id === "rechNiveau") rendreRessources(); });
 
