@@ -472,7 +472,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <p>Les trois onglets s'enchaînent : la programmation alimente la séquence, qui alimente la séance. L'onglet 📚 rassemble les textes officiels.</p>
       <h3>Pour démarrer vite</h3>
       <ul>
-        <li><b>✨ Partir d'un exemple de ma discipline</b> : un exemple complet (programmation, séquence, séance, cahier de textes) en anglais, EPS, mathématiques, SVT, lettres-histoire-EMC, enseignement professionnel ou arts plastiques. Modifiez-le ensuite pour votre classe.</li>
+        <li><b>✨ Partir d'un exemple de ma discipline</b> : un exemple complet (programmation, séquence, séance, cahier de textes) en anglais, EPS, mathématiques, SVT, lettres-histoire-EMC, économie-gestion, enseignement professionnel ou arts plastiques. Modifiez-le ensuite pour votre classe.</li>
         <li><b>💾 Enregistrer mon travail</b> crée un fichier dans vos Téléchargements. Déposez-le dans votre dossier Drive : avec « 📂 Ouvrir un fichier », vous reprenez votre travail sur n'importe quel ordinateur. Un rappel s'affiche après 20 minutes sans enregistrement.</li>
       </ul>
       <h3>① Programmation annuelle</h3>
@@ -1076,7 +1076,7 @@ function rendreListes() {
   h = "";
   E.seq.seances.forEach(function (s, i) {
     var b = "seq.seances." + i;
-    h += '<div class="bloc"><div class="tete"><b>Séance ' + (i + 1) + '</b><button class="suppr" type="button" data-action="supprSeance" data-i="' + i + '">✕</button></div>';
+    h += '<div class="bloc"><div class="tete"><b>Séance ' + (i + 1) + (s.disp ? ' <small style="font-weight:400;color:#777">· ' + esc(s.disp) + (s.duree ? " · " + s.duree + " min" : "") + "</small>" : "") + '</b><button class="suppr" type="button" data-action="supprSeance" data-i="' + i + '">✕</button></div>';
     h += '<div class="duo"><div><label class="ch">Type</label>' + sel(b + ".type", ["Lancement et diagnostic", "Apprentissage", "Réinvestissement / remédiation", "Évaluation", "Projet / production"].map(function (t) { return [t, t]; }), s.type) + '</div><div><label class="ch">Titre</label><input type="text" data-p="' + b + '.titre"></div></div>';
     h += '<label class="ch">Problématique de la séance</label><input type="text" data-p="' + b + '.probl">';
     h += '<div class="trio"><div><label class="ch">Durée <small>(min)</small></label><input type="number" min="5" data-p="' + b + '.duree" list="dlDurees" placeholder="' + (E.seq.duree || 55) + '"></div><div><label class="ch">Dominante</label><input type="text" data-p="' + b + '.dom" list="dlDom" placeholder="facultatif"></div><div><label class="ch">Jalon du projet</label><input type="text" data-p="' + b + '.jalon" placeholder="facultatif"></div></div>';
@@ -1149,7 +1149,9 @@ function remplirDepuisProg() {
       if (cr.length) { var freq = {}; cr.forEach(function (d) { freq[d] = (freq[d] || 0) + 1; }); E.seq.duree = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b - a; })[0]; }
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
       var hS = Number(s.h) || heuresEffectives(c, vi, s.t);
-      if (hS && E.seq.duree) E.seq.nb = Math.max(1, Math.round(hS * 60 / dureeComptee(E.seq.duree)));
+      var ry = rythmeClasse(c, E.seq.valence);
+      if (hS && ry.length) E.seq.nb = nbSeancesPourHeures(hS, ry);
+      else if (hS && E.seq.duree) E.seq.nb = Math.max(1, Math.round(hS * 60 / dureeComptee(E.seq.duree)));
       lierChamps(document.getElementById("p-seq"));
       toast("Classe, place, durée et nombre de séances repris de la programmation");
     });
@@ -1279,6 +1281,19 @@ function heuresProgSeq(q) {
   var r = null; (E.prog.classes || []).forEach(function (c) { if (c.nom !== q.classe) return; (c.valences || []).forEach(function (V, vi) { if (q.valence && V.nom && V.nom !== q.valence) return; if (V.seqs.some(function (x) { return x.t === q.titre; })) r = heuresEffectives(c, vi, q.titre); }); });
   return r;
 }
+/* rythme d'une semaine type : un « pas » = un cours en classe entière, ou le même cours fait à chaque groupe */
+function rythmeClasse(c, vnom) {
+  var ks = c.creneaux.filter(function (k) { return (k.s === "T" || k.s === "A") && !(vnom && k.v && k.v !== vnom) && Number(k.d); }).slice().sort(function (a, b) { return a.j - b.j; });
+  var pas = [], rang = {}, ouverts = {};
+  ks.forEach(function (k) {
+    if (!k.g) { pas.push({ d: Number(k.d), g: false }); return; }
+    rang[k.g] = (rang[k.g] || 0) + 1; var cle = rang[k.g];
+    if (!ouverts[cle]) { ouverts[cle] = { d: Number(k.d), g: true }; pas.push(ouverts[cle]); }
+  });
+  return pas;
+}
+function classeDeSeq(q) { return (E.prog.classes || []).filter(function (c) { return c.nom && c.nom === q.classe; })[0]; }
+function nbSeancesPourHeures(h, rythme) { var n = 0, m = 0; if (!rythme.length) return 0; while (m < h * 60 - 10 && n < 60) { m += dureeComptee(rythme[n % rythme.length].d); n++; } return Math.max(1, n); }
 function dureeSeance(s, q) { return Number(s.duree) || Number((q || E.seq).duree) || 55; }
 function genererTrameSeances() {
   var n = Math.max(2, Number(E.seq.nb) || 5), nobj = E.seq.objs.length;
@@ -1299,7 +1314,10 @@ function genererTrameSeances() {
     }
     t.push(x);
   }
-  E.seq.seances = t; toast("Trame de " + n + " séances générée" + (n > 10 ? " : c'est beaucoup, pensez à scinder la séquence ou à réduire le nombre de séances" : ""));
+  /* durées et dispositif d'après le rythme réel de la classe (ex. 1 h 50 en classe entière, 1 h 50 en groupes, 55 min) */
+  var cl = classeDeSeq(E.seq), ry = cl ? rythmeClasse(cl, E.seq.valence) : [];
+  if (ry.length > 1 && ry.some(function (p) { return p.d !== ry[0].d || p.g; })) t.forEach(function (x, i) { var p = ry[i % ry.length]; x.duree = p.d; x.disp = p.g ? "Groupes" : "Classe entière"; });
+  E.seq.seances = t; toast("Trame de " + n + " séances générée" + (ry && ry.length > 1 ? ", calée sur le rythme de la semaine (durées et groupes)" : "") + (n > 10 ? " : c'est beaucoup, pensez à scinder la séquence ou à réduire le nombre de séances" : ""));
 }
 
 function importerSeance(iForce, muet) {
@@ -1554,7 +1572,7 @@ function docSeq() {
   h += "</table>";
   if (q.seances.length) {
     h += "<h3 style='color:#c8692c;margin:6px 0'>Déroulé des séances</h3><table><thead><tr><th style='width:5%'>N°</th><th style='width:15%'>Type</th><th style='width:24%'>Titre et problématique</th><th>Activités et supports</th><th style='width:10%'>Objectifs</th></tr></thead><tbody>";
-    q.seances.forEach(function (s, i) { h += "<tr><td><b>" + (i + 1) + "</b><br><small>" + hm(dureeSeance(s, q)) + "</small></td><td>" + esc(s.type) + (s.dom ? "<br><small>" + esc(s.dom) + "</small>" : "") + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + (s.obj ? "<br>Objectif : " + esc(s.obj) : "") + (s.jalon ? "<br>🏁 " + esc(s.jalon) : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>"; });
+    q.seances.forEach(function (s, i) { h += "<tr><td><b>" + (i + 1) + "</b><br><small>" + hm(dureeSeance(s, q)) + "</small></td><td>" + esc(s.type) + (s.dom ? "<br><small>" + esc(s.dom) + "</small>" : "") + (s.disp && s.disp !== "Classe entière" ? "<br><small>" + esc(s.disp) + "</small>" : "") + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + (s.obj ? "<br>Objectif : " + esc(s.obj) : "") + (s.jalon ? "<br>🏁 " + esc(s.jalon) : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>"; });
     h += "</tbody></table>";
   }
   if (!q.attendus) al.push(["mo", "Recopiez les attendus du programme : l'encart « Textes officiels » vous donne les liens."]);
@@ -1967,6 +1985,37 @@ var EXEMPLES_DISC = {
     taf: [[1, "Apprendre la trace écrite sur les échanges gazeux de l'animal", "À apprendre", 15]] },
 
   lhg: { lib: "Lettres-histoire-EMC · LP", ico: "📖", lp: true },
+  eco: { lib: "Économie-gestion · 2nde MRC", ico: "🛍️", etab: "lp", disc: "Économie-gestion", classe: "2nde MRC", niveau: "2nde pro",
+    cren: [[1, 110, "T"], [2, 110, "T", "G1"], [3, 110, "T", "G2"], [4, 55, "T"]], marques: { "2026-12-14": "Semaine tampon" }, periodes: [["PFMP", "2027-01-25", "2027-02-12"], ["PFMP", "2027-05-31", "2027-06-11"]],
+    seqs: [["Accueillir le client", 15], ["Découvrir l'environnement commercial", ""], ["Identifier les besoins du client", ""], ["Argumenter et conclure la vente", ""], ["Encaisser et réaliser les calculs commerciaux", ""], ["Fidéliser la clientèle", ""], ["Préparer la PFMP et en faire le bilan", 6]],
+    seq: { titre: "Accueillir le client", duree: 110,
+      attendus: "Seconde professionnelle de la famille des métiers de la relation client : compétences communes de l'accueil et de la prise de contact avec le client (référentiels des baccalauréats professionnels Métiers du commerce et de la vente et Métiers de l'accueil ; intitulés exacts à vérifier).",
+      referentiel: "Bloc « Conseiller et vendre » : accueillir le client, prendre contact, identifier ses besoins (intitulés à recopier depuis le référentiel).",
+      comp: "Accueillir et prendre contact avec le client · Adopter une posture et un langage professionnels · Calculer un prix de vente", socle: [],
+      probl: "Comment faire bonne impression au client dès les premières secondes ?", og: "Accueillir un client de façon professionnelle, en magasin et au téléphone",
+      objs: ["À partir de 3 vidéos d'accueil en magasin, repérer au moins 4 attitudes professionnelles et 2 erreurs, à l'aide d'une grille d'observation",
+        "En jeu de rôle filmé, accueillir un client en face à face en respectant les 4 étapes de la grille de prise de contact",
+        "Accueillir un client au téléphone avant la 3e sonnerie, en respectant la phrase d'accueil de l'entreprise et en reformulant sa demande",
+        "À partir d'une fiche produit, calculer un prix de vente TTC sans erreur sur 4 exercices sur 5"],
+      prereq: "Vocabulaire de base de la vente · calcul d'un pourcentage", verif: "Questionnaire rapide en séance 1 : pourcentages et vocabulaire",
+      savoirs: "Étapes de la prise de contact · communication verbale et non verbale · distances interpersonnelles · prix HT, TVA, TTC",
+      obstacles: "Confondre familiarité et convivialité · posture fermée par timidité · TVA appliquée au prix TTC · peur d'être filmé : commencer par un enregistrement audio",
+      spec: { ref: "Bloc « Conseiller et vendre » (compétences à recopier)", contexte: "Magasin de sport fictif « Sport'Up », puis l'entreprise de PFMP de chaque élève", modalite: "Jeu de rôle / simulation", outils: "Grille d'observation, tablette pour filmer, fiche produit, tableur", liens: "Observation de l'accueil pendant la PFMP de janvier · co-intervention en mathématiques pour les calculs commerciaux" },
+      seances: [SE("Lancement et diagnostic", "Entrer dans la séquence", "Comment faire bonne impression au client dès les premières secondes ?", "Photos de deux accueils (réussi, raté) · représentations · questionnaire pré-requis · présentation du jeu de rôle final"),
+        SE("Apprentissage", "Observer l'accueil en magasin", "Qu'est-ce qu'un accueil réussi ?", "Analyse de 3 vidéos avec une grille d'observation · construction des 4 étapes de la prise de contact", [0]),
+        SE("Apprentissage", "Calculer un prix TTC", "Combien le client paiera-t-il ?", "Fiche produit · prix HT, TVA, TTC · exercices progressifs", [3]),
+        SE("Apprentissage", "La communication verbale et non verbale", "", "Jeux de mimes · distances interpersonnelles · formules d'accueil · fiche mémo", [1]),
+        SE("Apprentissage", "S'entraîner à l'accueil en face à face", "Comment réussir les premières secondes ?", "Jeux de rôle par trois (vendeur, client, observateur) · grille · enregistrement test", [1]),
+        SE("Apprentissage", "S'entraîner aux calculs commerciaux", "", "Exercices différenciés · auto-correction", [3]),
+        SE("Apprentissage", "Accueillir au téléphone", "Comment accueillir sans être vu ?", "Écoute d'appels · phrase d'accueil · simulations d'appels en binômes", [2]),
+        SE("Évaluation", "Jeu de rôle filmé évalué", "Suis-je capable d'accueillir un client en face à face et au téléphone ?", "Passages filmés en face à face et au téléphone · grille de prise de contact · auto-évaluation", [1, 2]),
+        SE("Évaluation", "Évaluation écrite et bilan", "", "Analyse d'une vidéo d'accueil · calculs de prix TTC · bilan de la séquence", [0, 3])] },
+    seaIdx: 4, sea: { tissage: ["Rappel des 4 étapes de la prise de contact (carte mentale de la séance 4)", 10], accroche: ["Vidéo de 30 s : un client entre, personne ne le regarde. Que ressent-il ?", 5, "Vidéo"], problPhase: ["Comment réussir les premières secondes avec un client ?", 5],
+      moments: [MO("Préparation des rôles", 15, "Par trois, chacun reçoit une fiche (vendeur, client, observateur) et prépare son rôle.", "Groupes", "Fiches rôles, grille d'observation", "Étapes de la prise de contact", "Accueillir et prendre contact", "Coup de pouce : fiche de formules d'accueil"),
+        MO("Jeux de rôle tournants", 45, "Trois passages de 10 min : chacun tient chaque rôle ; l'observateur remplit la grille.", "Groupes", "Espace de vente reconstitué, tablette", "Communication non verbale", "Adopter une posture professionnelle", "Défi : client pressé ou mécontent"),
+        MO("Retour sur les vidéos", 20, "Visionnage de 2 passages volontaires, analyse collective avec la grille.", "Collectif", "Vidéoprojecteur", "Grille de prise de contact", "Analyser sa pratique", "")],
+      synthese: [10, "Chacun note son point fort et un point à améliorer.", "Fiche d'auto-évaluation complétée et règle des 4 étapes dans le classeur professionnel"] },
+    taf: [[2, "Exercices 1 à 4 de la fiche « Prix TTC »", "À faire", 20], [4, "Observer l'accueil dans un magasin de son choix et compléter la grille d'observation", "À faire", 20]] },
 
   cap: { lib: "Enseignement pro · CAP", ico: "🔧", etab: "lp", disc: "Enseignement professionnel", classe: "CAP1 MV", niveau: "CAP 1re année",
     cren: [[1, 180, "T"], [2, 180, "T"]], marques: { "2026-12-14": "Semaine tampon" }, periodes: [["PFMP", "2027-02-01", "2027-02-26"], ["PFMP", "2027-05-31", "2027-06-25"]],
@@ -2036,7 +2085,7 @@ function chargerExempleDisc(k) {
   var P = nv.prog; P.etab = X.etab; P.zone = (E && E.prog && E.prog.zone) || "A"; P.discipline = X.disc; P.types = typesPour(X.etab);
   var T = function (nom) { return (P.types.filter(function (t) { return t.nom.indexOf(nom) === 0; })[0] || {}).id; };
   var c = classeVide(); c.nom = X.classe; c.niveau = X.niveau;
-  c.creneaux = X.cren.map(function (k) { return { j: k[0], d: k[1], s: k[2], v: "" }; });
+  c.creneaux = X.cren.map(function (k) { return { j: k[0], d: k[1], s: k[2], v: "", g: k[3] || "" }; });
   c.valences = [{ nom: "", part: 100, seqs: X.seqs.map(function (s, i) { return { t: s[0], h: s[1], col: EX_COULEURS[i % EX_COULEURS.length] }; }) }];
   Object.keys(X.marques || {}).forEach(function (l) { var id = T(X.marques[l]); if (id) c.marques[l] = id; });
   c.periodes = (X.periodes || []).map(function (p) { return { ty: T(p[0]), d: p[1], f: p[2] }; }).filter(function (p) { return p.ty; });
@@ -2047,6 +2096,8 @@ function chargerExempleDisc(k) {
   nv.seq.seances = X.seq.seances.map(function (s) { return JSON.parse(JSON.stringify(s)); });
   E = nv; completer();
   var p0 = profilsActifs()[0]; if (p0) { E.seq.spec[p0] = JSON.parse(JSON.stringify(X.seq.spec)); }
+  var ry = rythmeClasse(E.prog.classes[0], "");
+  if (ry.length > 1 && ry.some(function (p) { return p.d !== ry[0].d || p.g; })) E.seq.seances.forEach(function (x, i) { var p = ry[i % ry.length]; x.duree = p.d; x.disp = p.g ? "Groupes" : "Classe entière"; });
   importerSeance(X.seaIdx, true);
   var S = X.sea, sea = E.sea;
   sea.probl = X.seq.seances[X.seaIdx].probl || sea.probl;
@@ -2054,7 +2105,7 @@ function chargerExempleDisc(k) {
   sea.moments = S.moments.map(function (m) { return Object.assign(momentVide(), m); });
   sea.synthese.d = S.synthese[0]; sea.synthese.t = S.synthese[1]; sea.synthese.trace = S.synthese[2];
   E.cdt.classe = X.classe; E.cdt.discipline = X.disc; E.cdt.debut = "2026-11-16"; genererCdt();
-  (X.taf || []).forEach(function (t) { var e = E.cdt.entrees[t[0]]; if (!e) return; e.taf = t[1]; e.tafType = t[2]; e.tafDuree = t[3]; e.pour = e.pourSugg; });
+  (X.taf || []).forEach(function (t) { E.cdt.entrees.forEach(function (e) { var m = (e.titre || "").match(/Séance (\d+)/); if (!m || +m[1] !== t[0] + 1) return; e.taf = t[1]; e.tafType = t[2]; e.tafDuree = t[3]; e.pour = e.pourSugg; }); });
   return X.lib;
 }
 function ouvrirExemples() {
