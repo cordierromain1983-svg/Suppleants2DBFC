@@ -133,6 +133,16 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .encart ul{margin:4px 0 0;padding-left:18px}
 .modale{position:fixed;inset:0;background:rgba(29,42,68,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modale.ouverte{display:flex}
+.menu-sem{position:absolute;z-index:55;display:none;width:290px;background:#fff;border:1px solid #d9d2c3;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:10px;font-size:.88rem}
+.menu-sem.vu{display:block}
+.menu-sem .ms-tete{margin-bottom:6px}
+.menu-sem .ms-types{display:flex;flex-wrap:wrap;gap:5px}
+.menu-sem button{font:inherit;border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:4px 8px;cursor:pointer}
+.menu-sem .ms-sel{outline:2px solid var(--encre,#1d2a44)}
+.menu-sem .ms-eff{margin-top:6px;background:#fff}
+.menu-sem .ms-tous{display:block;margin-top:6px}
+.menu-sem .ms-aide{color:#777;font-size:.78rem;margin:6px 0}
+.menu-sem .ms-ferm{background:#f3f1ea}
 .grille-ex{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
 .carte-ex{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border:1.5px solid #e2dccd;border-radius:12px;background:#fffdf8;cursor:pointer;font:inherit;text-align:left}
 .carte-ex:hover,.carte-ex:focus{border-color:var(--cuivre,#c8692c);background:#fff6ec}
@@ -227,8 +237,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <div><label class="ch">Marge de sécurité <small>(%)</small></label><input type="number" min="0" max="40" data-p="prog.marge"></div>
         <div><label class="ch">Alternance A / B</label><select data-p="prog.ab"><option value="A">1re semaine de cours = A</option><option value="B">1re semaine de cours = B</option></select></div>
       </div>
-      <label class="coche"><input type="checkbox" data-p="prog.heuresCours"> Compter en <b>heures de cours</b> : un créneau de 55 min compte 1 h, 1 h 25 compte 1 h 30 (l'usage habituel)</label>
-      <label class="coche"><input type="checkbox" data-p="prog.debutSemaine"> Chaque séquence <b>commence en début de semaine</b> (les heures restantes de la semaine où une séquence se termine servent de marge)</label>
+      <label class="coche"><input type="checkbox" data-p="prog.heuresCours"> <span>Compter en <b>heures de cours</b> : un créneau de 55 min compte 1 h, 1 h 25 compte 1 h 30 (l'usage habituel)</span></label>
+      <label class="coche"><input type="checkbox" data-p="prog.seqLundi"> <span>Faire commencer chaque séquence <b>en début de semaine</b> (sinon, la suivante démarre dès que la précédente se termine)</span></label>
 
       <h3>Mes types d'événements</h3>
       <p class="aide">Ils servent à marquer le calendrier (clic sur la grille) ou des périodes datées. Modifiez-les, créez les vôtres.</p>
@@ -473,7 +483,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre. La durée en heures est <b>facultative</b> : sans durée, l'outil partage le temps disponible (après la marge et les séquences dont vous avez fixé la durée) et place chaque séquence ; la durée calculée s'affiche en gris (≈ 13). Saisissez une durée dès que vous la connaissez. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
         <li><b>Disciplines bivalentes</b> (lettres-histoire avec l'EMC, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence, avec sa propre colonne dans la grille. Attribuez chaque créneau à une valence, ou laissez-le « Partagé » : il est alors réparti selon la part de chaque valence.</li>
-        <li><b>Le calendrier</b> : choisissez un type d'événement dans la barre au-dessus de la grille (PFMP, stage, sortie, bac blanc…), puis <b>cliquez sur les semaines</b> concernées. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
+        <li><b>Le calendrier</b> : <b>cliquez sur une semaine</b> de la grille : un petit menu propose les événements (stage, PFMP, sortie, examen blanc, semaine tampon…) et permet de retirer une marque. Pour marquer plusieurs semaines d'un coup, choisissez d'abord le type dans la barre au-dessus de la grille, puis cliquez sur les semaines. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
       </ol>
       <h3>② Séquence</h3>
@@ -527,6 +537,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   </div>
 </div>
 <div class="bandeau-sauv" id="bandeauSauv" role="status"><span id="bandeauTxt"></span><span class="bs-actions" id="bandeauAct"></span></div>
+<div class="menu-sem" id="menuSem" role="dialog"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -712,7 +723,7 @@ var CLE = "atelier-suppleant-v2";
 function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T", v: "" }, { j: 4, d: 55, s: "T", v: "" }], valences: [{ nom: "", part: 100, seqs: [{ t: "", h: "", col: "" }] }], periodes: [], marques: {} }; }
 function etatVide() {
   return {
-    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", heuresCours: true, debutSemaine: true, tampon: true, types: typesPour("college"), classes: [classeVide()] },
+    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", heuresCours: true, seqLundi: false, tampon: true, types: typesPour("college"), classes: [classeVide()] },
     seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [], projet: "" },
     sea: seanceVide(),
     cdt: { classe: "", discipline: "", debut: "", entrees: [] }
@@ -911,7 +922,7 @@ function calculerClasse(c, vi) {
   nbTot = Math.round(nbTot);
   var reserve = total * (Number(P.marge) || 0) / 100, utile = total - reserve;
   var seqs = V.seqs.filter(function (s) { return s.t; });
-  var parSemaine = P.debutSemaine !== false;
+  var parSemaine = P.seqLundi === true;
   /* heures facultatives : les séquences sans durée se partagent le temps restant (après la marge et les durées fixées) */
   var fixe = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0), nAuto = seqs.filter(function (s) { return !Number(s.h); }).length;
   var auto = nAuto ? Math.max(0, Math.floor((utile - fixe) / nAuto * 2) / 2) : 0;
@@ -1010,7 +1021,7 @@ function rendreListes() {
   var et = [["Mon cadre", !!P.discipline], ["Classes et créneaux", aCren && C0.some(function (c) { return c.nom; })], ["Dates imposées", aDates], ["Semaines tampon (conseillé)", aTampon], ["Séquences", aSeq]];
   document.getElementById("etapesProg").innerHTML = '<div class="encart" style="margin-top:0"><b>Ordre conseillé</b><ol style="margin:4px 0 0;padding-left:20px">' + et.map(function (e) { return "<li>" + (e[1] ? "✅ " : "") + e[0] + "</li>"; }).join("") + "</ol></div>";
 
-  h = "<b>Marquer le calendrier :</b>";
+  h = "<b>Marquer plusieurs semaines d'un coup :</b>";
   P.types.forEach(function (t) { h += '<button type="button" class="outil' + (outilActif === t.id ? " sel" : "") + '" data-outil="' + t.id + '" style="background:' + esc(t.col) + '">' + esc(t.nom) + "</button>"; });
   h += '<button type="button" class="outil' + (outilActif === "gomme" ? " sel" : "") + '" data-outil="gomme" style="background:#fff;border-color:#ccc">⌫ Gomme</button>';
   h += '<label><input type="checkbox" id="toutesClasses"' + (toutesClasses ? " checked" : "") + "> toutes mes classes</label>";
@@ -1132,7 +1143,14 @@ function remplirDepuisProg() {
    ================================================================ */
 document.addEventListener("click", function (ev) {
   var cell = ev.target.closest("td[data-c]");
-  if (cell) { if (outilActif) marquer(+cell.getAttribute("data-c"), cell.getAttribute("data-w")); else toast("Choisissez d'abord un type d'événement dans la barre au-dessus de la grille"); return; }
+  if (cell) { if (outilActif) marquer(+cell.getAttribute("data-c"), cell.getAttribute("data-w")); else menuSemaine(cell); return; }
+  var ms = ev.target.closest("[data-ms]");
+  if (ms) { var m = document.getElementById("menuSem"), ci = +m.getAttribute("data-c"), lu = m.getAttribute("data-w"), v = ms.getAttribute("data-ms");
+    if (v === "fermer") { m.classList.remove("vu"); return; }
+    var tous = document.getElementById("msTous").checked, cibles = tous ? E.prog.classes : [E.prog.classes[ci]];
+    cibles.forEach(function (c) { if (v === "effacer") delete c.marques[lu]; else c.marques[lu] = v; });
+    m.classList.remove("vu"); rendreListes(); rendreTout(); sauver(); return; }
+  if (!ev.target.closest("#menuSem")) { var m0 = document.getElementById("menuSem"); if (m0) m0.classList.remove("vu"); }
   var o = ev.target.closest("[data-outil]");
   if (o) { var id = o.getAttribute("data-outil"); outilActif = outilActif === id ? null : id; rendreListes(); if (outilActif) toast("Cliquez sur les semaines de la grille"); return; }
   if (ev.target.id === "toutesClasses") { toutesClasses = ev.target.checked; return; }
@@ -1207,6 +1225,19 @@ document.addEventListener("click", function (ev) {
 });
 function apres() { rendreListes(); rendreTout(); sauver(); }
 
+function menuSemaine(cell) {
+  var ci = +cell.getAttribute("data-c"), lu = cell.getAttribute("data-w"), c = E.prog.classes[ci], actuel = c.marques[lu];
+  var m = document.getElementById("menuSem");
+  var h = '<div class="ms-tete"><b>Semaine du ' + esc(s2d(lu).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })) + '</b> · ' + esc(c.nom || "classe") + '</div><div class="ms-types">';
+  E.prog.types.forEach(function (t) { h += '<button type="button" data-ms="' + t.id + '" style="background:' + esc(t.col) + '"' + (actuel === t.id ? ' class="ms-sel"' : "") + ">" + esc(t.nom) + "</button>"; });
+  h += "</div>" + (actuel ? '<button type="button" class="ms-eff" data-ms="effacer">⌫ Retirer « ' + esc((typeParId(actuel) || {}).nom || "") + ' »</button>' : "") +
+    '<label class="ms-tous"><input type="checkbox" id="msTous"' + (E.prog.classes.length > 1 ? "" : " disabled") + "> pour toutes mes classes</label>" +
+    '<p class="ms-aide">Pour une période au jour près (stage du mardi au vendredi…), utilisez « Dates imposées » dans la classe.</p><button type="button" class="ms-ferm" data-ms="fermer">Fermer</button>';
+  m.innerHTML = h; m.setAttribute("data-c", ci); m.setAttribute("data-w", lu);
+  var r = cell.getBoundingClientRect(), L = Math.min(window.innerWidth - 300, Math.max(8, r.left)), T = r.bottom + window.scrollY + 4;
+  if (r.bottom + 320 > window.innerHeight) T = Math.max(window.scrollY + 8, r.top + window.scrollY - 320);
+  m.style.left = (L + window.scrollX) + "px"; m.style.top = T + "px"; m.classList.add("vu");
+}
 function marquer(ci, lundi) {
   var cibles = toutesClasses ? E.prog.classes : [E.prog.classes[ci]];
   var cible0 = E.prog.classes[ci].marques[lundi];
@@ -1427,8 +1458,8 @@ function docProg(pourWord) {
   if (!tampons) al.push(["mo", "Pensez aux semaines tampon : une semaine avant chaque période de vacances absorbe retards, absences et imprévus. Choisissez « Semaine tampon » dans la barre, puis cliquez sur les semaines voulues."]);
   P.classes.forEach(function (c) { if (c.valences.length > 1) { var tp = c.valences.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0); if (c.creneaux.some(function (k) { return !k.v; }) && tp !== 100) al.push(["mo", (c.nom || "Classe") + " : les parts des valences font " + tp + " % ; elles sont recalculées sur 100 % pour répartir les créneaux partagés."]); } });
   h += '<div class="legende">' + P.types.map(function (t) { return '<span style="background:' + esc(t.col) + '">' + esc(t.nom) + " · " + EFFETS[t.effet].toLowerCase() + "</span>"; }).join("") + '<span style="background:#ece9e2">vacances</span></div>';
-  if (!pourWord) h += '<p class="aide-doc" style="margin:0 0 6px">Choisissez un type d\'événement dans la barre ci-dessus, puis cliquez sur les semaines de la grille.</p>';
-  h += '<p class="aide-doc" style="margin:0 0 6px">' + (P.debutSemaine !== false ? "Chaque séquence démarre en début de semaine. Quand une séquence se termine en cours de semaine, la case indique les heures restantes : c'est de la marge (remédiation, évaluation, imprévus)." : "Les séquences s'enchaînent sans attendre la semaine suivante : une case « Fin de… · Début de… » indique qu'une séquence se termine et que la suivante commence dans la même semaine, avec les heures de chacune.") + " La flèche ↓ signifie que la séquence continue." + (P.heuresCours !== false ? " Les créneaux sont comptés en heures de cours (55 min = 1 h)." : "") + "</p>";
+  if (!pourWord) h += '<p class="aide-doc" style="margin:0 0 6px">Cliquez sur une semaine de la grille pour y placer une contrainte (stage, sortie, examen blanc, semaine tampon…). Pour en marquer plusieurs d\'un coup, choisissez d\'abord le type dans la barre ci-dessus.</p>';
+  h += '<p class="aide-doc" style="margin:0 0 6px">' + (P.seqLundi === true ? "Chaque séquence démarre en début de semaine. Quand une séquence se termine en cours de semaine, la case indique les heures restantes : c'est de la marge (remédiation, évaluation, imprévus)." : "Les séquences s'enchaînent : quand une séquence se termine en cours de semaine, la suivante commence aussitôt. La case porte alors les deux couleurs et indique les heures de chacune (« Fin de… · Début de… »).") + " La flèche ↓ signifie que la séquence continue." + (P.heuresCours !== false ? " Les créneaux sont comptés en heures de cours (55 min = 1 h)." : "") + "</p>";
 
   var col = calc.map(function (r, n) {
     var seqsC = r.seqs;
@@ -1441,8 +1472,13 @@ function docProg(pourWord) {
       if ((x.parts || []).length > 1) lib = x.parts.map(function (p, n) { return (n === 0 ? "Fin de « " : "Début de « ") + r.seqs[p.k].t + " » (" + hm(p.h * 60) + ")"; }).join(" · ");
       else lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join("");
       if (x.libre) lib += (lib ? " · " : "") + hm(x.libre * 60) + " libre" + (x.libre * 60 > 90 ? "s" : "") + " (marge)";
-      var dern = x.seqs[x.seqs.length - 1];
-      return { cls: "", txt: lib, col: x.seqs.length ? (seqsC[dern].col || COULEURS[dern % COULEURS.length]) : "", cle: (x.parts || []).length > 1 || x.libre ? "t" + Math.random() : "s" + x.seqs.join(","), evts: x.evts, nb: x.nb, seq: x.seqs.length > 0 };
+      var dern = x.seqs[x.seqs.length - 1], grad = "";
+      if ((x.parts || []).length > 1) {
+        var totH = x.parts.reduce(function (a, p) { return a + p.h; }, 0) || 1, cum = 0, stops = [];
+        x.parts.forEach(function (p) { var cl = seqsC[p.k].col || COULEURS[p.k % COULEURS.length], a = Math.round(cum / totH * 100); cum += p.h; var z = Math.round(cum / totH * 100); stops.push(cl + " " + a + "%", cl + " " + z + "%"); });
+        grad = "linear-gradient(90deg," + stops.join(",") + ")";
+      }
+      return { cls: "", txt: lib, col: x.seqs.length ? (seqsC[dern].col || COULEURS[dern % COULEURS.length]) : "", cle: (x.parts || []).length > 1 || x.libre ? "t" + Math.random() : "s" + x.seqs.join(","), evts: x.evts, nb: x.nb, seq: x.seqs.length > 0, grad: grad };
     });
   });
   var avecAB = P.classes.some(function (c) { return c.creneaux.some(function (k) { return k.s !== "T"; }); });
@@ -1467,6 +1503,7 @@ function docProg(pourWord) {
         fusion[ci] = n - 1;
         h += '<td class="' + x.cls + '"' + (n > 1 ? ' rowspan="' + n + '"' : "") + style + ">" + esc(x.txt) + evts + "</td>";
       } else {
+        if (x.grad) style = ' style="background:' + esc(x.grad) + '"';
         var prec = cc[wi - 1], suite = prec && !SEM[wi - 1].vac && prec.cle === x.cle && x.txt;
         var nbc = x.seq ? '<span class="nbc">' + (x.nb % 1 ? "≈ " + x.nb : x.nb) + " cours</span>" : (x.nb === 0 && !x.cls && !x.txt ? '<span class="nbc">pas de cours</span>' : "");
         h += '<td class="clic ' + x.cls + '" data-c="' + classes[ci].i + '" data-w="' + w.lundi + '"' + style + ' title="Cliquer pour marquer cette semaine">' + (suite ? '<span class="suite">↓</span>' : esc(x.txt)) + evts + nbc + "</td>";
