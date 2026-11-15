@@ -227,6 +227,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <div><label class="ch">Marge de sécurité <small>(%)</small></label><input type="number" min="0" max="40" data-p="prog.marge"></div>
         <div><label class="ch">Alternance A / B</label><select data-p="prog.ab"><option value="A">1re semaine de cours = A</option><option value="B">1re semaine de cours = B</option></select></div>
       </div>
+      <label class="coche"><input type="checkbox" data-p="prog.heuresCours"> Compter en <b>heures de cours</b> : un créneau de 55 min compte 1 h, 1 h 25 compte 1 h 30 (l'usage habituel)</label>
+      <label class="coche"><input type="checkbox" data-p="prog.debutSemaine"> Chaque séquence <b>commence en début de semaine</b> (les heures restantes de la semaine où une séquence se termine servent de marge)</label>
 
       <h3>Mes types d'événements</h3>
       <p class="aide">Ils servent à marquer le calendrier (clic sur la grille) ou des périodes datées. Modifiez-les, créez les vôtres.</p>
@@ -607,6 +609,8 @@ function partValence(c, vi) {
   var tot = V.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0);
   return tot > 0 ? (Number(V[vi].part) || 0) / tot : 1 / V.length;
 }
+/* usage : un créneau de 55 min est une « heure de cours » ; on arrondit à la demi-heure la plus proche si l'écart est de 10 min au plus */
+function dureeComptee(d) { d = Number(d) || 0; if (E.prog.heuresCours === false) return d; var r = Math.round(d / 30) * 30; return r && Math.abs(r - d) <= 10 ? r : d; }
 function nbGroupes(c) { var g = {}; c.creneaux.forEach(function (k) { if (k.g) g[k.g] = 1; }); return Object.keys(g).length; }
 /* un créneau en groupe n'est suivi que par une partie de la classe : pour l'élève, il compte pour 1 / nombre de groupes */
 function partGroupe(c, k) { return k.g ? 1 / Math.max(1, nbGroupes(c)) : 1; }
@@ -708,7 +712,7 @@ var CLE = "atelier-suppleant-v2";
 function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T", v: "" }, { j: 4, d: 55, s: "T", v: "" }], valences: [{ nom: "", part: 100, seqs: [{ t: "", h: "", col: "" }] }], periodes: [], marques: {} }; }
 function etatVide() {
   return {
-    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
+    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", heuresCours: true, debutSemaine: true, tampon: true, types: typesPour("college"), classes: [classeVide()] },
     seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [], projet: "" },
     sea: seanceVide(),
     cdt: { classe: "", discipline: "", debut: "", entrees: [] }
@@ -870,7 +874,7 @@ function pucesObjectif(t, garde) {
 /* ================================================================
    CALCUL D'UNE CLASSE
    ================================================================ */
-function minutesHebdo(c, ab, vi, prof) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? (Number(k.d) || 0) * (vi == null ? 1 : partCreneau(c, k, vi)) * (prof ? 1 : partGroupe(c, k)) : 0); }, 0); }
+function minutesHebdo(c, ab, vi, prof) { return c.creneaux.reduce(function (a, k) { return a + ((k.s === "T" || k.s === ab) ? dureeComptee(k.d) * (vi == null ? 1 : partCreneau(c, k, vi)) * (prof ? 1 : partGroupe(c, k)) : 0); }, 0); }
 function lettreAB(w) { return ((w.idx % 2 === 0) === (E.prog.ab !== "B")) ? "A" : "B"; }
 function calculerClasse(c, vi) {
   normaliserClasse(c); vi = vi || 0;
@@ -895,7 +899,7 @@ function calculerClasse(c, vi) {
     c.creneaux.forEach(function (k) {
       if (!(k.s === "T" || k.s === ab)) return;
       var part = partCreneau(c, k, vi) * partGroupe(c, k); if (!part) return;
-      jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += (Number(k.d) || 0) * part; nb += part; } });
+      jours.forEach(function (j) { if (s2d(j).getDay() === Number(k.j)) { min += dureeComptee(k.d) * part; nb += part; } });
     });
     if (demi) { min /= 2; nb = nb / 2; }
     nb = Math.round(nb * 10) / 10;
@@ -907,18 +911,20 @@ function calculerClasse(c, vi) {
   nbTot = Math.round(nbTot);
   var reserve = total * (Number(P.marge) || 0) / 100, utile = total - reserve;
   var seqs = V.seqs.filter(function (s) { return s.t; }), besoin = seqs.reduce(function (a, s) { return a + (Number(s.h) || 0); }, 0);
-  var coef = utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1;
+  var parSemaine = P.debutSemaine !== false;
+  var coef = parSemaine ? 1 : (utile > 0 && besoin > 0 ? Math.min(1, besoin / utile) : 1);
   var idx = 0, reste = seqs.length ? (Number(seqs[0].h) || 0) : 0;
   cases.forEach(function (x) {
     if (x.type !== "cours") return;
-    x.seqs = [];
+    x.seqs = []; x.parts = []; x.libre = 0;
     if (idx >= seqs.length || x.cap <= 0) return;
     var cap = x.cap * coef + 1e-9;
-    while (cap > 0 && idx < seqs.length) {
+    while (cap > 1e-6 && idx < seqs.length) {
       if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
-      var pris = Math.min(cap, reste); cap -= pris; reste -= pris;
-      if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? (Number(seqs[idx].h) || 0) : 0; }
+      var pris = Math.min(cap, reste); cap -= pris; reste -= pris; x.parts.push({ k: idx, h: pris });
+      if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? (Number(seqs[idx].h) || 0) : 0; if (parSemaine) break; }
     }
+    if (parSemaine && idx < seqs.length) x.libre = cap > 0.05 ? cap : 0;
   });
   return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
 }
@@ -1101,7 +1107,7 @@ function remplirDepuisProg() {
       var cr = c.creneaux.filter(function (k) { return partCreneau(c, k, vi) > 0; }).map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
       if (cr.length) { var freq = {}; cr.forEach(function (d) { freq[d] = (freq[d] || 0) + 1; }); E.seq.duree = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b - a; })[0]; }
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
-      if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / E.seq.duree));
+      if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / dureeComptee(E.seq.duree)));
       lierChamps(document.getElementById("p-seq"));
       toast("Classe, place, durée et nombre de séances repris de la programmation");
     });
@@ -1408,6 +1414,7 @@ function docProg(pourWord) {
   P.classes.forEach(function (c) { if (c.valences.length > 1) { var tp = c.valences.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0); if (c.creneaux.some(function (k) { return !k.v; }) && tp !== 100) al.push(["mo", (c.nom || "Classe") + " : les parts des valences font " + tp + " % ; elles sont recalculées sur 100 % pour répartir les créneaux partagés."]); } });
   h += '<div class="legende">' + P.types.map(function (t) { return '<span style="background:' + esc(t.col) + '">' + esc(t.nom) + " · " + EFFETS[t.effet].toLowerCase() + "</span>"; }).join("") + '<span style="background:#ece9e2">vacances</span></div>';
   if (!pourWord) h += '<p class="aide-doc" style="margin:0 0 6px">Choisissez un type d\'événement dans la barre ci-dessus, puis cliquez sur les semaines de la grille.</p>';
+  h += '<p class="aide-doc" style="margin:0 0 6px">' + (P.debutSemaine !== false ? "Chaque séquence démarre en début de semaine. Quand une séquence se termine en cours de semaine, la case indique les heures restantes : c'est de la marge (remédiation, évaluation, imprévus)." : "Les séquences s'enchaînent sans attendre la semaine suivante : une case « Fin de… · Début de… » indique qu'une séquence se termine et que la suivante commence dans la même semaine, avec les heures de chacune.") + " La flèche ↓ signifie que la séquence continue." + (P.heuresCours !== false ? " Les créneaux sont comptés en heures de cours (55 min = 1 h)." : "") + "</p>";
 
   var col = calc.map(function (r, n) {
     var seqsC = r.seqs;
@@ -1416,9 +1423,12 @@ function docProg(pourWord) {
       if (x.type === "fin") return { cls: "fin", txt: "", cle: "fin" };
       if (x.type === "tampon") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "tampon" + Math.random(), evts: x.evts };
       if (x.type === "off") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "off" + x.t.id };
-      var lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join(" → ");
+      var lib;
+      if ((x.parts || []).length > 1) lib = x.parts.map(function (p, n) { return (n === 0 ? "Fin de « " : "Début de « ") + r.seqs[p.k].t + " » (" + hm(p.h * 60) + ")"; }).join(" · ");
+      else lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join("");
+      if (x.libre) lib += (lib ? " · " : "") + hm(x.libre * 60) + " libre" + (x.libre * 60 > 90 ? "s" : "") + " (marge)";
       var dern = x.seqs[x.seqs.length - 1];
-      return { cls: "", txt: lib, col: x.seqs.length ? (seqsC[dern].col || COULEURS[dern % COULEURS.length]) : "", cle: "s" + x.seqs.join(","), evts: x.evts, nb: x.nb, seq: x.seqs.length > 0 };
+      return { cls: "", txt: lib, col: x.seqs.length ? (seqsC[dern].col || COULEURS[dern % COULEURS.length]) : "", cle: (x.parts || []).length > 1 || x.libre ? "t" + Math.random() : "s" + x.seqs.join(","), evts: x.evts, nb: x.nb, seq: x.seqs.length > 0 };
     });
   });
   var avecAB = P.classes.some(function (c) { return c.creneaux.some(function (k) { return k.s !== "T"; }); });
@@ -1451,7 +1461,7 @@ function docProg(pourWord) {
     h += "</tr>";
   });
   h += "</tbody></table>";
-  h += '<p class="aide-doc">Les séquences sont étalées selon les heures estimées et les créneaux réels de chaque semaine : jours fériés, pont de l\'Ascension, semaines A/B et événements compris.</p>';
+  h += '<p class="aide-doc">Les séquences sont placées selon les heures estimées et les créneaux réels de chaque semaine : jours fériés, pont de l\'Ascension, semaines A/B et événements compris.</p>';
   return { html: h, al: al };
 }
 
@@ -1461,7 +1471,7 @@ function docProg(pourWord) {
 function docSeq() {
   var q = E.seq, al = [];
   if (!q.titre && !q.og && !q.seances.length) return { html: '<p class="vide-msg">Renseignez votre séquence à gauche (ou chargez un exemple). Le document se construit en direct.</p>', al: al };
-  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.seances.length ? " · " + q.seances.length + " séance(s), " + hm(q.seances.reduce(function (a, x) { return a + dureeSeance(x, q); }, 0)) + " au total" : q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
+  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.seances.length ? " · " + q.seances.length + " séance(s), " + hm(q.seances.reduce(function (a, x) { return a + dureeComptee(dureeSeance(x, q)); }, 0)) + " au total" : q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
   var socle = (q.socle || []).map(function (k) { var s = SOCLE.filter(function (x) { return x[0] === k; })[0]; return s ? "<b>" + k + "</b> " + esc(s[1].split("· ")[1]) : ""; }).join("<br>");
   [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], q.projet ? ["Projet d'apprentissage", nl(q.projet)] : null, ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
@@ -1493,7 +1503,7 @@ function docSeq() {
     q.seances.forEach(function (s, i) { if (!(s.objs || []).length && s.type !== "Lancement et diagnostic") al.push(["mo", "Séance " + (i + 1) + " : à quel objectif contribue-t-elle ?"]); });
     if (!q.seances.some(function (s) { return s.type === "Évaluation"; })) al.push(["mo", "Aucune séance d'évaluation : les évaluations sont des séances à part entière."]);
     q.seances.forEach(function (s, i) { if (!s.obj) return; var a = analyseObjectif(s.obj); if (a && a.flous.length) al.push(["mo", "Séance " + (i + 1) + " : « " + a.flous[0].trim() + " » n'est pas observable dans l'objectif de la séance. Ex. : repérer, relever, expliquer, rédiger…"]); });
-    var tot = q.seances.reduce(function (a, x) { return a + dureeSeance(x, q); }, 0), prev = heuresProgSeq(q);
+    var tot = q.seances.reduce(function (a, x) { return a + dureeComptee(dureeSeance(x, q)); }, 0), prev = heuresProgSeq(q);
     if (prev && Math.abs(tot - prev * 60) >= 60) al.push(["mo", "Les séances totalisent " + hm(tot) + " ; la programmation prévoit " + hm(prev * 60) + " pour cette séquence. Ajustez l'une ou l'autre."]);
     var jal = q.seances.map(function (s) { return (s.jalon || "").match(/\d+/); }).filter(Boolean).map(function (m) { return +m[0]; });
     if (jal.length) { var dbl = jal.filter(function (x, k) { return jal.indexOf(x) !== k; }); var max = Math.max.apply(null, jal), manq = []; for (var j = 1; j <= max; j++) if (jal.indexOf(j) < 0) manq.push(j);
