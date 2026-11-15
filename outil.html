@@ -54,6 +54,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .bloc .tete b{color:var(--encre);font-size:.92rem}
 .lg{display:grid;gap:6px;margin:5px 0;align-items:center}
 .lg.seq{grid-template-columns:34px 1fr 64px 22px 22px 22px}
+.lg.seq.avecm{grid-template-columns:30px 70px 1fr 54px 20px 20px 20px}
+.lg.seq.avecm select{padding-left:4px;padding-right:2px}
 .lg.cren{grid-template-columns:1fr 64px 1fr 1.15fr 22px}
 .lg.per{grid-template-columns:1fr 118px 118px 22px}
 .lg.typ{grid-template-columns:34px 1fr 130px 22px}
@@ -488,7 +490,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Dates imposées d'abord</b> : avant les séquences, placez ce qui ne bouge pas : stages et PFMP, examens blancs, sorties, date de fin des cours. Les séquences se répartissent ensuite dans le temps réellement disponible. L'encart « Ordre conseillé » coche les étapes faites.</li>
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre. La durée en heures est <b>facultative</b> : sans durée, l'outil partage le temps disponible (après la marge et les séquences dont vous avez fixé la durée) et place chaque séquence ; la durée calculée s'affiche en gris (≈ 13). Saisissez une durée dès que vous la connaissez. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
-        <li><b>Disciplines bivalentes</b> (lettres-histoire avec l'EMC, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence, avec sa propre colonne dans la grille. Attribuez chaque créneau à une valence, ou laissez-le « Partagé » : il est alors réparti selon la part de chaque valence.</li>
+        <li><b>Disciplines bivalentes</b> (lettres-histoire, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence. Les créneaux partagés sont répartis <b>à parts égales</b> ; modifiez la répartition seulement si vous la connaissez. En lettres-histoire, l'<b>EMC fait partie de la valence histoire-géographie</b> : pour chaque séquence, choisissez la matière (histoire, géographie ou EMC) ; le résumé affiche les heures de chacune. Le même choix existe pour un professeur d'histoire-géographie au collège.</li>
         <li><b>Commentaires</b> : la dernière colonne de la grille accueille un commentaire libre pour chaque semaine (visite, projet, rappel, ajustement…). Il est repris dans l'export Word.</li>
         <li><b>Le calendrier</b> : <b>cliquez sur une semaine</b> de la grille : un petit menu propose les événements (stage, PFMP, sortie, examen blanc, semaine tampon…) et permet de retirer une marque. Pour marquer plusieurs semaines d'un coup, choisissez d'abord le type dans la barre au-dessus de la grille, puis cliquez sur les semaines. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
@@ -612,7 +614,7 @@ var TYPES_DEFAUT = {
 var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère", tampon: "Semaine tampon" };
 /* Bivalence : une programmation par valence */
 var VALENCES = [
-  [/lettres.*histoire|histoire.*lettres/i, [["Français", 50], ["Histoire-géographie", 35], ["EMC", 15]]],
+  [/lettres.*histoire|histoire.*lettres/i, [["Français", 50], ["Histoire-géographie-EMC", 50]]],
   [/math.*physique|physique.*math/i, [["Mathématiques", 50], ["Physique-chimie", 50]]],
   [/langues?.*lettres|lettres.*langues?|lettres.*anglais|lettres.*espagnol|lettres.*allemand/i, [["Français", 50], ["Langue vivante", 50]]]
 ];
@@ -620,8 +622,24 @@ function normaliserClasse(c) {
   if (!c.valences) { c.valences = [{ nom: "", part: 100, seqs: c.seqs && c.seqs.length ? c.seqs : [{ t: "", h: "", col: "" }] }]; delete c.seqs; }
   (c.creneaux || []).forEach(function (k) { if (k.v === undefined) k.v = ""; });
   c.periodes = c.periodes || []; c.marques = c.marques || {};
+  /* l'EMC fait partie de la valence histoire-géographie (ancienne version : valence séparée) */
+  var iE = -1, iH = -1; c.valences.forEach(function (v, k) { if (/^\s*emc\s*$/i.test(v.nom || "")) iE = k; else if (/histoire|géo/i.test(v.nom || "")) iH = k; });
+  if (iE >= 0 && iH >= 0) {
+    var VE = c.valences[iE], VH = c.valences[iH], nn = /emc/i.test(VH.nom) ? VH.nom : "Histoire-géographie-EMC";
+    VE.seqs.filter(function (x) { return x.t; }).forEach(function (x) { x.m = x.m || "EMC"; VH.seqs.push(x); });
+    c.creneaux.forEach(function (k) { if (k.v === VE.nom || k.v === VH.nom) k.v = nn; });
+    VH.nom = nn; c.valences.splice(iE, 1); c.valences.forEach(function (v) { v.part = Math.round(100 / c.valences.length); });
+  }
+  c.valences.forEach(function (v) { v.seqs.forEach(function (x) {
+    if (x.m !== undefined) return; x.m = "";
+    var r = [[/^(H\d*|Hist\.?)\s*[·:\-–]\s*/i, "Histoire"], [/^(G\d*|Géo\.?)\s*[·:\-–]\s*/i, "Géographie"], [/^EMC\d*\s*[·:\-–]\s*/i, "EMC"]];
+    r.forEach(function (p) { if (!x.m && x.t && p[0].test(x.t)) { x.m = p[1]; x.t = x.t.replace(p[0], ""); } });
+  }); });
   return c;
 }
+var MATIERES_HG = ["Histoire", "Géographie", "EMC"];
+function aMatieres(c, v) { return /histoire|géographie|geographie|\bemc\b/i.test((v && v.nom) || "") || (c.valences.length < 2 && /histoire|géographie|geographie|\bemc\b/i.test(E.prog.discipline || "")); }
+function abrMatiere(m) { return { "Histoire": "Hist.", "Géographie": "Géo.", "EMC": "EMC" }[m] || ""; }
 function partValence(c, vi) {
   var V = c.valences; if (V.length < 2) return 1;
   var tot = V.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0);
@@ -1002,7 +1020,7 @@ function rendreListes() {
     normaliserClasse(c);
     var b = "prog.classes." + i, mA = minutesHebdo(c, "A"), mB = minutesHebdo(c, "B"), bi = c.valences.length > 1;
     h += '<div class="bloc"><div class="tete"><b>Classe ' + (i + 1) + (c.nom ? " · " + esc(c.nom) : "") + '</b><span><button class="btn mini discret" type="button" data-action="dupliquerClasse" data-i="' + i + '" title="Dupliquer la classe">⧉ dupliquer</button> <button class="suppr" type="button" title="Supprimer la classe" data-action="supprClasse" data-i="' + i + '">✕</button></span></div>';
-    h += '<div class="trio"><div><label class="ch">Nom de la classe</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 4eB, 2nde MRC…"></div><div><label class="ch">Niveau</label><input type="text" data-p="' + b + '.niveau" list="dlNiv"></div><div><label class="ch">Fin des cours</label><input type="date" data-p="' + b + '.fin" title="Vide = 2 juillet 2027"></div></div>';
+    h += '<div class="trio"><div><label class="ch">Nom de la classe</label><input type="text" data-p="' + b + '.nom" placeholder="ex. 4eB, 2nde MRC…"></div><div><label class="ch">Niveau</label><input type="text" data-p="' + b + '.niveau" list="dlNiv"></div><div><label class="ch">Fin des cours' + (c.fin ? "" : ' <small style="color:#b23b2e">à indiquer</small>') + '</label><input type="date" data-p="' + b + '.fin" title="Dernier jour de cours de la classe (vide = 2 juillet 2027)"' + (c.fin ? "" : ' style="border-color:#e0a59c;background:#fff7f5"') + '></div></div>';
     /* ① créneaux */
     h += '<label class="ch">① Créneaux de cours <small>(jour · durée en minutes · semaine · classe entière ou groupe' + (bi ? " · valence" : "") + ')</small></label>';
     var optsV = [["", bi ? "Partagé" : "—"]].concat(c.valences.map(function (v) { return [v.nom, v.nom]; }));
@@ -1026,24 +1044,30 @@ function rendreListes() {
     if (!bi) h += '<div style="margin-top:10px"><button class="btn mini discret" type="button" data-action="activerBivalence" data-i="' + i + '">⇆ Discipline bivalente : une programmation par valence</button></div>';
     c.valences.forEach(function (v, vi) {
       var bv = b + ".valences." + vi;
-      if (bi) h += '<div class="bloc" style="background:#fff;margin-top:10px"><div class="tete"><b>Valence</b><span><button class="suppr" type="button" title="Retirer cette valence" data-action="supprValence" data-i="' + i + '" data-v="' + vi + '">✕</button></span></div><div class="duo"><div><label class="ch">Nom</label><input type="text" data-p="' + bv + '.nom" data-rerender="1" placeholder="ex. Français"></div><div><label class="ch">Part des créneaux partagés <small>(%)</small></label><input type="number" min="0" max="100" data-p="' + bv + '.part"></div></div>';
-      h += '<label class="ch">④ Séquences' + (bi && v.nom ? " de " + esc(v.nom) : "") + ', dans l\'ordre <small>(couleur · titre · heures : facultatif)</small></label><p class="aide" style="margin:0 0 4px">Vous pouvez saisir seulement les titres : l\'outil partage le temps disponible entre les séquences sans durée et les place. Indiquez une durée quand vous la connaissez.</p>';
+      if (bi) h += '<div class="bloc" style="background:#fff;margin-top:10px"><div class="tete"><b>Valence</b><span><button class="suppr" type="button" title="Retirer cette valence" data-action="supprValence" data-i="' + i + '" data-v="' + vi + '">✕</button></span></div><label class="ch">Nom</label><input type="text" data-p="' + bv + '.nom" data-rerender="1" placeholder="ex. Français">';
+      h += '<label class="ch">④ Séquences' + (bi && v.nom ? " de " + esc(v.nom) : "") + ', dans l\'ordre <small>(couleur · ' + (aMatieres(c, v) ? "matière · " : "") + 'titre · heures : facultatif)</small></label><p class="aide" style="margin:0 0 4px">Vous pouvez saisir seulement les titres : l\'outil partage le temps disponible entre les séquences sans durée et les place. Indiquez une durée quand vous la connaissez.</p>';
       v.seqs.forEach(function (sq, j) {
         var bs = bv + ".seqs." + j;
         if (!sq.col) sq.col = COULEURS[j % COULEURS.length];
-        h += '<div class="lg seq"><input type="color" data-p="' + bs + '.col"><input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" data-hauto="' + i + '|' + vi + '" placeholder="auto" title="Heures : vide = calculé automatiquement"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">✕</button></div>';
+        var avecM = aMatieres(c, v);
+        h += '<div class="lg seq' + (avecM ? " avecm" : "") + '"><input type="color" data-p="' + bs + '.col">' + (avecM ? sel(bs + ".m", [["", "—"]].concat(MATIERES_HG.map(function (x) { return [x, abrMatiere(x)]; })), sq.m || "").replace("<select", '<select title="Matière : histoire, géographie ou EMC"') : "") + '<input type="text" data-p="' + bs + '.t" placeholder="Séquence ' + (j + 1) + '"><input type="number" min="0" step="0.5" data-p="' + bs + '.h" data-hauto="' + i + '|' + vi + '" placeholder="auto" title="Heures : vide = calculé automatiquement"><button class="fl" type="button" title="Monter" data-action="monterSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▲</button><button class="fl" type="button" title="Descendre" data-action="descendreSeq" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">▼</button><button class="suppr" type="button" data-action="supprSeqProg" data-i="' + i + '" data-v="' + vi + '" data-j="' + j + '">✕</button></div>';
       });
       h += '<button class="btn mini" type="button" data-action="ajoutSeqProg" data-i="' + i + '" data-v="' + vi + '">+ séquence</button>';
       if (bi) h += "</div>";
     });
-    if (bi) h += '<button class="btn mini" type="button" data-action="ajoutValence" data-i="' + i + '" style="margin-top:6px">+ valence</button><p class="aide">Un créneau « Partagé » est réparti entre les valences selon leur part. Attribuez un créneau à une valence pour le lui réserver.</p>';
+    if (bi) {
+      var egales = c.valences.every(function (v) { return Number(v.part) === Number(c.valences[0].part); });
+      h += '<button class="btn mini" type="button" data-action="ajoutValence" data-i="' + i + '" style="margin-top:6px">+ valence</button>';
+      h += '<details style="margin-top:8px"' + (egales ? "" : " open") + '><summary class="aide" style="cursor:pointer">Répartition des créneaux partagés : ' + (egales ? "<b>à parts égales</b>" : "<b>personnalisée</b>") + ' (modifier)</summary><p class="aide">Un créneau attribué à une valence lui est réservé. Les créneaux « Partagé » sont répartis entre les valences, à parts égales par défaut. Modifiez seulement si vous savez que la répartition est différente.</p><div class="duo">' +
+        c.valences.map(function (v, vi) { return '<div><label class="ch">' + esc(v.nom || "Valence " + (vi + 1)) + ' <small>(%)</small></label><input type="number" min="0" max="100" data-p="' + b + ".valences." + vi + '.part"></div>'; }).join("") + '</div><button class="btn mini discret" type="button" data-action="partsEgales" data-i="' + i + '">Revenir à parts égales</button></details>';
+    }
     h += "</div>";
   });
   document.getElementById("listeClasses").innerHTML = h;
   var C0 = P.classes, aCren = C0.some(function (c) { return c.creneaux.length; }), aDates = C0.some(function (c) { return c.fin || c.periodes.some(function (p) { return p.d; }) || Object.keys(c.marques).some(function (k) { var t = typeParId(c.marques[k]); return t && t.effet !== "tampon"; }); });
   var aTampon = C0.some(function (c) { return Object.keys(c.marques).some(function (k) { var t = typeParId(c.marques[k]); return t && t.effet === "tampon"; }) || c.periodes.some(function (p) { var t = typeParId(p.ty); return t && t.effet === "tampon"; }); });
   var aSeq = C0.some(function (c) { return c.valences.some(function (v) { return v.seqs.some(function (s) { return s.t; }); }); });
-  var et = [["Mon cadre", !!P.discipline], ["Classes et créneaux", aCren && C0.some(function (c) { return c.nom; })], ["Dates imposées", aDates], ["Semaines tampon (conseillé)", aTampon], ["Séquences", aSeq]];
+  var et = [["Mon cadre", !!P.discipline], ["Classes et créneaux", aCren && C0.some(function (c) { return c.nom; })], ["Date de fin des cours de chaque classe", C0.length && C0.every(function (c) { return c.fin; })], ["Dates imposées (stages, PFMP, examens, sorties)", aDates], ["Semaines tampon (conseillé)", aTampon], ["Séquences", aSeq]];
   document.getElementById("etapesProg").innerHTML = '<div class="encart" style="margin-top:0"><b>Ordre conseillé</b><ol style="margin:4px 0 0;padding-left:20px">' + et.map(function (e) { return "<li>" + (e[1] ? "✅ " : "") + e[0] + "</li>"; }).join("") + "</ol></div>";
 
   h = "<b>Marquer plusieurs semaines d'un coup :</b>";
@@ -1151,7 +1175,7 @@ function remplirDepuisProg() {
       if (s.t !== E.seq.titre) return;
       if (!E.seq.classe) E.seq.classe = c.nom;
       E.seq.valence = c.valences.length > 1 ? V.nom : "";
-      if (!E.seq.discipline) E.seq.discipline = E.seq.valence || E.prog.discipline;
+      if (!E.seq.discipline || MATIERES_HG.indexOf(E.seq.discipline) >= 0) E.seq.discipline = s.m || E.seq.valence || E.prog.discipline;
       var cr = c.creneaux.filter(function (k) { return partCreneau(c, k, vi) > 0; }).map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
       if (cr.length) { var freq = {}; cr.forEach(function (d) { freq[d] = (freq[d] || 0) + 1; }); E.seq.duree = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b - a; })[0]; }
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
@@ -1206,10 +1230,11 @@ document.addEventListener("click", function (ev) {
       var preset = null, dsc = E.prog.discipline || ""; VALENCES.forEach(function (x) { if (!preset && x[0].test(dsc)) preset = x[1]; });
       preset = preset || [["Valence 1", 50], ["Valence 2", 50]];
       var anciennes = C[i].valences[0].seqs;
-      C[i].valences = preset.map(function (p, k) { return { nom: p[0], part: p[1], seqs: k === 0 && anciennes.some(function (s) { return s.t; }) ? anciennes : [{ t: "", h: "", col: "" }] }; });
-      toast(preset.length + " valences créées : ajustez leurs noms et la répartition des créneaux"); break;
-    case "ajoutValence": C[i].valences.push({ nom: "Valence " + (C[i].valences.length + 1), part: 20, seqs: [{ t: "", h: "", col: "" }] }); break;
-    case "supprValence": var vv2 = +b.getAttribute("data-v"); if (!confirm("Retirer cette valence et ses séquences ?")) return; var nomV = C[i].valences[vv2].nom; C[i].valences.splice(vv2, 1); C[i].creneaux.forEach(function (k) { if (k.v === nomV) k.v = ""; }); if (C[i].valences.length === 1) C[i].valences[0].part = 100; break;
+      C[i].valences = preset.map(function (p, k) { return { nom: p[0], part: Math.round(100 / preset.length), seqs: k === 0 && anciennes.some(function (s) { return s.t; }) ? anciennes : [{ t: "", h: "", col: "" }] }; });
+      toast(preset.length + " valences créées, à parts égales : attribuez chaque créneau à sa valence si besoin"); break;
+    case "ajoutValence": C[i].valences.push({ nom: "Valence " + (C[i].valences.length + 1), part: 0, seqs: [{ t: "", h: "", col: "" }] }); C[i].valences.forEach(function (v) { v.part = Math.round(100 / C[i].valences.length); }); break;
+    case "partsEgales": C[i].valences.forEach(function (v) { v.part = Math.round(100 / C[i].valences.length); }); break;
+    case "supprValence": var vv2 = +b.getAttribute("data-v"); if (!confirm("Retirer cette valence et ses séquences ?")) return; var nomV = C[i].valences[vv2].nom; C[i].valences.splice(vv2, 1); C[i].creneaux.forEach(function (k) { if (k.v === nomV) k.v = ""; }); C[i].valences.forEach(function (v) { v.part = Math.round(100 / C[i].valences.length); }); break;
     case "ajoutPer": C[i].periodes.push({ ty: (E.prog.types[0] || {}).id, d: "", f: "" }); break;
     case "supprPer": C[i].periodes.splice(j, 1); break;
     case "effacerMarques": C[i].marques = {}; break;
@@ -1485,7 +1510,7 @@ function docProg(pourWord) {
   P.classes.forEach(function (c) { Object.keys(c.marques).forEach(function (k) { var t = typeParId(c.marques[k]); if (t && t.effet === "tampon") tampons++; else dates++; }); c.periodes.forEach(function (p) { var t = typeParId(p.ty); if (t && t.effet === "tampon") tampons++; else if (p.d) dates++; }); if (c.fin) dates++; });
   calc.forEach(function (r, n) {
     var c = classes[n].c, nom = nomColonne(c, classes[n].vi), libre = r.total - r.besoin;
-    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (≈ " + r.nbTot + " cours) · " + hm(r.besoin * 60) + " prévues" + (r.nAuto ? " (dont " + r.nAuto + " séquence(s) à ≈ " + hm(r.auto * 60) + ", calculées)" : "") + "<br>" +
+    h += "<div><b>" + esc(nom) + (c.niveau ? " · " + esc(c.niveau) : "") + "</b>" + hm(r.total * 60) + " de cours disponibles (≈ " + r.nbTot + " cours) · " + hm(r.besoin * 60) + " prévues" + (r.nAuto ? " (dont " + r.nAuto + " séquence(s) à ≈ " + hm(r.auto * 60) + ", calculées)" : "") + (function () { var pm = {}; r.seqs.forEach(function (sq, k) { if (sq.m) pm[sq.m] = (pm[sq.m] || 0) + r.heff[k]; }); var ks = MATIERES_HG.filter(function (m) { return pm[m]; }); return ks.length ? "<br>Répartition : " + ks.map(function (m) { return m + " " + hm(pm[m] * 60); }).join(" · ") : ""; })() + "<br>" +
       (libre >= r.reserve ? "<span style='color:#3f7d58'>Marge : " + hm(libre * 60) + "</span>" : libre >= 0 ? "<span style='color:#8a6410'>Marge faible : " + hm(libre * 60) + "</span>" : "<span style='color:#b23b2e'>Dépassement : " + hm(-libre * 60) + "</span>") + "</div>";
     if (!c.creneaux.length) al.push(["ko", nom + " : ajoutez vos créneaux de cours (jour et durée)."]);
     if (r.nonPlace.length) al.push(["ko", nom + " : " + r.nonPlace.length + " séquence(s) ne rentrent pas dans l'année (« " + r.nonPlace.join(" », « ") + " »). Réduisez les durées, regroupez des notions, ou travaillez une notion en spirale."]);
@@ -1497,6 +1522,8 @@ function docProg(pourWord) {
   });
   h += "</div>";
   var aSeq = calc.some(function (r) { return r.seqs.length; });
+  var sansFin = P.classes.filter(function (c) { return c.nom && !c.fin; }).map(function (c) { return c.nom; });
+  if (sansFin.length) al.unshift(["mo", "Date de fin des cours à indiquer pour " + sansFin.join(", ") + " : elle change souvent selon le niveau (examens, brevet, épreuves, conseils de classe). Sans elle, l'outil compte jusqu'au 2 juillet 2027."]);
   if (aSeq && !dates) al.unshift(["mo", "Ordre conseillé : placez d'abord les dates imposées (stages, PFMP, examens blancs, sorties, date de fin des cours). Les séquences se répartiront alors dans le temps réellement disponible."]);
   if (!tampons) al.push(["mo", "Pensez aux semaines tampon : une semaine avant chaque période de vacances absorbe retards, absences et imprévus. Choisissez « Semaine tampon » dans la barre, puis cliquez sur les semaines voulues."]);
   P.classes.forEach(function (c) { if (c.valences.length > 1) { var tp = c.valences.reduce(function (a, v) { return a + (Number(v.part) || 0); }, 0); if (c.creneaux.some(function (k) { return !k.v; }) && tp !== 100) al.push(["mo", (c.nom || "Classe") + " : les parts des valences font " + tp + " % ; elles sont recalculées sur 100 % pour répartir les créneaux partagés."]); } });
@@ -1512,8 +1539,9 @@ function docProg(pourWord) {
       if (x.type === "tampon") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "tampon" + Math.random(), evts: x.evts };
       if (x.type === "off") return { cls: "", txt: x.t.nom, col: x.t.col, cle: "off" + x.t.id };
       var lib;
-      if ((x.parts || []).length > 1) lib = x.parts.map(function (p, n) { return (n === 0 ? "Fin de « " : "Début de « ") + r.seqs[p.k].t + " » (" + hm(p.h * 60) + ")"; }).join(" · ");
-      else lib = x.seqs.map(function (k) { return r.seqs[k].t; }).join("");
+      var tq = function (k) { var sq = r.seqs[k]; return (sq.m ? abrMatiere(sq.m) + " · " : "") + sq.t; };
+      if ((x.parts || []).length > 1) lib = x.parts.map(function (p, n) { return (n === 0 ? "Fin de « " : "Début de « ") + tq(p.k) + " » (" + hm(p.h * 60) + ")"; }).join(" · ");
+      else lib = x.seqs.map(tq).join("");
       if (x.libre) lib += (lib ? " · " : "") + hm(x.libre * 60) + " libre" + (x.libre * 60 > 90 ? "s" : "") + " (marge)";
       var dern = x.seqs[x.seqs.length - 1], grad = "";
       if ((x.parts || []).length > 1) {
@@ -1808,11 +1836,10 @@ function exemple(m) {
     var T = function (nom) { return (P.types.filter(function (t) { return t.nom.indexOf(nom) === 0; })[0] || {}).id; };
     if (etab === "lp") {
       P.discipline = "Lettres – Histoire-géographie et EMC";
-      var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T", v: "Français" }, { j: 2, d: 55, s: "T", v: "Histoire-géographie" }, { j: 4, d: 55, s: "T", v: "Français" }, { j: 4, d: 55, s: "A", v: "Histoire-géographie" }, { j: 4, d: 55, s: "B", v: "EMC" }],
+      var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T", v: "Français" }, { j: 2, d: 55, s: "T", v: "Histoire-géographie-EMC" }, { j: 4, d: 55, s: "T", v: "Français" }, { j: 4, d: 55, s: "T", v: "Histoire-géographie-EMC" }],
         valences: [
           { nom: "Français", part: 50, seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 6, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }] },
-          { nom: "Histoire-géographie", part: 35, seqs: [{ t: "H · L'expansion du monde connu (XVe-XVIIIe s.)", h: 9, col: "#f3dde6" }, { t: "G · Thème 1 du programme de géographie", h: 9, col: "#e6f0d0" }, { t: "H · L'Amérique et l'Europe en révolution", h: 9, col: "#d8ecef" }] },
-          { nom: "EMC", part: 15, seqs: [{ t: "EMC · Thème 1 (programme du BO du 13 juin 2024)", h: 4, col: "#f5ecc7" }, { t: "EMC · Thème 2 (programme du BO du 13 juin 2024)", h: 3, col: "#e9ddf1" }] }
+          { nom: "Histoire-géographie-EMC", part: 50, seqs: [{ t: "L'expansion du monde connu (XVe-XVIIIe s.)", m: "Histoire", h: 9, col: "#f3dde6" }, { t: "Thème 1 du programme d'EMC (BO du 13 juin 2024)", m: "EMC", h: 4, col: "#f5ecc7" }, { t: "Thème 1 du programme de géographie", m: "Géographie", h: 9, col: "#e6f0d0" }, { t: "L'Amérique et l'Europe en révolution", m: "Histoire", h: 9, col: "#d8ecef" }, { t: "Thème 2 du programme d'EMC (BO du 13 juin 2024)", m: "EMC", h: 3, col: "#e9ddf1" }] }
         ], periodes: [{ ty: T("PFMP"), d: "2027-01-18", f: "2027-02-12" }], marques: {} };
       a.marques["2027-03-15"] = T("Sortie"); a.marques["2027-06-07"] = T("PFMP"); a.marques["2027-06-14"] = T("PFMP"); a.marques["2026-12-14"] = T("Semaine tampon"); a.marques["2027-04-05"] = T("Semaine tampon");
       var b = { nom: "Tle MRC", niveau: "Tle pro", fin: "2027-05-28", creneaux: [{ j: 1, d: 110, s: "T" }], seqs: [{ t: "Vivre aujourd'hui (1) : lire l'œuvre du programme limitatif", h: 11, col: "#e6f0d0" }, { t: "Vivre aujourd'hui (2) : débattre des sciences et techniques", h: 11, col: "#d8ecef" }, { t: "Préparation à l'épreuve écrite", h: 4, col: "#f5ecc7" }], periodes: [{ ty: T("PFMP"), d: "2026-11-16", f: "2026-12-11" }, { ty: T("PFMP"), d: "2027-03-08", f: "2027-04-02" }], marques: {} };
