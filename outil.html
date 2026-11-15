@@ -303,7 +303,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <label class="ch">Profil disciplinaire <small>(détecté d'après la discipline, modifiable)</small></label>
       <select data-p="seq.profil" data-rerender="1">
         <option value="auto">Automatique</option><option value="lv">Langues vivantes</option><option value="eps">Éducation physique et sportive</option>
-        <option value="sci">Sciences, mathématiques, technologie</option><option value="pro">Enseignement professionnel</option>
+        <option value="sci">Sciences, mathématiques, technologie</option><option value="pro">Enseignement professionnel (industriel, services)</option><option value="tert">Économie-gestion, métiers du tertiaire</option>
         <option value="arts">Enseignements artistiques</option><option value="lettres">Lettres et sciences humaines</option><option value="aucun">Aucun profil particulier</option>
       </select>
       <div id="blocSpec"></div>
@@ -815,6 +815,12 @@ var SPEC = {
     { k: "question", lab: "Questionnement ou compétence du programme", type: "text" },
     { k: "pratique", lab: "Pratique et production attendue", type: "area" },
     { k: "refs", lab: "Œuvres et références (parcours d'éducation artistique et culturelle)", type: "area" } ] },
+  tert: { titre: "Économie-gestion et métiers du tertiaire", champs: [
+    { k: "ref", lab: "Programme, blocs et compétences du référentiel visés", type: "area", ph: "ex. Bloc « Conseiller et vendre » · compétence…" },
+    { k: "contexte", lab: "Contexte professionnel (entreprise réelle ou fictive, cas, PFMP)", type: "area", ph: "ex. magasin de sport « Décathlon » fictif, cas de l'entreprise de PFMP d'un élève…" },
+    { k: "modalite", lab: "Modalité dominante", type: "select", opts: ["", "Étude de cas", "Jeu de rôle / simulation", "Situation professionnelle réelle (PFMP, magasin pédagogique)", "Projet", "Analyse de documents", "Co-intervention"] },
+    { k: "outils", lab: "Outils numériques et documents professionnels", type: "text", ph: "ex. PGI, tableur, bon de commande, fiche produit" },
+    { k: "liens", lab: "Liens avec les PFMP, la co-intervention, le chef-d'œuvre", type: "text" } ] },
   lettres: { titre: "Lettres et sciences humaines", champs: [
     { k: "corpus", lab: "Œuvres, corpus ou documents étudiés", type: "area" },
     { k: "reperes", lab: "Repères (chronologiques, spatiaux, culturels)", type: "text" },
@@ -825,6 +831,7 @@ var LIB_SEANCE = {
   eps: { tissage: "Accueil, rappel et échauffement", accroche: "Mise en activité (situation de référence)", probl: "Problématisation : ce qu'il faut réussir", synth: "Retour au calme et bilan", trace: "Trace (fiche d'observation, carnet d'entraînement, vidéo…)", traceAlerte: "Quelle trace du bilan : fiche d'observation, carnet d'entraînement, vidéo ?" },
   pro: { tissage: "Tissage et consignes de sécurité", accroche: "Mise en situation professionnelle", probl: "Problématisation", synth: "Synthèse et rangement du poste", trace: "Trace (fiche de procédure, fiche de synthèse…)", traceAlerte: "Quelle trace garderont-ils : fiche de procédure, fiche de synthèse ?" },
   lv: { tissage: "Tissage (rebrassage en langue)", accroche: "Phase d'accroche (anticipation)", probl: "Phase de problématisation", synth: "Phase de synthèse", trace: "Trace écrite (lexique, structures, prononciation)", traceAlerte: "Quelle trace : lexique, structures, points de prononciation ?" },
+  tert: { tissage: "Tissage", accroche: "Mise en situation professionnelle", probl: "Problématisation", synth: "Synthèse et transfert en situation professionnelle", trace: "Trace (fiche de synthèse, fiche méthode, mémo professionnel…)", traceAlerte: "Quelle trace garderont-ils : fiche de synthèse, fiche méthode, mémo professionnel ?" },
   arts: { tissage: "Tissage", accroche: "Incitation", probl: "Phase de problématisation", synth: "Verbalisation et bilan", trace: "Trace (carnet de bord, références, photo des productions)", traceAlerte: "Quelle trace : carnet de bord, références, photo des productions ?" }
 };
 function libSeance() { var p = profilsActifs(); for (var i = 0; i < p.length; i++) if (LIB_SEANCE[p[i]]) return Object.assign({}, LIB_SEANCE.defaut, LIB_SEANCE[p[i]]); return LIB_SEANCE.defaut; }
@@ -833,6 +840,7 @@ var PREC = {
   eps: { lab: "Organisation, sécurité, rôles", ph: "ex. 4 terrains, rotation toutes les 6 min, arbitre et observateur" },
   sci: { lab: "Démarche, sécurité", ph: "ex. investigation · blouse et lunettes" },
   pro: { lab: "Poste de travail, sécurité", ph: "ex. poste 3 · EPI : gants, lunettes" },
+  tert: { lab: "Situation professionnelle, rôles", ph: "ex. jeu de rôle vendeur / client / observateur" },
   arts: { lab: "Production, référence", ph: "ex. esquisse au fusain · référence : …" },
   lettres: { lab: "Document ou texte support", ph: "ex. extrait p. 42" }
 };
@@ -841,7 +849,9 @@ function profilsDetectes(d) {
   if (/anglais|espagnol|allemand|italien|portugais|chinois|arabe|russe|néerlandais|japonais|hébreu|occitan|breton|basque|corse|catalan|créole|alsacien|langues? vivantes?|langues? –|\blv\d?\b|dnl/.test(d)) p.push("lv");
   if (/\beps\b|éducation physique|sport/.test(d)) p.push("eps");
   if (/math|physique|chimie|svt|sciences de la vie|technolog|\bsnt\b|\bnsi\b|biotech|informatique|sciences (et|de l'ingénieur)|\bsti/.test(d)) p.push("sci");
-  if (/enseignement professionnel|professionnel|atelier|métier|\bpse\b|prévention santé/.test(d)) p.push("pro");
+  var tertiaire = /économie|economie|gestion|droit|management|vente|commerce|commercial|relation client|accueil|logistique|transport|\bagora\b|\bmcv\b|\bmrc\b|\bstmg\b|\bsgn\b|marketing|comptab/.test(d);
+  if (tertiaire) p.push("tert");
+  else if (/enseignement professionnel|professionnel|atelier|métier|\bpse\b|prévention santé/.test(d)) p.push("pro");
   if (/arts|musique|musicale|plastiques|cinéma|théâtre|danse|histoire des arts/.test(d)) p.push("arts");
   if (/français|lettres|histoire|géographie|\bemc\b|moral et civique|philosophie|\bses\b|économiques et sociales|documentation|latin|grec|\blca\b/.test(d)) p.push("lettres");
   return p;
@@ -864,7 +874,7 @@ function analyseObjectif(t, prof) {
   var lv = (prof || profilsActifs()).indexOf("lv") >= 0;
   var tache = /(repérer|relever|restituer|répondre|identifier|cocher|compléter|reformuler|résumer|associer|classer|retrouver|prendre des notes|en français|en anglais|en espagnol|en allemand|en italien)/.test(s);
   if (lv && tache) flous = flous.filter(function (v) { return v !== "comprendre"; });
-  var cond = /( après | apres |lors d|au cours d|pendant |en situation|dans \d|dans les |dans le |dans la |dans l'|en utilisant|à l'oral|à l'écrit|par écrit|au tableau|sur une |sur un |sur le |sur la |sous l'|sous la |en temps limité|en \d+ ?(min|minutes|s|secondes|h)|à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
+  var cond = /( après | apres |au téléphone|par téléphone|en face à face|en magasin|en entreprise|en situation professionnelle|en jeu de rôle|par mail|par courriel|sur le poste|lors d|au cours d|pendant |en situation|dans \d|dans les |dans le |dans la |dans l'|en utilisant|à l'oral|à l'écrit|par écrit|au tableau|sur une |sur un |sur le |sur la |sous l'|sous la |en temps limité|en \d+ ?(min|minutes|s|secondes|h)|à partir d|a partir d|à l'aide|à l’aide|avec |sans |dans un|dans une|en autonomie|seul|en binôme|en groupe|en \d+ ?min|sur un|sur une|au moyen|grâce à|face à|devant )/.test(s);
   var crit = /(\d|sans erreur|au moins|tous les|toutes les|correctement|en respectant|conforme|critère|grille|%|\/\d)/.test(s);
   var capable = /(être|etre) capable (de |d'|d’)/.test(s);
   if (capable) {
@@ -935,11 +945,19 @@ function calculerClasse(c, vi) {
       if (x.type !== "cours") return;
       x.seqs = []; x.parts = []; x.libre = 0;
       if (idx >= seqs.length || x.cap <= 0) return;
-      var cap = x.cap * coef + 1e-9;
+      var cap = x.cap * coef + 1e-9, seuil = Math.min(1, x.cap * coef / 2);
       while (cap > 1e-6 && idx < seqs.length) {
         if (x.seqs.indexOf(idx) < 0) x.seqs.push(idx);
         var pris = Math.min(cap, reste); cap -= pris; reste -= pris; x.parts.push({ k: idx, h: pris });
-        if (reste <= 1e-6) { idx++; reste = idx < seqs.length ? H[idx] : 0; if (parSemaine) break; }
+        if (reste <= 1e-6) {
+          idx++; reste = idx < seqs.length ? H[idx] : 0;
+          if (parSemaine) break;
+          /* moins d'une heure restante dans la semaine : on ne démarre pas la séquence suivante pour un bout de cours */
+          if (cap < seuil - 1e-6) break;
+        } else if (cap <= 1e-6 && reste < seuil - 1e-6 && !parSemaine) {
+          /* il resterait moins d'une heure la semaine suivante : la séquence se termine cette semaine */
+          x.parts[x.parts.length - 1].h += reste; idx++; reste = idx < seqs.length ? H[idx] : 0; break;
+        }
       }
       if (parSemaine && idx < seqs.length) x.libre = cap > 0.05 ? cap : 0;
     });
@@ -1366,7 +1384,7 @@ function genererCdt() {
     parSeance.push(liste);
   });
   /* l'évaluation est annoncée dans la séance précédente */
-  parSeance.forEach(function (liste, i) { if (parSeance[i + 1] && parSeance[i + 1][0].eval) liste.forEach(function (e) { if (!e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)"; e.tafType = "À apprendre"; } }); });
+  parSeance.forEach(function (liste, i) { var suiv = parSeance[i + 1]; if (suiv && suiv[0].eval) liste.forEach(function (e) { if (!e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)" + (suiv.length > 1 && e.disp === "Classe entière" ? " : " + suiv.map(function (x) { return x.disp.toLowerCase() + " le " + frLong(x.date); }).join(", ") : ""); e.tafType = "À apprendre"; } }); });
   E.cdt.ecarts = ecarts;
   toast(E.cdt.entrees.length + " entrées créées" + (c && pas.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : "") + (pas.some(function (p) { return p[0].g; }) ? " · les séances en groupes sont notées pour chaque groupe" : ""));
 }
@@ -1555,7 +1573,7 @@ function docSeq() {
     if (!q.seances.some(function (s) { return s.type === "Évaluation"; })) al.push(["mo", "Aucune séance d'évaluation : les évaluations sont des séances à part entière."]);
     q.seances.forEach(function (s, i) { if (!s.obj) return; var a = analyseObjectif(s.obj); if (a && a.flous.length) al.push(["mo", "Séance " + (i + 1) + " : « " + a.flous[0].trim() + " » n'est pas observable dans l'objectif de la séance. Ex. : repérer, relever, expliquer, rédiger…"]); });
     var tot = q.seances.reduce(function (a, x) { return a + dureeComptee(dureeSeance(x, q)); }, 0), prev = heuresProgSeq(q);
-    if (prev && Math.abs(tot - prev * 60) >= 60) al.push(["mo", "Les séances totalisent " + hm(tot) + " ; la programmation prévoit " + hm(prev * 60) + " pour cette séquence. Ajustez l'une ou l'autre."]);
+    if (prev && Math.abs(tot - prev * 60) > Math.max(60, dureeComptee(q.duree || 55))) al.push(["mo", "Les séances totalisent " + hm(tot) + " ; la programmation prévoit " + hm(prev * 60) + " pour cette séquence. Ajustez l'une ou l'autre."]);
     var jal = q.seances.map(function (s) { return (s.jalon || "").match(/\d+/); }).filter(Boolean).map(function (m) { return +m[0]; });
     if (jal.length) { var dbl = jal.filter(function (x, k) { return jal.indexOf(x) !== k; }); var max = Math.max.apply(null, jal), manq = []; for (var j = 1; j <= max; j++) if (jal.indexOf(j) < 0) manq.push(j);
       if (dbl.length) al.push(["mo", "Jalon " + dbl[0] + " indiqué deux fois dans les séances."]); if (manq.length) al.push(["mo", "Jalon " + manq.join(", ") + " : placé dans aucune séance."]); }
