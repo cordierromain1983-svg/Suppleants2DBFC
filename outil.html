@@ -284,7 +284,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
       <label class="ch">Programme, thème, attendus <small>(à recopier depuis le texte officiel)</small></label><textarea data-p="seq.attendus"></textarea>
       <label class="ch" id="lblRef">Référentiel du diplôme <small>(voie professionnelle : compétences, blocs)</small></label><textarea data-p="seq.referentiel" style="min-height:44px"></textarea>
       <label class="ch">Compétences travaillées</label><textarea data-p="seq.comp"></textarea>
-      <label class="ch">Socle commun <small>(composantes visées)</small></label>
+      <label class="ch">Socle commun <small>(composantes visées · en français, l'oral comme l'écrit relèvent de D1.1)</small></label>
       <div id="listeSocle"></div>
 
       <h3>Spécificités de ma discipline</h3>
@@ -300,6 +300,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 
       <h3>Problématique et objectifs</h3>
       <label class="ch">Problématique de la séquence</label><input type="text" data-p="seq.probl" placeholder="La question à laquelle la séquence répond">
+      <label class="ch">Projet d'apprentissage ou tâche finale <small>(facultatif : la production qui donne du sens à la séquence, et ses jalons)</small></label><textarea data-p="seq.projet" style="min-height:44px" placeholder="ex. Rédiger une lettre de Poilu à sa famille · Jalon 1 après la séance 3 : …"></textarea>
       <label class="ch">Objectif général <small>(être capable de…)</small></label><input type="text" data-p="seq.og">
       <label class="ch">Objectifs opérationnels <small>(comportement observable + conditions + critère)</small></label>
       <div id="listeObjs"></div>
@@ -499,6 +500,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 <datalist id="dlDurees"></datalist>
 <datalist id="dlDisc"></datalist>
 <datalist id="dlNiv"></datalist>
+<datalist id="dlDom"><option value="Lecture"><option value="Écriture"><option value="Oral"><option value="Langue (étude de la langue)"><option value="Lexique"><option value="Culture littéraire et artistique"><option value="Compréhension de l'oral"><option value="Expression orale"><option value="Compréhension de l'écrit"><option value="Expression écrite"><option value="Pratique"><option value="Démarche d'investigation"><option value="Analyse de documents"><option value="Évaluation"></datalist>
 
 <div class="modale" id="modaleIA" role="dialog" aria-modal="true">
   <div class="boite">
@@ -585,7 +587,7 @@ function semaines(zone) {
 var TYPES_DEFAUT = {
   college: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage d'observation (3e)", "#cfe0f3", "off"], ["Brevet blanc", "#f6d6d1", "demi"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"], ["Semaine banalisée", "#d8ead3", "off"]],
   lgt: [["Semaine tampon", "#fff1cc", "tampon"], ["Stage de seconde", "#cfe0f3", "off"], ["Bac blanc", "#f6d6d1", "demi"], ["Épreuves / oraux", "#f8e3c4", "rep"], ["Sortie / voyage", "#e3d7f0", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]],
-  lp: [["Semaine tampon", "#fff1cc", "tampon"], ["PFMP", "#cfe0f3", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
+  lp: [["Semaine tampon", "#fff1cc", "tampon"], ["PFMP", "#cfe0f3", "off"], ["Stage (3e prépa-métiers)", "#d6e6f7", "off"], ["Examen blanc", "#f6d6d1", "demi"], ["CCF", "#f8e3c4", "rep"], ["Sortie / visite", "#e3d7f0", "rep"], ["Chef-d'œuvre", "#d8ead3", "rep"], ["Conseil de classe", "#e8e8e8", "rep"]]
 };
 var EFFETS = { off: "Pas de cours", demi: "Demi-semaine", rep: "Simple repère", tampon: "Semaine tampon" };
 /* Bivalence : une programmation par valence */
@@ -704,7 +706,7 @@ function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1
 function etatVide() {
   return {
     prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", tampon: true, types: typesPour("college"), classes: [classeVide()] },
-    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [] },
+    seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [], projet: "" },
     sea: seanceVide(),
     cdt: { classe: "", discipline: "", debut: "", entrees: [] }
   };
@@ -754,6 +756,10 @@ document.addEventListener("input", function (ev) {
 document.addEventListener("change", function (ev) { var el = ev.target; if ((el.type === "checkbox" || el.tagName === "SELECT" || el.type === "color") && el.getAttribute("data-p")) { rendreListes(); rendreTout(); sauver(); } });
 
 function proposerTypes() {
+  var utilises = {}; E.prog.classes.forEach(function (c) { Object.keys(c.marques || {}).forEach(function (k) { utilises[c.marques[k]] = 1; }); (c.periodes || []).forEach(function (p) { utilises[p.ty] = 1; }); });
+  var defaut = {}; ["college", "lgt", "lp"].forEach(function (e) { typesPour(e).forEach(function (t) { defaut[t.nom] = 1; }); });
+  /* on retire les types par défaut d'un autre établissement qui ne sont pas utilisés */
+  E.prog.types = E.prog.types.filter(function (t) { return utilises[t.id] || !defaut[t.nom] || t.effet === "tampon"; });
   var noms = E.prog.types.map(function (t) { return t.nom; });
   var ajout = typesPour(E.prog.etab).filter(function (t) { return noms.indexOf(t.nom) < 0; });
   E.prog.types = E.prog.types.concat(ajout);
@@ -1022,6 +1028,8 @@ function rendreListes() {
     h += '<div class="bloc"><div class="tete"><b>Séance ' + (i + 1) + '</b><button class="suppr" type="button" data-action="supprSeance" data-i="' + i + '">✕</button></div>';
     h += '<div class="duo"><div><label class="ch">Type</label>' + sel(b + ".type", ["Lancement et diagnostic", "Apprentissage", "Réinvestissement / remédiation", "Évaluation", "Projet / production"].map(function (t) { return [t, t]; }), s.type) + '</div><div><label class="ch">Titre</label><input type="text" data-p="' + b + '.titre"></div></div>';
     h += '<label class="ch">Problématique de la séance</label><input type="text" data-p="' + b + '.probl">';
+    h += '<div class="trio"><div><label class="ch">Durée <small>(min)</small></label><input type="number" min="5" data-p="' + b + '.duree" list="dlDurees" placeholder="' + (E.seq.duree || 55) + '"></div><div><label class="ch">Dominante</label><input type="text" data-p="' + b + '.dom" list="dlDom" placeholder="facultatif"></div><div><label class="ch">Jalon du projet</label><input type="text" data-p="' + b + '.jalon" placeholder="facultatif"></div></div>';
+    h += '<label class="ch">Objectif de la séance <small>(facultatif : ce que l\'élève saura faire à la fin de cette séance)</small></label><input type="text" data-p="' + b + '.obj"><div class="puces" data-puces="' + b + '.obj"></div>';
     h += '<label class="ch">Activités et supports</label><textarea data-p="' + b + '.act" style="min-height:44px"></textarea>';
     h += '<label class="ch">Objectifs travaillés</label><div class="puces">' + E.seq.objs.map(function (o, k) { var on = (s.objs || []).indexOf(k) >= 0; return '<label class="puce' + (on ? " ok" : "") + '" style="cursor:pointer"><input type="checkbox" data-action="basculeObj" data-i="' + i + '" data-k="' + k + '"' + (on ? " checked" : "") + ' style="margin:0 4px 0 0;vertical-align:-1px">O' + (k + 1) + "</label>"; }).join("") + "</div></div>";
   });
@@ -1087,7 +1095,7 @@ function remplirDepuisProg() {
       E.seq.valence = c.valences.length > 1 ? V.nom : "";
       if (!E.seq.discipline) E.seq.discipline = E.seq.valence || E.prog.discipline;
       var cr = c.creneaux.filter(function (k) { return partCreneau(c, k, vi) > 0; }).map(function (k) { return Number(k.d) || 0; }).filter(Boolean);
-      if (cr.length) E.seq.duree = Math.round(cr.reduce(function (a, b) { return a + b; }, 0) / cr.length);
+      if (cr.length) { var freq = {}; cr.forEach(function (d) { freq[d] = (freq[d] || 0) + 1; }); E.seq.duree = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a] || b - a; })[0]; }
       if (!E.seq.place) E.seq.place = "Séquence " + (j + 1) + "/" + liste.length + (liste[j - 1] ? " · après « " + liste[j - 1].t + " »" : "") + (liste[j + 1] ? " · avant « " + liste[j + 1].t + " »" : "");
       if (s.h && E.seq.duree) E.seq.nb = Math.max(1, Math.round(Number(s.h) * 60 / E.seq.duree));
       lierChamps(document.getElementById("p-seq"));
@@ -1142,7 +1150,7 @@ document.addEventListener("click", function (ev) {
     case "basculeSpec": var pp = b.getAttribute("data-pr"), kk = b.getAttribute("data-k"), vv = b.getAttribute("data-v"); E.seq.spec[pp] = E.seq.spec[pp] || {}; var arr = E.seq.spec[pp][kk] = E.seq.spec[pp][kk] || []; var ix = arr.indexOf(vv); if (ix >= 0) arr.splice(ix, 1); else arr.push(vv); break;
     case "ajoutObj": E.seq.objs.push(""); break;
     case "supprObj": E.seq.objs.splice(i, 1); if (E.seq.objsOk) E.seq.objsOk.splice(i, 1); E.seq.seances.forEach(function (s) { s.objs = (s.objs || []).filter(function (k) { return k !== i; }).map(function (k) { return k > i ? k - 1 : k; }); }); break;
-    case "ajoutSeance": E.seq.seances.push({ type: "Apprentissage", titre: "", probl: "", act: "", objs: [] }); break;
+    case "ajoutSeance": E.seq.seances.push({ type: "Apprentissage", titre: "", probl: "", act: "", objs: [], duree: "", dom: "", obj: "", jalon: "" }); break;
     case "supprSeance": E.seq.seances.splice(i, 1); break;
     case "basculeObj": var s = E.seq.seances[i], k = +b.getAttribute("data-k"); s.objs = s.objs || []; var pos = s.objs.indexOf(k); if (pos >= 0) s.objs.splice(pos, 1); else s.objs.push(k); s.objs.sort(); break;
     case "trameSeances": genererTrameSeances(); break;
@@ -1194,6 +1202,11 @@ function ouvrirOnglet(o) {
   window.scrollTo(0, 0);
 }
 
+function heuresProgSeq(q) {
+  var r = null; (E.prog.classes || []).forEach(function (c) { if (c.nom !== q.classe) return; (c.valences || []).forEach(function (V) { if (q.valence && V.nom && V.nom !== q.valence) return; V.seqs.forEach(function (x) { if (x.t && x.t === q.titre && Number(x.h)) r = Number(x.h); }); }); });
+  return r;
+}
+function dureeSeance(s, q) { return Number(s.duree) || Number((q || E.seq).duree) || 55; }
 function genererTrameSeances() {
   var n = Math.max(2, Number(E.seq.nb) || 5), nobj = E.seq.objs.length;
   if (E.seq.seances.some(function (s) { return s.titre || s.act; }) && !confirm("Remplacer les séances déjà saisies par une nouvelle trame de " + n + " séances ?")) return;
@@ -1221,9 +1234,9 @@ function importerSeance(iForce, muet) {
   i = +i; var s = E.seq.seances[i], q = E.seq;
   E.sea.titre = s.titre || (s.type + ((s.objs || []).length ? " · O" + (s.objs[0] + 1) : ""));
   E.sea.place = "Séance " + (i + 1) + "/" + q.seances.length + (q.titre ? " de « " + q.titre + " »" : "");
-  E.sea.classe = q.classe; E.sea.duree = q.duree || E.sea.duree; E.sea.probl = s.probl || "";
+  E.sea.classe = q.classe; E.sea.duree = dureeSeance(s, q); E.sea.probl = s.probl || "";
   E.sea.prereq = i === 0 ? q.prereq : "Séance " + i + (q.seances[i - 1] && q.seances[i - 1].titre ? " : " + q.seances[i - 1].titre : "") + (q.prereq ? "\n" + q.prereq : "");
-  E.sea.objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean).join("\n");
+  E.sea.objs = (s.obj ? [s.obj] : []).concat((s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean)).join("\n");
   if (s.act && !E.sea.moments.some(function (m) { return m.t; })) E.sea.moments[0].t = s.act;
   var suiv = q.seances[i + 1]; E.sea.synthese.ouv = suiv ? "Séance suivante : " + (suiv.titre || suiv.type) : "Fin de la séquence";
   /* ajuster les moments à la durée réelle de la séance */
@@ -1268,9 +1281,10 @@ function genererCdt() {
   if (E.cdt.entrees.length && !confirm("Remplacer les entrées existantes ?")) return;
   var slots = c ? creneauxDates(c, E.cdt.debut, E.seq.valence || "") : [];
   if (!c) toast("Classe « " + (nom || "?") + " » absente de la programmation : dates à compléter à la main");
-  E.cdt.classe = nom; E.cdt.discipline = E.cdt.discipline || q.discipline;
+  E.cdt.classe = nom; E.cdt.discipline = E.cdt.discipline || q.discipline; var ecarts = [];
   E.cdt.entrees = q.seances.map(function (s, i) {
-    var e = entreeVide(slots[i] ? slots[i].duree : q.duree);
+    var e = entreeVide(slots[i] ? slots[i].duree : dureeSeance(s, q));
+    if (slots[i] && s.duree && Number(s.duree) !== slots[i].duree) ecarts.push(i + 1);
     e.date = slots[i] ? slots[i].date : "";
     e.titre = (q.titre ? q.titre + " · " : "") + "Séance " + (i + 1) + (s.titre ? " : " + s.titre : "");
     var objs = (s.objs || []).map(function (k) { return q.objs[k]; }).filter(Boolean);
@@ -1281,6 +1295,7 @@ function genererCdt() {
   });
   /* l'évaluation est annoncée dans l'entrée précédente */
   E.cdt.entrees.forEach(function (e, i) { if (E.cdt.entrees[i + 1] && E.cdt.entrees[i + 1].eval && !e.taf) { e.taf = "Réviser pour l'évaluation de la prochaine séance (objectifs de la séquence)"; e.tafType = "À apprendre"; } });
+  E.cdt.ecarts = ecarts;
   toast(E.cdt.entrees.length + " entrées créées" + (c && slots.length < q.seances.length ? " (pas assez de créneaux avant la fin de l'année)" : ""));
 }
 function texteCdt(e, k) {
@@ -1324,6 +1339,7 @@ function docCdt() {
     h += "<h3 style='color:#c8692c;margin:10px 0 4px'>Charge de travail</h3><table><thead><tr><th>Pour le</th><th>Travaux</th><th>Temps estimé</th></tr></thead><tbody>" + lignes.map(function (d) { var x = charge[d]; return "<tr><td>" + esc(frLong(d)) + "</td><td>" + x.n + "</td><td>" + (x.min ? x.min + " min" : "—") + "</td></tr>"; }).join("") + "</tbody></table>";
     lignes.forEach(function (d) { if (charge[d].n > 1) al.push(["mo", "Plusieurs travaux pour le " + frLong(d) + " : vérifiez la charge de travail des élèves."]); });
   }
+  if ((C.ecarts || []).length) al.push(["mo", "Séance(s) " + C.ecarts.join(", ") + " : la durée prévue dans la séquence ne correspond pas au créneau de l'emploi du temps. Vérifiez les dates : une séance de 2 h peut couvrir deux créneaux, deux séances d'1 h peuvent partager un créneau."]);
   var nbTaf = C.entrees.filter(function (e) { return e.taf; }).length, sansContenu = C.entrees.filter(function (e) { return !e.contenu; }).length;
   if (C.entrees.length && !nbTaf) al.push(["mo", "Aucun travail à effectuer n'est noté. C'est possible, mais si vous en donnez en classe, il doit figurer ici avec sa date de remise."]);
   if (sansContenu) al.push(["mo", sansContenu + " séance(s) sans contenu : le contenu de chaque séance est obligatoire."]);
@@ -1424,9 +1440,9 @@ function docProg(pourWord) {
 function docSeq() {
   var q = E.seq, al = [];
   if (!q.titre && !q.og && !q.seances.length) return { html: '<p class="vide-msg">Renseignez votre séquence à gauche (ou chargez un exemple). Le document se construit en direct.</p>', al: al };
-  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
+  var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.seances.length ? " · " + q.seances.length + " séance(s), " + hm(q.seances.reduce(function (a, x) { return a + dureeSeance(x, q); }, 0)) + " au total" : q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
   var socle = (q.socle || []).map(function (k) { var s = SOCLE.filter(function (x) { return x[0] === k; })[0]; return s ? "<b>" + k + "</b> " + esc(s[1].split("· ")[1]) : ""; }).join("<br>");
-  [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
+  [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], q.projet ? ["Projet d'apprentissage", nl(q.projet)] : null, ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
   [["Pré-requis", q.prereq], ["Vérification des pré-requis", q.verif], ["Savoirs associés", q.savoirs], ["Représentations et obstacles prévisibles", q.obstacles]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
   profilsActifs().forEach(function (p) {
@@ -1438,7 +1454,7 @@ function docSeq() {
   h += "</table>";
   if (q.seances.length) {
     h += "<h3 style='color:#c8692c;margin:6px 0'>Déroulé des séances</h3><table><thead><tr><th style='width:5%'>N°</th><th style='width:15%'>Type</th><th style='width:24%'>Titre et problématique</th><th>Activités et supports</th><th style='width:10%'>Objectifs</th></tr></thead><tbody>";
-    q.seances.forEach(function (s, i) { h += "<tr><td><b>" + (i + 1) + "</b></td><td>" + esc(s.type) + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>"; });
+    q.seances.forEach(function (s, i) { h += "<tr><td><b>" + (i + 1) + "</b><br><small>" + hm(dureeSeance(s, q)) + "</small></td><td>" + esc(s.type) + (s.dom ? "<br><small>" + esc(s.dom) + "</small>" : "") + "</td><td><b>" + esc(s.titre) + "</b>" + (s.probl ? "<br><i>" + esc(s.probl) + "</i>" : "") + (s.obj ? "<br>Objectif : " + esc(s.obj) : "") + (s.jalon ? "<br>🏁 " + esc(s.jalon) : "") + "</td><td>" + nl(s.act) + "</td><td>" + (s.objs || []).map(function (k) { return "O" + (k + 1); }).join(", ") + "</td></tr>"; });
     h += "</tbody></table>";
   }
   if (!q.attendus) al.push(["mo", "Recopiez les attendus du programme : l'encart « Textes officiels » vous donne les liens."]);
@@ -1455,6 +1471,12 @@ function docSeq() {
     objs.forEach(function (x) { if (!q.seances.some(function (s) { return (s.objs || []).indexOf(x.i) >= 0; })) al.push(["ko", "O" + (x.i + 1) + " n'est travaillé dans aucune séance."]); });
     q.seances.forEach(function (s, i) { if (!(s.objs || []).length && s.type !== "Lancement et diagnostic") al.push(["mo", "Séance " + (i + 1) + " : à quel objectif contribue-t-elle ?"]); });
     if (!q.seances.some(function (s) { return s.type === "Évaluation"; })) al.push(["mo", "Aucune séance d'évaluation : les évaluations sont des séances à part entière."]);
+    q.seances.forEach(function (s, i) { if (!s.obj) return; var a = analyseObjectif(s.obj); if (a && a.flous.length) al.push(["mo", "Séance " + (i + 1) + " : « " + a.flous[0].trim() + " » n'est pas observable dans l'objectif de la séance. Ex. : repérer, relever, expliquer, rédiger…"]); });
+    var tot = q.seances.reduce(function (a, x) { return a + dureeSeance(x, q); }, 0), prev = heuresProgSeq(q);
+    if (prev && Math.abs(tot - prev * 60) >= 60) al.push(["mo", "Les séances totalisent " + hm(tot) + " ; la programmation prévoit " + hm(prev * 60) + " pour cette séquence. Ajustez l'une ou l'autre."]);
+    var jal = q.seances.map(function (s) { return (s.jalon || "").match(/\d+/); }).filter(Boolean).map(function (m) { return +m[0]; });
+    if (jal.length) { var dbl = jal.filter(function (x, k) { return jal.indexOf(x) !== k; }); var max = Math.max.apply(null, jal), manq = []; for (var j = 1; j <= max; j++) if (jal.indexOf(j) < 0) manq.push(j);
+      if (dbl.length) al.push(["mo", "Jalon " + dbl[0] + " indiqué deux fois dans les séances."]); if (manq.length) al.push(["mo", "Jalon " + manq.join(", ") + " : placé dans aucune séance."]); }
     if (q.seances.length > 10) al.push(["mo", q.seances.length + " séances : pouvez-vous scinder la séquence pour que les élèves gardent le fil ?"]);
   }
   if (!q.obstacles) al.push(["mo", "Éclairage didactique : quelles erreurs ou représentations attendez-vous chez les élèves ?"]);
@@ -1644,7 +1666,7 @@ function exemple(m) {
       P.discipline = "Lettres – Histoire-géographie et EMC";
       var a = { nom: "2nde MRC", niveau: "2nde pro", fin: "", creneaux: [{ j: 2, d: 55, s: "T", v: "Français" }, { j: 2, d: 55, s: "T", v: "Histoire-géographie" }, { j: 4, d: 55, s: "T", v: "Français" }, { j: 4, d: 55, s: "A", v: "Histoire-géographie" }, { j: 4, d: 55, s: "B", v: "EMC" }],
         valences: [
-          { nom: "Français", part: 50, seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 11, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }] },
+          { nom: "Français", part: 50, seqs: [{ t: "Devenir soi : écritures autobiographiques", h: 6, col: "#dcebd9" }, { t: "S'informer, informer : les circuits de l'information", h: 11, col: "#f9e2cf" }, { t: "Dire et se faire entendre : la parole, le théâtre, l'éloquence", h: 11, col: "#dfe4f4" }] },
           { nom: "Histoire-géographie", part: 35, seqs: [{ t: "H · L'expansion du monde connu (XVe-XVIIIe s.)", h: 9, col: "#f3dde6" }, { t: "G · Thème 1 du programme de géographie", h: 9, col: "#e6f0d0" }, { t: "H · L'Amérique et l'Europe en révolution", h: 9, col: "#d8ecef" }] },
           { nom: "EMC", part: 15, seqs: [{ t: "EMC · Thème 1 (programme du BO du 13 juin 2024)", h: 4, col: "#f5ecc7" }, { t: "EMC · Thème 2 (programme du BO du 13 juin 2024)", h: 3, col: "#e9ddf1" }] }
         ], periodes: [{ ty: T("PFMP"), d: "2027-01-18", f: "2027-02-12" }], marques: {} };
