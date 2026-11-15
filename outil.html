@@ -101,6 +101,12 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
 .doc .grille-prog td.clic{cursor:crosshair}
 .doc .grille-prog td.clic:hover{outline:2px solid var(--encre);outline-offset:-2px}
 .doc .grille-prog .suite{color:rgba(0,0,0,.35)}
+.doc .grille-prog td.note{padding:2px 4px;min-width:150px;background:#fffdf6}
+.doc .grille-prog td.note textarea{width:100%;min-height:26px;border:1px dashed transparent;border-radius:6px;background:transparent;font:inherit;font-size:.78rem;line-height:1.25;padding:3px 5px;resize:vertical;color:#333}
+.doc .grille-prog td.note textarea:hover{border-color:#d9d2c3}
+.doc .grille-prog td.note textarea::placeholder{color:#cfc6b2;text-align:center}
+.doc .grille-prog td.note textarea:focus::placeholder{color:transparent}
+.doc .grille-prog td.note textarea:focus{border-color:var(--bleu);background:#fff;outline:none}
 .doc .evt{display:block;font-size:.72rem;font-weight:700}
 .doc .nbc{display:block;font-size:.68rem;color:var(--doux)}
 .doc .resume{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0 14px}
@@ -483,6 +489,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre. La durée en heures est <b>facultative</b> : sans durée, l'outil partage le temps disponible (après la marge et les séquences dont vous avez fixé la durée) et place chaque séquence ; la durée calculée s'affiche en gris (≈ 13). Saisissez une durée dès que vous la connaissez. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
         <li><b>Disciplines bivalentes</b> (lettres-histoire avec l'EMC, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence, avec sa propre colonne dans la grille. Attribuez chaque créneau à une valence, ou laissez-le « Partagé » : il est alors réparti selon la part de chaque valence.</li>
+        <li><b>Commentaires</b> : la dernière colonne de la grille accueille un commentaire libre pour chaque semaine (visite, projet, rappel, ajustement…). Il est repris dans l'export Word.</li>
         <li><b>Le calendrier</b> : <b>cliquez sur une semaine</b> de la grille : un petit menu propose les événements (stage, PFMP, sortie, examen blanc, semaine tampon…) et permet de retirer une marque. Pour marquer plusieurs semaines d'un coup, choisissez d'abord le type dans la barre au-dessus de la grille, puis cliquez sur les semaines. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
       </ol>
@@ -723,7 +730,7 @@ var CLE = "atelier-suppleant-v2";
 function classeVide() { return { nom: "", niveau: "", fin: "", creneaux: [{ j: 1, d: 55, s: "T", v: "" }, { j: 4, d: 55, s: "T", v: "" }], valences: [{ nom: "", part: 100, seqs: [{ t: "", h: "", col: "" }] }], periodes: [], marques: {} }; }
 function etatVide() {
   return {
-    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", heuresCours: true, seqLundi: false, tampon: true, types: typesPour("college"), classes: [classeVide()] },
+    prog: { etab: "college", zone: "A", discipline: "", nomEtab: "", marge: 10, ab: "A", heuresCours: true, seqLundi: false, notes: {}, tampon: true, types: typesPour("college"), classes: [classeVide()] },
     seq: { classe: "", discipline: "", titre: "", nb: 5, duree: 55, place: "", attendus: "", referentiel: "", comp: "", socle: [], probl: "", og: "", objs: [""], prereq: "", verif: "", savoirs: "", obstacles: "", seances: [], profil: "auto", spec: {}, adapt: "", autres: "", objsOk: [], projet: "" },
     sea: seanceVide(),
     cdt: { classe: "", discipline: "", debut: "", entrees: [] }
@@ -1518,13 +1525,15 @@ function docProg(pourWord) {
     });
   });
   var avecAB = P.classes.some(function (c) { return c.creneaux.some(function (k) { return k.s !== "T"; }); });
-  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (x) { return "<th>" + esc(nomColonne(x.c, x.vi)) + "<br><span style='font-weight:400;font-size:.74rem'>" + (function () { var a = minutesHebdo(x.c, "A", x.vi), bb = minutesHebdo(x.c, "B", x.vi); return a === bb ? hm(a) + "/sem." : hm(a) + " (A) · " + hm(bb) + " (B)"; })() + "</span></th>"; }).join("") + "</tr></thead><tbody>";
+  h += '<table class="grille-prog"><thead><tr><th>Semaine</th>' + classes.map(function (x) { return "<th>" + esc(nomColonne(x.c, x.vi)) + "<br><span style='font-weight:400;font-size:.74rem'>" + (function () { var a = minutesHebdo(x.c, "A", x.vi), bb = minutesHebdo(x.c, "B", x.vi); return a === bb ? hm(a) + "/sem." : hm(a) + " (A) · " + hm(bb) + " (B)"; })() + "</span></th>"; }).join("") + (!pourWord || Object.keys(P.notes || {}).some(function (k) { return (P.notes || {})[k]; }) ? "<th>Commentaire</th>" : "") + "</tr></thead><tbody>";
+  var NOTES = P.notes || {}, avecNotes = !pourWord || Object.keys(NOTES).some(function (k) { return NOTES[k]; });
+  function celNote(lu) { if (!avecNotes) return ""; return pourWord ? '<td style="text-align:left;font-size:9pt">' + nl(NOTES[lu] || "") + "</td>" : '<td class="note"><textarea data-note="' + lu + '" rows="1" placeholder="＋" title="Ajouter un commentaire pour cette semaine" aria-label="Commentaire pour la semaine du ' + fr(lu) + '">' + esc(NOTES[lu] || "") + "</textarea></td>"; }
   var fusion = classes.map(function () { return 0; });
   SEM.forEach(function (w, wi) {
     if (w.vac) {
       if (wi > 0 && SEM[wi - 1].vac && SEM[wi - 1].vac.nom === w.vac.nom) return;
       var nbv = 1; while (SEM[wi + nbv] && SEM[wi + nbv].vac && SEM[wi + nbv].vac.nom === w.vac.nom) nbv++;
-      h += '<tr><td class="sem">S' + w.num + (nbv > 1 ? "–" + SEM[wi + nbv - 1].num : "") + '</td><td class="vac" colspan="' + classes.length + '">' + esc(w.vac.nom.toUpperCase()) + "</td></tr>";
+      h += '<tr><td class="sem">S' + w.num + (nbv > 1 ? "–" + SEM[wi + nbv - 1].num : "") + '</td><td class="vac" colspan="' + classes.length + '">' + esc(w.vac.nom.toUpperCase()) + "</td>" + celNote(w.lundi) + "</tr>";
       fusion = classes.map(function () { return 0; }); return;
     }
     var partiel = w.ouvres < 5 ? " <span style='color:#b23b2e'>(" + w.ouvres + " j)</span>" : "";
@@ -1545,7 +1554,7 @@ function docProg(pourWord) {
         h += '<td class="clic ' + x.cls + '" data-c="' + classes[ci].i + '" data-w="' + w.lundi + '"' + style + ' title="Cliquer pour marquer cette semaine">' + (suite ? '<span class="suite">↓</span>' : esc(x.txt)) + evts + nbc + "</td>";
       }
     });
-    h += "</tr>";
+    h += celNote(w.lundi) + "</tr>";
   });
   h += "</tbody></table>";
   h += '<p class="aide-doc">Les séquences sont placées selon les heures estimées et les créneaux réels de chaque semaine : jours fériés, pont de l\'Ascension, semaines A/B et événements compris.</p>';
@@ -1688,6 +1697,7 @@ function rendreTout() {
   rendreRessources();
   majListesDeroulantes();
   majHeuresAuto();
+  document.querySelectorAll("textarea[data-note]").forEach(function (t) { if (t.value) hauteurNote(t); });
 }
 function majHeuresAuto() {
   var cache = {};
@@ -1698,6 +1708,13 @@ function majHeuresAuto() {
   });
 }
 document.addEventListener("input", function (e) { if (e.target.id === "rechNiveau") rendreRessources(); });
+/* commentaires de la programmation : enregistrés sans redessiner la grille (on garde le curseur) */
+document.addEventListener("input", function (e) {
+  var lu = e.target.getAttribute && e.target.getAttribute("data-note"); if (!lu) return;
+  E.prog.notes = E.prog.notes || {}; var v = e.target.value; if (v.trim()) E.prog.notes[lu] = v; else delete E.prog.notes[lu];
+  hauteurNote(e.target); clearTimeout(window._sn); window._sn = setTimeout(sauver, 400);
+});
+function hauteurNote(t) { t.style.height = "auto"; t.style.height = Math.max(26, t.scrollHeight + 2) + "px"; }
 
 function rgbHex(c) { var m = c.match(/\d+/g); return m ? "#" + m.slice(0, 3).map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("") : ""; }
 function htmlPourWord(html) {
