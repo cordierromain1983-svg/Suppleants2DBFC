@@ -263,6 +263,8 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
     </div>
     <div class="sortie">
       <div class="actions">
+        <label class="aide" for="filtreProg" style="display:flex;align-items:center;gap:6px;margin:0">Classe :
+          <select id="filtreProg" style="width:auto;min-width:150px" title="Afficher, imprimer et télécharger toutes les classes ou une seule"><option value="">Toutes les classes</option></select></label>
         <button class="btn plein" type="button" data-export="prog">⬇︎ Télécharger en Word</button>
         <button class="btn" type="button" onclick="window.print()">🖨 Imprimer / PDF</button>
         <button class="btn accent" type="button" data-ia="prog">✨ Prompt pour une IA</button>
@@ -491,6 +493,7 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <li><b>Semaines tampon (conseillé)</b> : elles ne sont plus ajoutées automatiquement. Choisissez « Semaine tampon » dans la barre et cliquez sur les semaines voulues, par exemple la dernière avant chaque vacances : aucune nouvelle séquence n'y démarre.</li>
         <li><b>Séquences</b> : listez-les dans l'ordre. La durée en heures est <b>facultative</b> : sans durée, l'outil partage le temps disponible (après la marge et les séquences dont vous avez fixé la durée) et place chaque séquence ; la durée calculée s'affiche en gris (≈ 13). Saisissez une durée dès que vous la connaissez. Les flèches changent l'ordre, et la pastille permet de choisir la couleur.</li>
         <li><b>Disciplines bivalentes</b> (lettres-histoire, maths-sciences, langues-lettres) : le bouton « Discipline bivalente » crée une programmation par valence. Les créneaux partagés sont répartis <b>à parts égales</b> ; modifiez la répartition seulement si vous la connaissez. En lettres-histoire, l'<b>EMC fait partie de la valence histoire-géographie</b> : pour chaque séquence, choisissez la matière (histoire, géographie ou EMC) ; le résumé affiche les heures de chacune. Le même choix existe pour un professeur d'histoire-géographie au collège.</li>
+        <li><b>Une seule classe</b> : au-dessus de la grille, le menu « Classe » permet d'afficher, d'imprimer et de télécharger en Word la programmation d'une seule classe (ou de toutes).</li>
         <li><b>Commentaires</b> : la dernière colonne de la grille accueille un commentaire libre pour chaque semaine (visite, projet, rappel, ajustement…). Il est repris dans l'export Word.</li>
         <li><b>Le calendrier</b> : <b>cliquez sur une semaine</b> de la grille : un petit menu propose les événements (stage, PFMP, sortie, examen blanc, semaine tampon…) et permet de retirer une marque. Pour marquer plusieurs semaines d'un coup, choisissez d'abord le type dans la barre au-dessus de la grille, puis cliquez sur les semaines. La programmation se recalcule aussitôt. La gomme efface. Cochez « toutes mes classes » pour marquer toutes les colonnes en un clic. Pour une période précise au jour près, saisissez-la dans la classe (« Périodes datées »).</li>
         <li><b>Types d'événements</b> : chacun a une couleur et un effet : <i>pas de cours</i> (PFMP, stage), <i>demi-semaine</i> (bac blanc, brevet blanc) ou <i>simple repère</i> (sortie, conseil de classe). Renommez-les, changez-les ou créez les vôtres.</li>
@@ -994,9 +997,10 @@ function calculerClasse(c, vi) {
   var besoin = H.reduce(function (a, x) { return a + x; }, 0);
   return { cases: cases, total: total, nbTot: nbTot, reserve: reserve, besoin: besoin, seqs: seqs, heff: H, nAuto: nAuto, auto: auto, nonPlace: seqs.slice(idx).map(function (s) { return s.t; }) };
 }
-function colonnesProg() {
+var progFiltre = "";
+function colonnesProg(filtre) {
   var cols = [];
-  E.prog.classes.forEach(function (c, i) { normaliserClasse(c); c.valences.forEach(function (v, vi) { if (c.nom || v.seqs.some(function (s) { return s.t; })) cols.push({ c: c, i: i, vi: vi }); }); });
+  E.prog.classes.forEach(function (c, i) { normaliserClasse(c); if (filtre !== undefined && filtre !== "" && String(i) !== String(filtre)) return; c.valences.forEach(function (v, vi) { if (c.nom || v.seqs.some(function (s) { return s.t; })) cols.push({ c: c, i: i, vi: vi }); }); });
   return cols;
 }
 
@@ -1498,13 +1502,15 @@ function telecharger(blob, nom) { var a = document.createElement("a"); a.href = 
 /* ================================================================
    DOCUMENT : PROGRAMMATION
    ================================================================ */
-function docProg(pourWord) {
+function docProg(pourWord, filtre) {
   var P = E.prog, al = [], SEM = semaines(P.zone);
-  var classes = colonnesProg();
+  if (filtre === undefined) filtre = progFiltre;
+  if (filtre !== "" && !E.prog.classes[+filtre]) filtre = progFiltre = "";
+  var classes = colonnesProg(filtre), cF = filtre !== "" ? E.prog.classes[+filtre] : null;
   if (!classes.length) return { html: '<p class="vide-msg">Saisissez une classe, ses créneaux et ses séquences à gauche, ou chargez un exemple.</p>', al: al };
   var calc = classes.map(function (x) { return calculerClasse(x.c, x.vi); });
   var etabLib = { college: "Collège", lgt: "Lycée général et technologique", lp: "Lycée professionnel" }[P.etab];
-  var h = "<h2>Programmation annuelle 2026-2027</h2><p class=\"sous\">" + esc([P.discipline, P.nomEtab || etabLib].filter(Boolean).join(" · ")) + " · Zone " + P.zone + " · marge " + (Number(P.marge) || 0) + " %</p>";
+  var h = "<h2>Programmation annuelle 2026-2027" + (cF ? " · " + esc(cF.nom || "Classe " + (+filtre + 1)) : "") + "</h2><p class=\"sous\">" + esc([P.discipline, P.nomEtab || etabLib].filter(Boolean).join(" · ")) + " · Zone " + P.zone + " · marge " + (Number(P.marge) || 0) + " %</p>";
   h += '<div class="resume">';
   var tampons = 0, dates = 0;
   P.classes.forEach(function (c) { Object.keys(c.marques).forEach(function (k) { var t = typeParId(c.marques[k]); if (t && t.effet === "tampon") tampons++; else dates++; }); c.periodes.forEach(function (p) { var t = typeParId(p.ty); if (t && t.effet === "tampon") tampons++; else if (p.d) dates++; }); if (c.fin) dates++; });
@@ -1725,7 +1731,14 @@ function rendreTout() {
   rendreRessources();
   majListesDeroulantes();
   majHeuresAuto();
+  majFiltreProg();
   document.querySelectorAll("textarea[data-note]").forEach(function (t) { if (t.value) hauteurNote(t); });
+}
+function majFiltreProg() {
+  var sl = document.getElementById("filtreProg"); if (!sl) return;
+  var opts = '<option value="">Toutes les classes</option>' + E.prog.classes.map(function (c, i) { return '<option value="' + i + '">' + esc(c.nom || "Classe " + (i + 1)) + "</option>"; }).join("");
+  if (sl.getAttribute("data-o") !== opts) { sl.innerHTML = opts; sl.setAttribute("data-o", opts); }
+  sl.value = progFiltre; sl.parentNode.style.display = E.prog.classes.length > 1 ? "flex" : "none";
 }
 function majHeuresAuto() {
   var cache = {};
@@ -1736,6 +1749,7 @@ function majHeuresAuto() {
   });
 }
 document.addEventListener("input", function (e) { if (e.target.id === "rechNiveau") rendreRessources(); });
+document.addEventListener("change", function (e) { if (e.target.id === "filtreProg") { progFiltre = e.target.value; rendreTout(); } });
 /* commentaires de la programmation : enregistrés sans redessiner la grille (on garde le curseur) */
 document.addEventListener("input", function (e) {
   var lu = e.target.getAttribute && e.target.getAttribute("data-note"); if (!lu) return;
@@ -1769,13 +1783,14 @@ function enveloppeWord(titre, corps) {
 }
 function nomFichier(t) { return t.trim().replace(/[^\wÀ-ÿ\- ]+/g, "").replace(/\s+/g, "_").slice(0, 60) + ".doc"; }
 function exporterWord(m) {
-  var r = m === "prog" ? docProg(true) : GEN[m](), titres = { prog: "Programmation annuelle", seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || ""), cdt: "Cahier de textes " + (E.cdt.classe || "") };
+  var cF = m === "prog" && progFiltre !== "" ? E.prog.classes[+progFiltre] : null;
+  var r = m === "prog" ? docProg(true) : GEN[m](), titres = { prog: "Programmation annuelle" + (cF ? " " + (cF.nom || "") : ""), seq: "Sequence " + (E.seq.titre || ""), sea: "Seance " + (E.sea.titre || ""), cdt: "Cahier de textes " + (E.cdt.classe || "") };
   telecharger(new Blob(["\ufeff", enveloppeWord(titres[m], htmlPourWord(r.html))], { type: "application/msword" }), nomFichier(titres[m]));
   toast("Fichier Word téléchargé");
 }
 function exporterTout() {
   var parts = [], saut = "<br clear='all' style='page-break-before:always'>";
-  var r1 = docProg(true); if (colonnesProg().length) parts.push(htmlPourWord(r1.html));
+  var r1 = docProg(true, ""); if (colonnesProg().length) parts.push(htmlPourWord(r1.html));
   if (E.seq.titre || E.seq.seances.length) parts.push(htmlPourWord(docSeq().html));
   if (E.sea.titre || E.sea.moments.some(function (m) { return m.t; })) parts.push(htmlPourWord(docSea().html));
   if (E.cdt.entrees.length) parts.push(htmlPourWord(docCdt().html));
