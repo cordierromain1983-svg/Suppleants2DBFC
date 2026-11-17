@@ -1673,6 +1673,15 @@ function docSeq() {
     var det = (SOCLE_DETAIL[s[0]] || []).filter(function (d) { return SQ.indexOf(d[0]) >= 0; });
     return "<b>" + s[0] + "</b> " + esc(libSocle(s[0])) + det.map(function (d) { return "<br>&nbsp;&nbsp;– " + esc(d[1]); }).join("");
   }).join("<br>");
+  /* classe, nombre de séances, volume horaire : toujours affichés */
+  var fmtD = function (d) { return d < 60 ? d + " min" : hm(d); };
+  var clP = classeDeSeq(q), nbS = q.seances.length || Number(q.nb) || 0;
+  var totMin = q.seances.length ? q.seances.reduce(function (a, x) { return a + dureeComptee(dureeSeance(x, q)); }, 0) : nbS * dureeComptee(q.duree || 55);
+  var prevH = heuresProgSeq(q), durees = {}; q.seances.forEach(function (x) { var d = dureeSeance(x, q); durees[d] = (durees[d] || 0) + 1; });
+  var detailD = Object.keys(durees).length > 1 ? " (" + Object.keys(durees).map(function (d) { return durees[d] + " × " + fmtD(+d); }).join(", ") + ")" : nbS ? " de " + fmtD(Object.keys(durees)[0] ? +Object.keys(durees)[0] : (q.duree || 55)) : "";
+  h += '<tr><td class="lab">Classe</td><td>' + (q.classe ? "<b>" + esc(q.classe) + "</b>" + (clP && clP.niveau ? " · " + esc(clP.niveau) : "") + (q.valence ? " · " + esc(q.valence) : "") : '<i style="color:#a33">à préciser</i>') + "</td></tr>";
+  h += '<tr><td class="lab">Nombre de séances</td><td>' + (nbS ? "<b>" + nbS + "</b> séance" + (nbS > 1 ? "s" : "") + detailD : '<i style="color:#a33">à préciser</i>') + "</td></tr>";
+  h += '<tr><td class="lab">Volume horaire</td><td>' + (totMin ? "<b>" + hm(totMin) + "</b>" : '<i style="color:#a33">à préciser</i>') + (prevH ? " · prévu dans la programmation : " + hm(prevH * 60) : "") + "</td></tr>";
   [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], q.projet ? ["Projet d'apprentissage", nl(q.projet)] : null, ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
   [["Pré-requis", q.prereq], ["Vérification des pré-requis", q.verif], ["Savoirs associés", q.savoirs], ["Représentations et obstacles prévisibles", q.obstacles]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
