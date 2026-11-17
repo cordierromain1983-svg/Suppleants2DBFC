@@ -684,6 +684,24 @@ var SOCLE = [
   ["D4", "Domaine 4 · Les systèmes naturels et les systèmes techniques"],
   ["D5", "Domaine 5 · Les représentations du monde et l'activité humaine"]
 ];
+/* Détail : objectifs de connaissances et de compétences du socle (décret du 31 mars 2015, BO n° 17 du 23 avril 2015).
+   Domaines 2 à 5 : intitulés officiels. Domaine 1 : le texte du socle décrit chaque composante sans sous-titres ;
+   les repères ci-dessous en reprennent les grandes lignes. */
+var SOCLE_DETAIL = {
+  "D1.1": [["D1.1a", "S'exprimer à l'oral de façon claire et organisée, écouter et prendre en compte ses interlocuteurs"], ["D1.1b", "Lire et comprendre des textes variés, littéraires et documentaires"], ["D1.1c", "Écrire des textes de genres variés, adaptés à leur destinataire"], ["D1.1d", "Employer à bon escient les règles de la langue (grammaire, orthographe, lexique)"]],
+  "D1.2": [["D1.2a", "Comprendre des messages oraux et écrits"], ["D1.2b", "S'exprimer et communiquer à l'oral et à l'écrit"], ["D1.2c", "Connaître des aspects culturels liés à la langue"]],
+  "D1.3": [["D1.3a", "Utiliser les nombres, le calcul et le raisonnement mathématique"], ["D1.3b", "Lire et produire des représentations (tableaux, graphiques, schémas, figures, cartes)"], ["D1.3c", "Utiliser le langage scientifique pour décrire, expliquer, argumenter"], ["D1.3d", "Connaître les principes de l'algorithmique et de la programmation"]],
+  "D1.4": [["D1.4a", "S'exprimer et créer à travers les langages des arts"], ["D1.4b", "Utiliser son corps pour s'exprimer, agir et communiquer"], ["D1.4c", "Comprendre et apprécier les œuvres et les productions artistiques et corporelles"]],
+  "D2": [["D2.1", "Organisation du travail personnel"], ["D2.2", "Coopération et réalisation de projets"], ["D2.3", "Médias, démarches de recherche et de traitement de l'information"], ["D2.4", "Outils numériques pour échanger et communiquer"]],
+  "D3": [["D3.1", "Expression de la sensibilité et des opinions, respect des autres"], ["D3.2", "La règle et le droit"], ["D3.3", "Réflexion et discernement"], ["D3.4", "Responsabilité, sens de l'engagement et de l'initiative"]],
+  "D4": [["D4.1", "Démarches scientifiques"], ["D4.2", "Conception, création, réalisation"], ["D4.3", "Responsabilités individuelles et collectives"]],
+  "D5": [["D5.1", "L'espace et le temps"], ["D5.2", "Organisations et représentations du monde"], ["D5.3", "Invention, élaboration, production"]]
+};
+function libSocle(k) {
+  var s = SOCLE.filter(function (x) { return x[0] === k; })[0]; if (s) return s[1].split("· ")[1];
+  for (var p in SOCLE_DETAIL) { var d = SOCLE_DETAIL[p].filter(function (x) { return x[0] === k; })[0]; if (d) return d[1]; }
+  return "";
+}
 
 /* ================================================================
    BIBLIOTHÈQUE DE RESSOURCES OFFICIELLES (vérifiées en novembre 2026)
@@ -1080,7 +1098,12 @@ function rendreListes() {
   h += '<label><input type="checkbox" id="toutesClasses"' + (toutesClasses ? " checked" : "") + "> toutes mes classes</label>";
   document.getElementById("palette").innerHTML = h;
 
-  h = SOCLE.map(function (s) { var on = (E.seq.socle || []).indexOf(s[0]) >= 0; return '<label class="coche" style="margin:3px 0;align-items:flex-start"><input type="checkbox" data-action="basculeSocle" data-k="' + s[0] + '"' + (on ? " checked" : "") + '><span style="font-size:.84rem"><b>' + s[0] + "</b> " + esc(s[1].split("· ")[1]) + "</span></label>"; }).join("");
+  var SL = E.seq.socle || [];
+  h = SOCLE.map(function (s) {
+    var on = SL.indexOf(s[0]) >= 0, det = SOCLE_DETAIL[s[0]] || [], nSub = det.filter(function (d) { return SL.indexOf(d[0]) >= 0; }).length;
+    return '<div class="socle-d"><label class="coche" style="margin:3px 0;align-items:flex-start"><input type="checkbox" data-action="basculeSocle" data-k="' + s[0] + '"' + (on ? " checked" : "") + '><span style="font-size:.84rem"><b>' + s[0] + "</b> " + esc(s[1].split("· ")[1]) + (nSub ? ' <small style="color:var(--bleu)">(' + nSub + ' précisé' + (nSub > 1 ? "s" : "") + ")</small>" : "") + "</span></label>" +
+      (on ? det : []).map(function (d) { return '<label class="coche" style="margin:2px 0 2px 26px;align-items:flex-start"><input type="checkbox" data-action="basculeSocle" data-k="' + d[0] + '"' + (SL.indexOf(d[0]) >= 0 ? " checked" : "") + '><span style="font-size:.8rem">' + esc(d[1]) + "</span></label>"; }).join("") + "</div>";
+  }).join("") + '<p class="aide" style="margin-top:4px">Cochez une composante : son détail apparaît en dessous, pour préciser les compétences travaillées.</p>';
   document.getElementById("listeSocle").innerHTML = h;
 
   /* Spécificités disciplinaires */
@@ -1242,7 +1265,12 @@ document.addEventListener("click", function (ev) {
     case "ajoutPer": C[i].periodes.push({ ty: (E.prog.types[0] || {}).id, d: "", f: "" }); break;
     case "supprPer": C[i].periodes.splice(j, 1); break;
     case "effacerMarques": C[i].marques = {}; break;
-    case "basculeSocle": var code = b.getAttribute("data-k"), sl = E.seq.socle = E.seq.socle || [], ps = sl.indexOf(code); if (ps >= 0) sl.splice(ps, 1); else sl.push(code); break;
+    case "basculeSocle": var code = b.getAttribute("data-k"), sl = E.seq.socle = E.seq.socle || [], ps = sl.indexOf(code); if (ps >= 0) sl.splice(ps, 1); else sl.push(code);
+      /* cocher un détail coche aussi sa composante */
+      if (ps < 0) Object.keys(SOCLE_DETAIL).forEach(function (p) { if (SOCLE_DETAIL[p].some(function (d) { return d[0] === code; }) && sl.indexOf(p) < 0) sl.push(p); });
+      /* décocher une composante retire ses détails */
+      if (ps >= 0 && SOCLE_DETAIL[code]) SOCLE_DETAIL[code].forEach(function (d) { var q2 = sl.indexOf(d[0]); if (q2 >= 0) sl.splice(q2, 1); });
+      break;
     case "garderObj": E.seq.objsOk = E.seq.objsOk || []; E.seq.objsOk[i] = !E.seq.objsOk[i]; break;
     case "basculeSpec": var pp = b.getAttribute("data-pr"), kk = b.getAttribute("data-k"), vv = b.getAttribute("data-v"); E.seq.spec[pp] = E.seq.spec[pp] || {}; var arr = E.seq.spec[pp][kk] = E.seq.spec[pp][kk] || []; var ix = arr.indexOf(vv); if (ix >= 0) arr.splice(ix, 1); else arr.push(vv); break;
     case "ajoutObj": E.seq.objs.push(""); break;
@@ -1602,7 +1630,11 @@ function docSeq() {
   var q = E.seq, al = [];
   if (!q.titre && !q.og && !q.seances.length) return { html: '<p class="vide-msg">Renseignez votre séquence à gauche (ou chargez un exemple). Le document se construit en direct.</p>', al: al };
   var h = "<h2>Séquence : " + esc(q.titre || "sans titre") + "</h2><p class=\"sous\">" + esc([q.classe, q.discipline].filter(Boolean).join(" · ")) + (q.seances.length ? " · " + q.seances.length + " séance(s), " + hm(q.seances.reduce(function (a, x) { return a + dureeComptee(dureeSeance(x, q)); }, 0)) + " au total" : q.nb ? " · " + q.nb + " séance(s) de " + (q.duree || "?") + " min" : "") + "</p><table>";
-  var socle = (q.socle || []).map(function (k) { var s = SOCLE.filter(function (x) { return x[0] === k; })[0]; return s ? "<b>" + k + "</b> " + esc(s[1].split("· ")[1]) : ""; }).join("<br>");
+  var SQ = q.socle || [];
+  var socle = SOCLE.filter(function (s) { return SQ.indexOf(s[0]) >= 0; }).map(function (s) {
+    var det = (SOCLE_DETAIL[s[0]] || []).filter(function (d) { return SQ.indexOf(d[0]) >= 0; });
+    return "<b>" + s[0] + "</b> " + esc(libSocle(s[0])) + det.map(function (d) { return "<br>&nbsp;&nbsp;– " + esc(d[1]); }).join("");
+  }).join("<br>");
   [["Place dans la progression", nl(q.place)], ["Programme, thème, attendus", nl(q.attendus)], q.referentiel ? ["Référentiel du diplôme", nl(q.referentiel)] : null, ["Compétences travaillées", nl(q.comp)], socle ? ["Socle commun", socle] : null, ["Problématique", nl(q.probl)], q.projet ? ["Projet d'apprentissage", nl(q.projet)] : null, ["Objectif général", nl(q.og)]].forEach(function (r) { if (r) h += '<tr><td class="lab">' + r[0] + "</td><td>" + r[1] + "</td></tr>"; });
   h += '<tr><td class="lab">Objectifs opérationnels</td><td>' + (q.objs.filter(Boolean).length ? "<ol style='margin:0;padding-left:20px'>" + q.objs.map(function (o) { return o ? "<li>" + esc(o) + "</li>" : ""; }).join("") + "</ol>" : "") + "</td></tr>";
   [["Pré-requis", q.prereq], ["Vérification des pré-requis", q.verif], ["Savoirs associés", q.savoirs], ["Représentations et obstacles prévisibles", q.obstacles]].forEach(function (r) { h += '<tr><td class="lab">' + r[0] + "</td><td>" + nl(r[1]) + "</td></tr>"; });
@@ -1700,7 +1732,7 @@ function rendreRessources() {
   if (P.etab !== "lp") { var autre = P.etab === "college" ? "lgt" : "college"; h += '<div class="carte-r"><h3>Liaison · ' + esc(RESS[autre].titre) + "</h3><ul>" + RESS[autre].liens.slice(0, 2).map(function (l) { return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + "</a></li>"; }).join("") + "</ul></div>"; }
   h += "</div>";
   document.getElementById("doc-ress").innerHTML = h;
-  document.getElementById("socleListe").innerHTML = SOCLE.map(function (s) { return "<li><b>" + s[0] + "</b> " + esc(s[1].split("· ")[1]) + "</li>"; }).join("");
+  document.getElementById("socleListe").innerHTML = SOCLE.map(function (s) { return "<li><b>" + s[0] + "</b> " + esc(s[1].split("· ")[1]) + '<ul style="margin:2px 0 6px;font-size:.88em;color:#555">' + (SOCLE_DETAIL[s[0]] || []).map(function (d) { return "<li>" + esc(d[1]) + "</li>"; }).join("") + "</ul></li>"; }).join("");
   var d2 = E.seq.discipline || disc, cl = E.seq.classe || "";
   var base = (RESS[P.etab] || RESS.college).liens;
   var cle = d2 ? d2.toLowerCase().slice(0, 6) : "";
