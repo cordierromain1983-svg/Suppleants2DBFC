@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d2a44">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<title>Suppléants 2D BFC – Visio « Évaluer pour faire progresser »</title>
+<style>
+:root{
+  --encre:#1d2a44; --texte:#2c3445; --doux:#5d6678; --fond:#f6f4ef; --carte:#ffffff;
+  --bleu:#2f5d8a; --bleu-clair:#e6eef6; --accent:#c8692c; --accent-clair:#fbeee4;
+  --vert:#3f7d58; --vert-clair:#e5f1e9; --trait:#e2ded5; --rayon:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--texte);background:var(--fond);line-height:1.55;font-size:17px}
+a{color:var(--bleu)}
+header.hero{background:var(--encre);color:#fff;padding:48px 20px 40px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.hero .sur{font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin:0 0 8px}
+.hero h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.15;margin:0 0 12px}
+.hero p.chapo{max-width:660px;margin:0;opacity:.9;font-size:1.05rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pill{display:inline-block;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:.9rem}
+nav.menu{position:sticky;top:0;z-index:10;background:rgba(246,244,239,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--trait)}
+nav.menu .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+nav.menu a{flex:0 0 auto;text-decoration:none;color:var(--encre);padding:7px 12px;border-radius:999px;font-size:.92rem;font-weight:500}
+nav.menu a:hover{background:var(--bleu-clair)}
+section{padding:44px 0 8px}
+h2{font-family:Georgia,"Times New Roman",serif;font-weight:600;color:var(--encre);font-size:1.7rem;margin:0 0 6px}
+h2 + .sous{color:var(--doux);margin:0 0 22px}
+h3{color:var(--encre);margin:0 0 6px;font-size:1.2rem}
+.carte{background:var(--carte);border:1px solid var(--trait);border-radius:var(--rayon);padding:22px 24px;margin-bottom:18px}
+.filrouge{background:var(--accent-clair);border-color:#efd3bf}
+.filrouge strong{color:#8a4317}
+.prog{list-style:none;margin:0;padding:0}
+.prog li{display:grid;grid-template-columns:118px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--trait)}
+.prog li:last-child{border-bottom:0}
+.prog .h{font-variant-numeric:tabular-nums;color:var(--doux);font-size:.95rem;padding-top:1px}
+.prog .t{font-weight:600;color:var(--encre)}
+.prog .d{color:var(--doux);font-size:.95rem}
+.prog li.atelier .t{color:var(--accent)}
+.prog li.pause .t{color:var(--doux);font-weight:500;font-style:italic}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;margin-right:6px;vertical-align:2px}
+.tag.apport{background:var(--bleu-clair);color:var(--bleu)}
+.tag.travail{background:var(--accent-clair);color:var(--accent)}
+.tag.collectif{background:var(--vert-clair);color:var(--vert)}
+.atelier-carte{border-left:5px solid var(--accent)}
+.infos{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.infos span{background:var(--fond);border:1px solid var(--trait);border-radius:8px;padding:3px 10px;font-size:.88rem;color:var(--doux)}
+.etapes{margin:8px 0 14px;padding-left:22px}
+.etapes li{margin-bottom:6px}
+.essentiel{background:var(--bleu-clair);border-radius:10px;padding:12px 16px;margin:4px 0 16px;font-size:.96rem}
+.essentiel b.titre{display:block;color:var(--bleu);margin-bottom:4px}
+.essentiel ul{margin:4px 0 0;padding-left:20px}
+.prod{background:var(--vert-clair);border-radius:10px;padding:10px 14px;margin:12px 0 16px;font-size:.96rem}
+.prod b{color:var(--vert)}
+.boutons{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.95rem;padding:10px 16px;border-radius:10px;border:1.5px solid var(--bleu);color:var(--bleu);background:#fff;cursor:pointer;font-family:inherit}
+.btn.plein{background:var(--bleu);color:#fff}
+.btn:hover{filter:brightness(.95)}
+.btn.inactif{border-color:var(--trait);color:var(--doux);background:var(--fond);cursor:not-allowed;font-weight:500}
+details{border:1px solid var(--trait);border-radius:10px;padding:10px 14px;margin:10px 0;background:#fcfbf8}
+details summary{cursor:pointer;font-weight:600;color:var(--encre)}
+details[open] summary{margin-bottom:8px}
+table.grille{border-collapse:collapse;width:100%;font-size:.94rem;margin:8px 0}
+table.grille th,table.grille td{border:1px solid var(--trait);padding:7px 10px;text-align:left;vertical-align:top}
+table.grille th{background:var(--fond)}
+/* Le cas */
+.doc{background:#fffdf7;border:1px solid #e8dfc8;border-radius:10px;padding:14px 18px;font-family:Georgia,"Times New Roman",serif;font-size:1.02rem}
+.doc .src{font-family:system-ui,sans-serif;font-size:.82rem;color:var(--doux);margin-top:6px}
+.consignes{margin:10px 0 0;padding-left:22px}
+.consignes li{margin-bottom:4px}
+.copie{background:#fbfbfe;border:1px solid #d9dcea;border-radius:10px;padding:14px 18px 14px 46px;background-image:linear-gradient(to right,transparent 30px,#f0b9b9 30px,#f0b9b9 31.5px,transparent 31.5px),repeating-linear-gradient(to bottom,transparent 0,transparent 27px,#e3e7f3 27px,#e3e7f3 28px);line-height:28px;font-family:"Comic Sans MS","Segoe Print","Bradley Hand",cursive;color:#23306b}
+.copie p{margin:0}
+.copie .annot{font-family:system-ui,sans-serif;color:#c0392b;font-weight:700;font-size:.95rem}
+.profils{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:10px 0}
+.profils .carte{margin:0;border-top:4px solid var(--bleu);padding:16px 18px}
+.profils h4{margin:0 0 4px;color:var(--encre)}
+.profils p{margin:0;font-size:.94rem}
+/* Quiz et tri */
+.q{margin-bottom:18px}
+.q p{font-weight:600;margin:0 0 8px;color:var(--encre)}
+.q .opts{display:flex;flex-wrap:wrap;gap:8px}
+.q button{font:inherit;font-size:.95rem;border:1.5px solid var(--trait);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;text-align:left}
+.q button.ok{border-color:var(--vert);background:var(--vert-clair)}
+.q button.ko{border-color:#c0392b;background:#fbe9e7}
+.q button.choisi{border-color:var(--bleu);background:var(--bleu-clair);font-weight:600}
+.q .explic{display:none;margin-top:8px;font-size:.94rem;color:var(--doux)}
+.q.repondu .explic{display:block}
+.score{font-weight:600;color:var(--vert);margin-top:4px}
+/* Réponses */
+textarea.rep{width:100%;min-height:110px;font:inherit;font-size:.96rem;border:1px solid #d3cec3;border-radius:10px;padding:10px 12px;background:#fff;resize:vertical}
+.rep-lab{display:block;font-weight:600;color:var(--encre);margin:12px 0 4px;font-size:.95rem}
+.enreg{font-size:.85rem;color:var(--doux);margin-top:4px}
+.ressources{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ressources .carte{margin:0}
+.ressources ul{margin:6px 0 0;padding-left:18px}
+.ressources li{margin-bottom:6px}
+/* Corrigés */
+.corrige{margin-top:16px;border:1.5px dashed #c9c2b4;border-radius:12px;padding:10px 14px;background:#fcfbf8}
+.corr-tete{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-weight:600;color:var(--encre)}
+.corr-form{display:flex;gap:6px}
+.corr-form input{font:inherit;font-size:.9rem;border:1px solid #d3cec3;border-radius:8px;padding:5px 9px;width:200px;text-transform:uppercase}
+.btn.mini{font-size:.85rem;padding:6px 12px}
+.corr-msg{font-size:.88rem;color:#b23b2e}
+.corrige.ouvert{border-style:solid;border-color:var(--vert);background:#fff}
+.corrige.ouvert .corr-form{display:none}
+.corr-corps{display:none;margin-top:8px}
+.corrige.ouvert .corr-corps{display:block}
+.horsligne{display:none;position:sticky;top:0;z-index:20;background:#fff4d6;color:#6e500c;text-align:center;font-size:.9rem;padding:6px 10px}
+.horsligne.vu{display:block}
+footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;border-top:1px solid var(--trait)}
+@media (max-width:600px){
+  .prog li{grid-template-columns:1fr;gap:2px}
+  .carte{padding:18px}
+  body{font-size:16px}
+  table.grille{display:block;overflow-x:auto;font-size:.86rem;hyphens:auto}
+  table.grille th,table.grille td{padding:5px 6px}
+}
+@media print{nav.menu,.boutons,.corrige:not(.ouvert),.enreg{display:none}header.hero{background:none;color:#000}.carte{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="horsligne" id="horsligne">Hors connexion : la page reste utilisable et vos réponses sont gardées dans ce navigateur.</div>
+<header class="hero">
+  <div class="wrap">
+    <p class="sur">Suppléants 2nd degré · BFC · Visio</p>
+    <h1>Évaluer pour faire progresser</h1>
+    <p class="chapo">Deux heures, un seul élève fictif : Noé. On suit son parcours, du diagnostic au bilan, et chaque activité prépare la suivante.</p>
+    <div class="meta">
+      <span class="pill" id="pDate">Date communiquée par le formateur</span>
+      <span class="pill" id="pHeure">2 h en visio</span>
+      <span class="pill">5 activités · 1 cas commun</span>
+    </div>
+  </div>
+</header>
+
+<nav class="menu" aria-label="Sommaire">
+  <div class="wrap">
+    <a href="#programme">Programme</a>
+    <a href="#cas">Le cas de Noé</a>
+    <a href="#vf">Vrai ou faux</a>
+    <a href="#a1">1 Diagnostic</a>
+    <a href="#a2">2 Critères</a>
+    <a href="#a3">3 Feedback</a>
+    <a href="#a4">4 Différencier</a>
+    <a href="#a5">5 Bilan sommatif</a>
+    <a href="#bilan">Bilan</a>
+    <a href="#ressources">Ressources</a>
+    <a href="#mes-reponses" style="background:var(--accent);color:#fff">💾 Mes réponses</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section id="programme">
+  <h2>Le programme de la visio</h2>
+  <p class="sous">Un apport très court au début de chaque activité, puis du travail en salles de sous-groupes (3 ou 4 personnes) et une mise en commun.</p>
+
+  <div class="carte filrouge">
+    <strong>Le fil de la séance :</strong> un enseignant va commencer une séquence où les élèves devront souvent <strong>expliquer</strong> et <strong>justifier</strong> à partir d'un document. On suit <strong>Noé</strong> et sa classe à chaque étape : <strong>avant</strong> (diagnostic), <strong>pendant</strong> (critères, feedback, différenciation) et <strong>après</strong> (évaluation sommative et appréciation). Le cas est le même pour tous et se transpose à toutes les disciplines.
+  </div>
+
+  <div class="carte">
+    <ul class="prog" id="prog">
+      <li data-d="5"><span class="h"></span><span><span class="tag collectif">Collectif</span><span class="t">Accueil et retour sur J3</span><br><span class="d">Une chose que vous avez mise en place depuis la journée « Construire son enseignement ».</span></span></li>
+      <li data-d="15"><span class="h"></span><span><span class="tag collectif">Collectif</span><a class="t" href="#vf">Vrai ou faux : évaluer, est-ce noter ?</a><br><span class="d">Vote dans la conversation de la visio, débat, puis l'essentiel : évaluer n'est pas mesurer ; les trois fonctions de l'évaluation.</span></span></li>
+      <li class="atelier" data-d="20"><span class="h"></span><span><span class="tag travail">Activité 1</span><a class="t" href="#a1">Avant : un diagnostic qui aide à décider</a></span></li>
+      <li class="atelier" data-d="20"><span class="h"></span><span><span class="tag travail">Activité 2</span><a class="t" href="#a2">Ce que j'attends : critères et indicateurs</a></span></li>
+      <li class="pause" data-d="5"><span class="h"></span><span class="t">Pause</span></li>
+      <li class="atelier" data-d="15"><span class="h"></span><span><span class="tag travail">Activité 3</span><a class="t" href="#a3">Pendant : un feedback qui fait progresser</a></span></li>
+      <li class="atelier" data-d="20"><span class="h"></span><span><span class="tag travail">Activité 4</span><a class="t" href="#a4">Différencier à partir du diagnostic</a></span></li>
+      <li class="atelier" data-d="10"><span class="h"></span><span><span class="tag travail">Activité 5</span><a class="t" href="#a5">Après : l'évaluation sommative et l'appréciation</a></span></li>
+      <li data-d="10"><span class="h"></span><span><span class="tag collectif">Collectif</span><a class="t" href="#bilan">Bilan de la formation</a></span></li>
+    </ul>
+  </div>
+
+  <div class="carte">
+    <h3>Pendant la visio</h3>
+    <ul style="margin:6px 0 0;padding-left:20px">
+      <li>Gardez cette page ouverte dans un onglet. Les liens de chaque activité sont aussi collés dans la conversation.</li>
+      <li>Vos réponses s'écrivent <strong>directement dans la page</strong> et restent dans votre navigateur. À la fin, <a href="#mes-reponses">téléchargez-les en Word</a>.</li>
+      <li>En salle de sous-groupe, désignez quelqu'un qui partage son écran et quelqu'un qui présentera la production à la mise en commun.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="cas">
+  <h2>Le cas de Noé</h2>
+  <p class="sous">Classe de 4e, mais le cas vaut pour le lycée et la voie professionnelle : ce qui compte, ce sont les verbes de la consigne.</p>
+
+  <div class="carte">
+    <h3>Le document donné à la classe</h3>
+    <div class="doc">
+      <p style="margin:0">Le collège Victor-Hugo a changé de fournisseur pour sa cantine en janvier. Avant, 40 % des repas étaient préparés avec des produits locaux ; aujourd'hui, c'est 75 %. Le principal explique que les familles se plaignaient du goût des plats et que le département aide désormais les collèges qui achètent près de chez eux. Depuis le changement, le gaspillage a baissé : on jette 30 kg de nourriture par jour, contre 55 kg auparavant. Certains élèves regrettent cependant que les frites ne soient plus servies qu'une fois par semaine.</p>
+      <div class="src">Texte fictif écrit pour la formation.</div>
+    </div>
+    <h3 style="margin-top:16px">Les consignes</h3>
+    <ol class="consignes">
+      <li><strong>Relève</strong> deux chiffres qui montrent un changement.</li>
+      <li><strong>Explique</strong> pourquoi le collège a changé de fournisseur.</li>
+      <li>Le changement est-il une réussite ? <strong>Justifie</strong> ta réponse à l'aide d'un passage du texte.</li>
+    </ol>
+  </div>
+
+  <div class="carte">
+    <h3>La copie de Noé</h3>
+    <div class="copie">
+      <p>1. 40 % et 75 %</p>
+      <p>2. Le collège a changé de fournisseur en janvier et maintenant il y a 75 % de produits locaux.</p>
+      <p>3. Oui c'est une réussite parce que moi j'aime bien manger local.</p>
+      <p class="annot">2/5 – Lis mieux les consignes !</p>
+    </div>
+    <p style="margin:12px 0 0;font-size:.95rem;color:var(--doux)">Noé a travaillé, il a écrit une réponse à chaque question, et il a même utilisé « parce que ». Pourtant, deux réponses sur trois ne répondent pas à ce qui est demandé. Gardez sa copie en tête : elle revient dans toutes les activités.</p>
+  </div>
+</section>
+
+<section id="vf">
+  <h2>Vrai ou faux · Évaluer, est-ce noter ?</h2>
+  <p class="sous">Votez dans la conversation de la visio en un seul message, par exemple : <strong>1F 2V 3F 4V 5F</strong>. On débat, puis le formateur donne le code du corrigé.</p>
+  <div class="carte" id="vfListe">
+    <div class="q"><p>1. Une évaluation, c'est une note.</p><div class="opts vote"><button>Vrai</button><button>Faux</button></div></div>
+    <div class="q"><p>2. Une évaluation diagnostique n'a pas à compter dans la moyenne.</p><div class="opts vote"><button>Vrai</button><button>Faux</button></div></div>
+    <div class="q"><p>3. L'évaluation formative a lieu à la fin de la séquence.</p><div class="opts vote"><button>Vrai</button><button>Faux</button></div></div>
+    <div class="q"><p>4. Deux enseignants qui corrigent la même copie lui donnent à peu près la même note.</p><div class="opts vote"><button>Vrai</button><button>Faux</button></div></div>
+    <div class="q"><p>5. Différencier, c'est donner une évaluation plus facile aux élèves en difficulté.</p><div class="opts vote"><button>Vrai</button><button>Faux</button></div></div>
+    <div class="corrige" data-corr="vf"><div class="corr-tete"><span>🔒 Corrigé du vrai ou faux</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+  <div class="carte">
+    <h3>L'essentiel en 3 minutes</h3>
+    <table class="grille">
+      <tr><th></th><th>Diagnostique</th><th>Formative</th><th>Sommative</th></tr>
+      <tr><td><b>Quand ?</b></td><td>Avant un apprentissage (année, séquence, séance)</td><td>Pendant, en continu</td><td>À la fin d'une étape</td></tr>
+      <tr><td><b>Pour quoi ?</b></td><td>Repérer les acquis et les prérequis manquants pour <strong>adapter</strong> l'enseignement</td><td><strong>Réguler</strong> : montrer à l'élève où il en est et comment avancer</td><td><strong>Faire le bilan</strong> de ce qui est acquis, rendre compte, certifier</td></tr>
+      <tr><td><b>Pour Noé</b></td><td>Activité 1</td><td>Activités 2, 3 et 4</td><td>Activité 5</td></tr>
+    </table>
+    <p style="margin:8px 0 0;font-size:.95rem"><strong>Évaluer</strong>, c'est porter un jugement sur ce que l'élève a appris, à partir de critères, <strong>pour prendre une décision</strong>. <strong>Mesurer</strong>, c'est relever une donnée chiffrée. La note n'est qu'une manifestation possible de l'évaluation : un 39 °C de fièvre n'est pas la maladie, c'en est un signe.</p>
+  </div>
+</section>
+
+<section id="a1">
+  <h2>Activité 1 · Avant : un diagnostic qui aide à décider</h2>
+  <p class="sous">La séquence n'a pas commencé. Les élèves vont devoir expliquer et justifier : savent-ils ce que ces verbes demandent ?</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 20 min</span><span>👥 Salles de 3 ou 4</span><span>🎯 Prérequis : comprendre les verbes de consigne</span></div>
+    <div class="essentiel"><b class="titre">L'essentiel (3 min)</b>Un bon diagnostic porte sur <strong>un seul prérequis</strong>, dure <strong>10 minutes au plus</strong>, <strong>n'est pas noté</strong>, se corrige vite (✓ / ~ / ✗) et chaque résultat entraîne une <strong>décision prévue à l'avance</strong>. Si je ne sais pas ce que je ferai des résultats, ce n'est pas un diagnostic.</div>
+    <h3>En salle (12 min)</h3>
+    <ol class="etapes">
+      <li>Imaginez <strong>3 questions</strong> courtes, à poser à la classe de Noé <strong>avant</strong> la séquence, pour savoir si les élèves distinguent <em>relever</em>, <em>expliquer</em> et <em>justifier</em>. Pas de texte long : on veut vérifier le prérequis, pas la lecture.</li>
+      <li>Pour chaque question, notez <strong>l'erreur que vous vous attendez à voir</strong> et ce qu'elle révèle.</li>
+      <li>Notez la <strong>décision</strong> : que faites-vous si un tiers de la classe échoue ? si un élève seul échoue ?</li>
+      <li>Choisissez une <strong>modalité</strong> rapide : ardoises, cartes-réponses, formulaire en ligne, à main levée…</li>
+    </ol>
+    <label class="rep-lab" for="r-a1">Nos 3 questions, l'erreur attendue, la décision</label>
+    <textarea class="rep" id="r-a1" data-rep="a1" placeholder="Question 1 : …&#10;Erreur attendue : …&#10;Décision : …"></textarea>
+    <h3 style="margin-top:16px">Mise en commun (5 min)</h3>
+    <p style="margin:0">Une salle présente ses questions ; les autres vérifient : un seul prérequis ? moins de 10 minutes ? une décision pour chaque résultat ?</p>
+    <div class="prod"><b>Ce qui suit :</b> le corrigé montre ce que le diagnostic révèle de Noé. Ce n'est pas qu'il « ne lit pas les consignes » : il se fait une idée fausse de ce que demandent les verbes.</div>
+    <div class="corrige" data-corr="e1"><div class="corr-tete"><span>🔒 Corrigé de l'activité 1</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+</section>
+
+<section id="a2">
+  <h2>Activité 2 · Ce que j'attends : critères et indicateurs</h2>
+  <p class="sous">Avant de dire à Noé ce qui ne va pas, il faut savoir précisément ce qu'on attend. C'est aussi ce qui rend la correction plus juste.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 20 min</span><span>👤 Seul, puis salles de 3 ou 4</span><span>📏 Échelle à 4 niveaux</span></div>
+    <div class="essentiel"><b class="titre">L'essentiel (3 min)</b>
+      <ul>
+        <li>Un <strong>critère</strong> dit la qualité attendue : <em>« la réponse donne une cause »</em>.</li>
+        <li>Un <strong>indicateur</strong> est un signe que l'on peut observer sur la copie et qui montre que le critère est atteint : <em>« un mot de cause relie le changement à une raison tirée du texte »</em>.</li>
+        <li>Les indicateurs permettent de <strong>distinguer des niveaux</strong>. Au collège, l'échelle de référence a 4 niveaux : maîtrise insuffisante, fragile, satisfaisante, très bonne maîtrise.</li>
+      </ul>
+    </div>
+    <h3>Étape 1 · Trier (5 min, seul)</h3>
+    <p>Pour les questions 2 et 3 de la copie de Noé : chaque proposition est-elle un critère, un indicateur, ou faut-il l'écarter ?</p>
+    <div id="tri" class="quiz">
+      <div class="q"><p>a. La réponse donne une cause du changement.</p><div class="opts" data-bonne="0"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">C'est la qualité attendue pour « explique pourquoi ». Elle ne dit pas encore à quoi on la reconnaît.</div></div>
+      <div class="q"><p>b. Un mot de cause (car, parce que, en effet) relie le changement à une raison tirée du texte.</p><div class="opts" data-bonne="1"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">C'est observable sur la copie. Attention : Noé écrit « parce que », mais la raison ne vient pas du texte. L'indicateur n'a de sens que relié à son critère.</div></div>
+      <div class="q"><p>c. La copie est propre et sans rature.</p><div class="opts" data-bonne="2"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">Ce n'est pas l'objectif travaillé. La présentation ne devient un critère que si elle a été enseignée et annoncée. Sinon, elle fausse le jugement : c'est l'effet de halo.</div></div>
+      <div class="q"><p>d. L'avis est appuyé sur le texte.</p><div class="opts" data-bonne="0"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">C'est la qualité attendue pour « justifie à l'aide d'un passage du texte ».</div></div>
+      <div class="q"><p>e. Un passage du texte est cité entre guillemets ou reformulé avec précision.</p><div class="opts" data-bonne="1"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">On le voit sur la copie : c'est un indicateur du critère d.</div></div>
+      <div class="q"><p>f. L'élève a bien travaillé.</p><div class="opts" data-bonne="2"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">Ce n'est ni observable sur la copie ni lié à l'objectif. Noé a d'ailleurs « bien travaillé »… et ses réponses 2 et 3 ne répondent pas aux questions.</div></div>
+      <div class="q"><p>g. La réponse cite les deux raisons données par le texte (le goût des plats, l'aide du département).</p><div class="opts" data-bonne="1"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">C'est un indicateur qui permet de distinguer un niveau élevé (deux raisons) d'un niveau satisfaisant (une raison).</div></div>
+      <div class="q"><p>h. La réponse fait au moins cinq lignes.</p><div class="opts" data-bonne="2"><button>Critère</button><button>Indicateur</button><button>À écarter</button></div><div class="explic">La longueur ne dit rien de la qualité : une phrase peut suffire pour expliquer une cause.</div></div>
+      <div class="score" id="triScore"></div>
+    </div>
+    <h3 style="margin-top:16px">Étape 2 · Construire la grille (12 min, en salle)</h3>
+    <p>Pour la <strong>question 3</strong> (« Justifie à l'aide d'un passage du texte »), décrivez ce que l'on observe à chacun des 4 niveaux. Puis placez Noé.</p>
+    <table class="grille">
+      <tr><th>Maîtrise insuffisante</th><th>Maîtrise fragile</th><th>Maîtrise satisfaisante</th><th>Très bonne maîtrise</th></tr>
+      <tr><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+    </table>
+    <label class="rep-lab" for="r-a2">Notre grille et le niveau de Noé</label>
+    <textarea class="rep" id="r-a2" data-rep="a2" placeholder="Insuffisante : …&#10;Fragile : …&#10;Satisfaisante : …&#10;Très bonne : …&#10;Noé est au niveau … parce que …"></textarea>
+    <div class="prod"><b>Ce qui suit :</b> avec cette grille, on peut dire à Noé autre chose que « lis mieux les consignes ».</div>
+    <div class="corrige" data-corr="e2"><div class="corr-tete"><span>🔒 Corrigé de l'activité 2</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+</section>
+
+<section id="a3">
+  <h2>Activité 3 · Pendant : un feedback qui fait progresser</h2>
+  <p class="sous">L'évaluation formative ne sert que si l'élève sait quoi faire ensuite.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 15 min</span><span>👥 Salles de 3 ou 4</span><span>💬 Feedback et auto-évaluation</span></div>
+    <h3>Étape 1 · Comparer trois retours (4 min)</h3>
+    <p>Trois enseignants ont annoté la copie de Noé. Lequel l'aidera à réussir la prochaine fois ?</p>
+    <div class="quiz">
+      <div class="q"><p>Quel retour est le plus utile à Noé ?</p>
+        <div class="opts" data-bonne="2" style="flex-direction:column;align-items:stretch">
+          <button>A. « 2/5 – Lis mieux les consignes ! »</button>
+          <button>B. « Hors sujet aux questions 2 et 3. »</button>
+          <button>C. « Question 1 réussie : tu as trouvé les deux bons chiffres. Question 3 : tu donnes ton avis (« j'aime bien manger local »), mais la consigne demande un passage du texte. Souligne une phrase du texte qui montre que c'est une réussite, puis recopie-la après « parce que ». »</button>
+        </div>
+        <div class="explic">A et B constatent sans dire quoi faire : Noé croit avoir lu la consigne. C contient les trois ingrédients d'un feedback utile : <strong>ce qui est réussi</strong>, <strong>l'écart avec le critère</strong> et <strong>une action précise et faisable</strong>.</div>
+      </div>
+    </div>
+    <h3>Étape 2 · À vous (6 min)</h3>
+    <p>Rédigez le feedback de la <strong>question 2</strong> (« Explique pourquoi… ») avec les trois ingrédients. Deux ou trois phrases, adressées à Noé.</p>
+    <label class="rep-lab" for="r-a3a">Notre feedback pour la question 2</label>
+    <textarea class="rep" id="r-a3a" data-rep="a3a" placeholder="Ce qui est réussi : …&#10;Ce qui manque par rapport au critère : …&#10;Ce que tu fais maintenant : …"></textarea>
+    <h3 style="margin-top:16px">Étape 3 · Une grille d'auto-évaluation (5 min)</h3>
+    <p>Écrivez 3 ou 4 lignes que Noé pourra cocher <strong>avant de rendre</strong> sa copie la prochaine fois. Elles doivent être à la première personne et vérifiables par l'élève lui-même.</p>
+    <label class="rep-lab" for="r-a3b">La grille de Noé</label>
+    <textarea class="rep" id="r-a3b" data-rep="a3b" placeholder="☐ J'ai … &#10;☐ …"></textarea>
+    <div class="prod"><b>Ce qui suit :</b> Noé n'est pas seul dans ce cas. Le diagnostic de la classe montre des besoins différents. Comment les prendre en compte sans faire 24 cours ?</div>
+    <div class="corrige" data-corr="e3"><div class="corr-tete"><span>🔒 Corrigé de l'activité 3</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+</section>
+
+<section id="a4">
+  <h2>Activité 4 · Différencier à partir du diagnostic</h2>
+  <p class="sous">Mêmes objectifs, mêmes critères pour tous ; ce sont les chemins qui changent.</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 20 min</span><span>👥 Salles de 3 ou 4, un élève par salle</span><span>🧭 4 leviers</span></div>
+    <div class="essentiel"><b class="titre">L'essentiel (3 min) : différencier, c'est agir sur…</b>
+      <ul>
+        <li>les <strong>contenus</strong> : <em>avec quoi</em> l'élève apprend (supports, niveaux de texte, fiches d'aide) ;</li>
+        <li>les <strong>processus</strong> : <em>comment</em> il apprend (consignes plus ou moins guidées, étapes, temps) ;</li>
+        <li>les <strong>productions</strong> : <em>comment il montre</em> ce qu'il a appris (oral, schéma, texte court…), avec les mêmes critères de fond ;</li>
+        <li>l'<strong>environnement</strong> : <em>où et avec qui</em> (groupes de besoin, binômes, rôle de l'enseignant).</li>
+      </ul>
+      On part des <strong>besoins observés</strong>, pas des étiquettes. Si un élève a un PAP ou un PPS, les aménagements prévus s'appliquent aussi.
+    </div>
+    <h3>Le diagnostic de la classe (24 élèves)</h3>
+    <table class="grille">
+      <tr><th>Résultat</th><th>Élèves</th></tr>
+      <tr><td>Distinguent relever, expliquer et justifier</td><td>13</td></tr>
+      <tr><td>Confondent expliquer et raconter, justifier et donner son avis</td><td>8, dont Noé</td></tr>
+      <tr><td>Comprennent les verbes à l'oral, mais écrivent très peu et lentement</td><td>3, dont Inès</td></tr>
+    </table>
+    <div class="profils">
+      <div class="carte"><h4>Noé</h4><p>Confond <em>expliquer</em> et <em>raconter</em>, <em>justifier</em> et <em>donner son avis</em>. Volontaire, il écrit beaucoup.</p></div>
+      <div class="carte"><h4>Inès</h4><p>À l'oral, ses réponses sont justes et complètes. À l'écrit, elle n'a terminé qu'une question sur trois.</p></div>
+      <div class="carte"><h4>Yanis</h4><p>A tout réussi en 10 minutes, avec deux raisons tirées du texte. Il s'ennuie et commence à perturber.</p></div>
+    </div>
+    <h3 style="margin-top:12px">En salle (13 min)</h3>
+    <ol class="etapes">
+      <li>Le formateur attribue un élève à chaque salle.</li>
+      <li>Pour la <strong>prochaine séance</strong> (même objectif : expliquer une cause et justifier avec le texte), proposez <strong>une action par levier</strong> pour cet élève.</li>
+      <li>Vérifiez : l'objectif et les critères sont-ils restés les mêmes que pour le reste de la classe ? Votre proposition est-elle faisable avec 24 élèves dans la salle ?</li>
+    </ol>
+    <label class="rep-lab" for="r-a4">Notre élève et nos 4 actions</label>
+    <textarea class="rep" id="r-a4" data-rep="a4" placeholder="Élève : …&#10;Contenus : …&#10;Processus : …&#10;Productions : …&#10;Environnement : …"></textarea>
+    <h3 style="margin-top:16px">Mise en commun (4 min)</h3>
+    <p style="margin:0">Une proposition par élève. Ce qui revient souvent : les groupes de besoin sont <strong>temporaires</strong>. Une nouvelle évaluation formative permet de les refaire.</p>
+    <div class="corrige" data-corr="e4"><div class="corr-tete"><span>🔒 Corrigé de l'activité 4</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+</section>
+
+<section id="a5">
+  <h2>Activité 5 · Après : l'évaluation sommative et l'appréciation</h2>
+  <p class="sous">Trois semaines plus tard, la séquence se termine. Comment vérifier ce que Noé a appris, et comment le lui dire ?</p>
+  <div class="carte atelier-carte">
+    <div class="infos"><span>⏱ 10 min</span><span>👤 Seul, puis échange collectif</span><span>🎯 Aligner objectif, activités et évaluation</span></div>
+    <p><strong>Objectif de la séquence :</strong> à partir d'un document court <strong>qu'il ne connaît pas</strong>, l'élève explique un fait en donnant sa cause et justifie une opinion par un passage du document.</p>
+    <div class="quiz">
+      <div class="q"><p>1. Quelle évaluation sommative est alignée sur cet objectif ?</p>
+        <div class="opts" data-bonne="1" style="flex-direction:column;align-items:stretch">
+          <button>A. Un QCM : « Donne la définition de relever, expliquer, justifier. »</button>
+          <button>B. Un nouveau document court (la fermeture d'une piscine) avec des questions « relève, explique, justifie », corrigé avec la grille connue des élèves depuis le début.</button>
+          <button>C. Le texte sur la cantine travaillé en classe, avec les mêmes questions.</button>
+          <button>D. Un exposé oral de 5 minutes sur l'alimentation au collège.</button>
+        </div>
+        <div class="explic">A vérifie une connaissance, pas la compétence. C vérifie la mémoire : le document n'est plus « inconnu ». D évalue autre chose (l'exposé). Seule B place l'élève dans la situation de l'objectif, avec des critères qu'il connaît déjà.</div>
+      </div>
+      <div class="q"><p>2. Noé atteint le niveau « satisfaisant » pour <em>expliquer</em> et reste « fragile » pour <em>justifier</em>. Quelle appréciation choisir ?</p>
+        <div class="opts" data-bonne="1" style="flex-direction:column;align-items:stretch">
+          <button>A. « Élève sérieux, mais qui doit encore faire des efforts. »</button>
+          <button>B. « Net progrès : Noé explique désormais une cause en s'appuyant sur le document. Prochaine étape : appuyer son avis sur une citation du texte. »</button>
+          <button>C. « Ensemble encore fragile, attention aux consignes. »</button>
+        </div>
+        <div class="explic">B nomme un <strong>progrès précis</strong>, s'appuie sur les critères et donne <strong>une piste</strong> : l'élève et sa famille savent quoi faire. A et C pourraient s'appliquer à n'importe quel élève.</div>
+      </div>
+      <div class="q"><p>3. Le diagnostic du début de séquence de Noé était très faible. Doit-il peser dans sa moyenne ?</p>
+        <div class="opts" data-bonne="1"><button>Oui, il fait partie de son parcours</button><button>Non, il a servi à décider, pas à certifier</button></div>
+        <div class="explic">On évalue en fin de parcours ce qui a été enseigné et travaillé. Le diagnostic a joué son rôle : il a orienté la différenciation.</div>
+      </div>
+    </div>
+    <div class="corrige" data-corr="e5"><div class="corr-tete"><span>🔒 Corrigé de l'activité 5 et synthèse</span><form class="corr-form"><input type="text" placeholder="Code donné par le formateur" aria-label="Code du corrigé" autocomplete="off"><button class="btn mini" type="submit">Afficher</button></form></div><div class="corr-msg"></div><div class="corr-corps"></div></div>
+  </div>
+</section>
+
+<section id="bilan">
+  <h2>Bilan de la formation</h2>
+  <p class="sous">Dix minutes pour faire le point sur la visio et sur l'ensemble du parcours de formation.</p>
+  <div class="carte">
+    <ol class="etapes">
+      <li>Écrivez <strong>une chose que vous changerez dans votre prochaine évaluation</strong> (un diagnostic, une grille, un feedback, une appréciation…).</li>
+      <li>Repérez, dans la séquence construite en J3, <strong>où placer</strong> le diagnostic, les moments formatifs et l'évaluation sommative.</li>
+      <li>Répondez au formulaire de bilan (anonyme).</li>
+    </ol>
+    <label class="rep-lab" for="r-bilan">Ce que je change dans ma prochaine évaluation</label>
+    <textarea class="rep" id="r-bilan" data-rep="bilan" placeholder="Dans ma classe de …, je vais …"></textarea>
+    <div class="boutons" style="margin-top:12px" data-liens="bilan"></div>
+    <p style="margin:14px 0 0;font-size:.95rem">🛠 Pour transposer à votre classe, reprenez votre séquence dans <a href="outil.html#seq">l'atelier du suppléant</a> (onglet ②) : vérifiez que chaque objectif a son critère de réussite et que l'évaluation sommative porte sur ce qui a été travaillé.</p>
+  </div>
+</section>
+
+<section id="ressources">
+  <h2>Ressources</h2>
+  <p class="sous">Les textes de référence, par type d'établissement.</p>
+  <div class="ressources">
+    <div class="carte">
+      <h3>Collège</h3>
+      <ul>
+        <li><a href="https://eduscol.education.gouv.fr/5235/suivi-des-acquis-scolaires-des-eleves-de-la-maternelle-au-college" target="_blank" rel="noopener">Suivi des acquis des élèves et livret scolaire unique</a> : l'échelle à 4 niveaux de maîtrise du socle</li>
+        <li><a href="https://eduscol.education.gouv.fr/5604/modalites-d-attribution-du-diplome-national-du-brevet" target="_blank" rel="noopener">Modalités du brevet et mémento « Évaluer les élèves de 3e »</a></li>
+        <li><a href="https://www.education.gouv.fr/le-diplome-national-du-brevet-10613" target="_blank" rel="noopener">Le diplôme national du brevet</a> : depuis la session 2026, contrôle continu = moyennes annuelles de 3e (40 %)</li>
+        <li><a href="https://eduscol.education.fr/137/reperes-annuels-de-progression-et-attendus-de-fin-d-annee-du-cp-la-3e" target="_blank" rel="noopener">Repères annuels de progression et attendus de fin d'année</a></li>
+      </ul>
+    </div>
+    <div class="carte">
+      <h3>Lycée et voie professionnelle</h3>
+      <ul>
+        <li><a href="https://eduscol.education.gouv.fr/5670/le-projet-d-evaluation-en-lycee-general-et-technologique" target="_blank" rel="noopener">Le projet d'évaluation en lycée général et technologique</a></li>
+        <li><a href="https://eduscol.education.fr/document/5470/download" target="_blank" rel="noopener">Guide de l'évaluation des apprentissages et des acquis des élèves au LGT</a></li>
+        <li><a href="https://eduscol.education.gouv.fr/5601/controle-en-cours-de-formation" target="_blank" rel="noopener">Le contrôle en cours de formation (CCF)</a></li>
+        <li>Dans votre établissement : demandez le <strong>projet d'évaluation</strong> ou les règles communes de l'équipe disciplinaire.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="carte" style="margin-top:14px">
+    <h3>Aide-mémoire : le feedback utile</h3>
+    <table class="grille">
+      <tr><th>Ingrédient</th><th>Question à se poser</th><th>Exemple</th></tr>
+      <tr><td>Ce qui est réussi</td><td>Sur quoi l'élève peut-il s'appuyer ?</td><td>« Tu as trouvé les deux bons chiffres. »</td></tr>
+      <tr><td>L'écart avec le critère</td><td>Qu'est-ce qui manque, par rapport à ce qui était attendu ?</td><td>« La consigne demande un passage du texte, tu as donné ton avis. »</td></tr>
+      <tr><td>Une action</td><td>Que fait-il maintenant, concrètement ?</td><td>« Souligne une phrase du texte et recopie-la après "parce que". »</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="mes-reponses">
+  <h2>💾 Mes réponses</h2>
+  <p class="sous">Tout ce que vous avez écrit dans cette page est gardé dans ce navigateur. Téléchargez-le pour le garder ou le déposer dans votre dossier.</p>
+  <div class="carte">
+    <div class="boutons">
+      <button class="btn plein" type="button" id="bExport">📄 Télécharger mes réponses (Word)</button>
+      <button class="btn" type="button" id="bEffacer">Effacer mes réponses</button>
+    </div>
+    <p class="enreg" id="etatRep"></p>
+    <p style="font-size:.9rem;color:var(--doux);margin:8px 0 0">⚠️ Aucune donnée d'élève réel (nom, note, difficulté) dans vos réponses.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Visio « Évaluer pour faire progresser ». · <a href="index.html" style="color:inherit">Journée 3</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSf2QlkYvI1uYPUnhjJ-M2-qsCxh2k3akLkf0GZLVTyxSgvHwA/viewform?usp=pp_url&amp;entry.2143209314=Visio+%C3%A9valuation" target="_blank" rel="noopener" style="color:inherit">🐞 Signaler un problème</a> · <a href="projection-evaluation.html" style="color:inherit">Mode formateur</a></div>
+</footer>
+
+<script>
+/* =====================================================================
+   RÉGLAGES DE LA VISIO : date, heure de début, lien du formulaire de bilan.
+   - date  : "AAAA-MM-JJ" (vide = « date communiquée par le formateur »)
+   - debut : "HH:MM" ; les horaires du programme sont calculés à partir de là
+   - bilan : lien du formulaire de bilan (vide = bouton « bientôt disponible »)
+   ===================================================================== */
+var VISIO = { date: "", debut: "14:00", bilan: "" };
+
+function $(id) { return document.getElementById(id); }
+function hm(m) { return Math.floor(m / 60) + "h" + String(m % 60).padStart(2, "0"); }
+
+/* Horaires du programme */
+(function () {
+  var p = VISIO.debut.split(":"), t = +p[0] * 60 + +p[1], t0 = t;
+  document.querySelectorAll("#prog li").forEach(function (li) {
+    var d = +li.getAttribute("data-d");
+    li.querySelector(".h").textContent = hm(t) + " – " + hm(t + d);
+    t += d;
+  });
+  if (VISIO.date) {
+    var j = new Date(VISIO.date + "T12:00:00");
+    var txt = j.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    $("pDate").textContent = txt.charAt(0).toUpperCase() + txt.slice(1);
+    $("pHeure").textContent = hm(t0) + " – " + hm(t) + " · visio";
+  }
+})();
+
+/* Bouton du bilan */
+document.querySelectorAll("[data-liens=bilan]").forEach(function (zone) {
+  var a = document.createElement("a");
+  if (VISIO.bilan) { a.className = "btn plein"; a.href = VISIO.bilan; a.target = "_blank"; a.rel = "noopener"; a.textContent = "🗳 Répondre au bilan en ligne"; }
+  else { a.className = "btn inactif"; a.textContent = "🗳 Formulaire de bilan (bientôt disponible)"; a.setAttribute("aria-disabled", "true"); }
+  zone.appendChild(a);
+});
+
+/* Quiz à correction immédiate */
+document.querySelectorAll(".quiz .opts").forEach(function (bloc) {
+  var bonne = parseInt(bloc.getAttribute("data-bonne"), 10);
+  var boutons = bloc.querySelectorAll("button");
+  boutons.forEach(function (b, i) {
+    b.type = "button";
+    b.addEventListener("click", function () {
+      boutons.forEach(function (x) { x.classList.remove("ok", "ko"); });
+      b.classList.add(i === bonne ? "ok" : "ko");
+      boutons[bonne].classList.add("ok");
+      bloc.parentNode.classList.add("repondu");
+      bloc.setAttribute("data-juste", i === bonne ? "1" : "0");
+      scoreTri();
+    });
+  });
+});
+function scoreTri() {
+  var blocs = document.querySelectorAll("#tri .opts"), faits = 0, justes = 0;
+  blocs.forEach(function (b) { if (b.hasAttribute("data-juste")) { faits++; if (b.getAttribute("data-juste") === "1") justes++; } });
+  $("triScore").textContent = faits === blocs.length ? "Premier choix juste : " + justes + " sur " + blocs.length + "." : "";
+}
+/* Le score ne compte que le premier clic */
+document.querySelectorAll("#tri .opts").forEach(function (bloc) {
+  bloc.addEventListener("click", function (e) {
+    if (e.target.tagName !== "BUTTON") return;
+    if (bloc.hasAttribute("data-premier")) bloc.setAttribute("data-juste", bloc.getAttribute("data-premier"));
+    else bloc.setAttribute("data-premier", bloc.getAttribute("data-juste"));
+    scoreTri();
+  });
+});
+
+/* Vrai ou faux : on choisit sans correction (le corrigé est verrouillé) */
+var CLE_VF = "eval-vf";
+function lireVF() { try { return JSON.parse(localStorage.getItem(CLE_VF) || "{}"); } catch (e) { return {}; } }
+document.querySelectorAll("#vfListe .opts.vote").forEach(function (bloc, k) {
+  var boutons = bloc.querySelectorAll("button"), vf = lireVF();
+  boutons.forEach(function (b, i) {
+    b.type = "button";
+    if (vf[k] === i) b.classList.add("choisi");
+    b.addEventListener("click", function () {
+      boutons.forEach(function (x) { x.classList.remove("choisi"); });
+      b.classList.add("choisi");
+      var v = lireVF(); v[k] = i;
+      try { localStorage.setItem(CLE_VF, JSON.stringify(v)); } catch (e) {}
+    });
+  });
+});
+
+/* Réponses écrites : enregistrées dans le navigateur */
+var zones = document.querySelectorAll("textarea.rep");
+function majEtat() {
+  var n = 0; zones.forEach(function (z) { if (z.value.trim()) n++; });
+  $("etatRep").textContent = n ? n + " réponse" + (n > 1 ? "s" : "") + " enregistrée" + (n > 1 ? "s" : "") + " dans ce navigateur." : "Aucune réponse pour l'instant.";
+}
+zones.forEach(function (z) {
+  try { z.value = localStorage.getItem("eval-rep-" + z.getAttribute("data-rep")) || ""; } catch (e) {}
+  z.addEventListener("input", function () {
+    try { localStorage.setItem("eval-rep-" + z.getAttribute("data-rep"), z.value); } catch (e) {}
+    majEtat();
+  });
+});
+majEtat();
+
+function echap(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+$("bExport").addEventListener("click", function () {
+  var titres = { a1: "Activité 1 · Mon diagnostic", a2: "Activité 2 · Ma grille (question 3)", a3a: "Activité 3 · Mon feedback (question 2)", a3b: "Activité 3 · La grille d'auto-évaluation", a4: "Activité 4 · Différencier", bilan: "Bilan · Ce que je change" };
+  var corps = "<h1>Visio « Évaluer pour faire progresser »</h1><p>Suppléants 2nd degré · BFC</p>";
+  var vf = lireVF(), lignes = [];
+  document.querySelectorAll("#vfListe .q").forEach(function (q, k) { lignes.push("<li>" + echap(q.querySelector("p").textContent) + " <b>" + (vf[k] === 0 ? "Vrai" : vf[k] === 1 ? "Faux" : "—") + "</b></li>"); });
+  corps += "<h2>Vrai ou faux : mes votes</h2><ul>" + lignes.join("") + "</ul>";
+  zones.forEach(function (z) {
+    corps += "<h2>" + titres[z.getAttribute("data-rep")] + "</h2><p>" + (z.value.trim() ? echap(z.value).replace(/\n/g, "<br>") : "<i>(pas de réponse)</i>") + "</p>";
+  });
+  var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt}h1{color:#1d2a44;font-size:18pt}h2{color:#c8692c;font-size:13pt;margin-top:16pt}</style></head><body>' + corps + "</body></html>";
+  var blob = new Blob(["﻿" + html], { type: "application/msword" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "Visio_evaluation_mes_reponses.doc";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+});
+$("bEffacer").addEventListener("click", function () {
+  if (!confirm("Effacer toutes vos réponses de cette page ?")) return;
+  zones.forEach(function (z) { z.value = ""; try { localStorage.removeItem("eval-rep-" + z.getAttribute("data-rep")); } catch (e) {} });
+  try { localStorage.removeItem(CLE_VF); } catch (e) {}
+  document.querySelectorAll("#vfListe button").forEach(function (b) { b.classList.remove("choisi"); });
+  majEtat();
+});
+
+/* ===== Corrigés chiffrés : déverrouillés par code (AES-GCM) ===== */
+var CORRIGES = /*CORRIGES*/{"vf": {"s": "tI+licGLx1ZnaFtaOrGHXA==", "i": "TJI9QvfUrNwzriJQ", "c": "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"}, "e1": {"s": "iNe8o9LRdJAeailbKSRnmw==", "i": "2J72RKVMjkop+MgR", "c": "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"}, "e2": {"s": "IQtiXu9rexi5GpgcWa2a7g==", "i": "oSJINYwCic2Mcffs", "c": "teWWx0DGFye+yDFW4XYemO+63qbHfrh9Yd1oUxcb9z0IdCMMtDjM+jQWNo/HATwesmlxoC+5WRnT/7t4OAPT6H1W3to5Yr4n8HF6T0fiOVaJa8ZQq/00BpBjPhHMRDjsKkcKq3w6cwz7vNwEhtZdaWthagZuSfib63FJPcC5DbN85T6Ga1IDWK39rhZRJ1zJgUGgYiCxKaWncOdKyAnzSXDPlJwQgPxHiwlEVRA7skrhW9EsUyMdwyGEAHuROpjjF4nwBNz6buGhwo6ppGB4GKQz6lMtcOjlhIw3rZN4km/8221koB4WytO1Xsz8WlR6hEjkljm24uNJ2EYt87fkQKQwEnmmC+JdneW4/TR9QRAWRa651X81czVQziSbWgY2QhtgOKCOzRRlaS84W1yOX+R+L8WAQSTrEL5h+ShSBiPMPmE+v7oRbvEk8qSCJCUEVDtLAJoy6SYfbFQPmg+mCJRy4kUs5W85Pt5Gz9TzkOP8IsDSkkXHqXq2a6+522GTZtajveaQ5+iA8GTG8uMmF4wJtcwi/CgBKoYUTJYFb+gFIES89aHoH3nkZGsP3UHTZRJ5FdciyiJxZ/KvsDKD0uEF0O+kfNVOzAEZQLRSLuOrsXidJVZ/Z9LJNVkReuzDwD+oibuOvIWgJ/IHe0CMujM62J3dJZ5Ac7xEc0MPRrG04WryqIKJAGfV/o/gCQs6aRhh+32G24jXs1WQ9FhISvVM81ro03dzWAPdl+U5x+tKyBMw+OIn1+zpy0hcmrLU69iNbNCfgOY664BIGTPRLLAw08nXiKyBQzx6DGgfhqApitia4TlcwkD3+01w0j/zT4P7sEyzZ+gJ4KzNUlaDx0xJL00pDMky+9EIRPWB6phbPlOtJWV7znZ8Xo/44ZKS1G33XzvQJbhGf44D9Fid/lnP0u/xR+/b9pQCs8rQ2utvYeX8RNQOCDJULwCazy6iWsoc73eHKqiD5feU6sui57C17RZNTrstWguHJJ7W0E58HC3FpPX+t4cq8s/s0PdDBJSZBCuACbCF63/g6JKnBneyaBaWt6nZCSqJuF/UbKTM5OwhxI5sqCJViyOVyTE44wdEikYJonmg5g0pRxYnGIeBGevOQZkNJE6midjC+c17+5tLLjTjGCdw4adoH/gVzayZedShDtCmwp42YEylfhAOl7jU4LW/jn4xRloTkTSZZXZD+xutq+mp8+0Y7ezo/3TmMf5661fXI53Xy+jw72SFh+BuaWgxtCFjQ1uX0KfqCE0DsAbAzSeeo+OXh0dJYT20UKgFKxuWCKsL9vv0G+6lgnrEOYEsDefo+tZn+6Pr/XZFEkoWEOZP7Ma6UOVj31+g0F/atZtJE+ENhB9jOJIRbXvUq8+IiqQy4ZNqjMNDEHxVWUxeURfrdoES8VYWewpTtZ7wEuW9Gd6zDNt+bW1zS6MEe6DF64ZhOrBAQmO/8Ik68VstHmU8zzlhEeNUOS5GLY/kk9IQN+7cLScfVUw/tqwhmexxK74CAV3xwbJzzSUCZqJ3DnkR6pBntg8JoInPJ2MTUcm3wxd0FOZWpt9KknM6tOospVnE69nAWA680gcTevdN5sr3VO0IVFdRUbqt4rRO+E23RvU3+a24yrirITKQK3sp3KITOR4DtaG5pL1iyBhS8yaWJILQOsVqJJVY1Ao+mvPspG4KEAQ075DPgkYbko6s7tXpBqBp4v+Mefht0d7fHmCRjgSsoF4BS1xnkzKeLVGQkmWLoqLxwSbqnrb3F32kPYDYXiucRLwzJ6Eh9tcarLHA+utFv8qFWueLdv06DyDNjZU7lU3scTR7TN607bApMNcLs9ZiBuKU7fSIWCtcfUlmGc9nLQWXsjDi0RGJ2yhCcx4MDjf+xIJy1m4EZNIHty/AZvGsVo0Pjw5ZKWcpl8WAVEhprj1+5ZY2ua1n+G+GKs8Mub3NVE4/JSRawb0eWG9c3ZGbfXpkjlC43OWIvAnj"}, "e3": {"s": "TUb2FZ7CIzIkgZjvevMzeA==", "i": "CUfX8VMFlcP4zcdY", "c": "4FTgOrRLnkjs79UO+AyZTRdgVx6xBoWvoY/a/uqto2aG/O+y/ZCat/7dRAhDFAeD6QoUoHkVKoq/AKNGs/tTQZFZhglZABmww/7t0T8W2OfwdILW0wc5wXdFVbfQKHxQyLRUCfDmLsTr6Cw1s0mhYX6Pk9OS/54Vsywq4LKNqHLGqbpPLaTTnPntz5xxbkj/mJW7XGZKPfNiC8w+AHqO9+1rSQiM21mYQ2OPrP6W+faf8h2eeJiBXK3h/Y6lq8CSwvtjSync+vEfaT0mbPXWVYqNzi29IZBRzNvHGIGm7AKDQig9fgU42eedYynyej5Mwo+PpkEIIXsnTanLdwiwMPGhX1fOiV6n3MFLBisDn2oHSRAB5rWoJiPEU1haqqNg+/Ide3eJBw4hSOzEE9+cVN7uvvpbzjoFJGrEO49nwoXCIDaCNnjFS99wQEBE4Dm61kq8fHf7X5sIFzePChGu5qABg/5QcyjZWpG7GlIWTSWmREmaxjjm4fTyRaxmnSFZ+9qe76eySN5sVSeOSG8GKRUn6j7uCl4JJu6S6NvMqdksBlSwjkhtNQ1Soj7u4rSgWj9YE8Wyg3RhlHZ+LgVQ0Rc/IAM4GLpEpISDl3ygDJQD/deNlVlH0qxQ+fZMg0RSmIg2A2w3QWTkjHw0nrNAc2dJYWsQjSlGm1g2X3Z2kuGw/XnSrqfrXIaUhimw/4NiCFN03JHGhvF1FGWYjP1clm7QYR0v8NrpmlMdlAKlOMGmpA3d/DSMvGXMcZPZBFmLdJm7AZcLACEbirZ3y9T2q7Lvuh8lmr9K1peDrBWX9MldC8Bt0TCuAaS2fEgkVjUH53MhoO7l/67RF8GMyaGt/zlWvt+NkvMZ8fI752wlMiOZUTzq2u8hxFMmIvAeE+QiOF43/JGyTVS6spjkLiQ9B0DJZta1UhffFMqo8fH9wuGj/S57oLoKnu/fy32udxtw5g+4iBt0DAuzK7fOhhH2OGwvjVQ7kBG2hwfBonVnreg6BZOl7mo60fDnn9rAWr7L7nExQK2FKiTvydzlNhZ11HJ4p/nIL3D7qD5xv+TiSJa/WfchlYhZq+tZdaAryiTMELfNiKHNn/BTUKnkwwrIAin3hpqbdRS29dFmXFQ7zlRSB8b9bRKtI1nkqIYCrWUNxX3tl6wkMMCpAx2vEtNdzFAavLeMkqTtRxC0grvhlhM/hOZF4JGloTpXrNVgPEDb4lvBI4UAun08slvbBkATBtQz25KAjiQ5n4yvaIylP6adjex7GfDzCD7VizkVC4hVnB+fnO0u/3MBZjPYIg+URDXR/W7frZReLHYgMWt0w5scKQNl5br59YmqNcat/OD1RyrmaC3AK8qWl5WZR/PlUDlV5Ur8LiG9jdDfW8iFapQzFhBqufwahN+L7fdmxznLkaKLhyOUOrhD5X6AhjH31OfCOu1O36oum8WXIhyaN/APlfY7u48HTBGYUF6RFsJ9EJVbNmQII3h3iijKnufkb1PYzA1t5TZR+5sld6RPy3kPDv8JHCzf3WoJI8dnF/rF0tPoPVj7qfqmm5gEDHLSXoUx5mSe7jbqFiZAREyKTaKqtNrjLs3y2UFqTdcZd2uLMObkt/qkQhtpE7jVgWQkdX5CItz241ooTBPT+uXzOLCIKWlLi734QQrogWnW56mxaISbsDDAPFZrr1L1Fcc4n7p8gNzgwF0hbsQ+2q5mw91AHcXnsrOagYW1JdK8y/b6Ox/OEEdw3MmVNA1Usa9WTGuh2B/Ufn+80vVx+io2yu+85a8a7U7sKPHgVXr9h4rIlqfLv2w8aqdu2K6TgBqPXyxRarz4rYq+b5Mr54PiOJ7R7qpNYQiNj+r6SO/DnfbYXPTUbBEDU/OeakRd37A2JmfmfO3dyrre3pzpWbbLkBvweozsnRrptkq0qOm/OVNl2uCCB3OHazsaHlC4slnphqZFcjw="}, "e4": {"s": "MyRlkgPgD/ije+UgvxnRtw==", "i": "5hFw84Vza3va1LsW", "c": "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"}, "e5": {"s": "0GwF6GSPACPblNMLoogs/A==", "i": "ZniDR5AYr1U2dBin", "c": "TcDJo73bgwMqlCVddwUEdFgOK8/9eDF8lL8qFsNk+5vjypXXMiVTw2hZTTzzL/+5el6Uqj1Ho2EXBbM11UejHtuOPSOsRvOXzybG95QPdO9Rf8PEP1sfQykPL5IETk7Nds+GtogsN940HP1CetadBy6/4Oo+9ZDoE6LeP50OGz9kLaSsgwoDuCx73oh6QlI1Z7piN81VpgURI+YyJnrZiLdsTIo5M1ygKn5jvGd22W/dznQSe7CQiecCNT7H1Yad37Dx2+wsJ/usXiTa0pn84kHaXrtpVbZc3qdfHMYGpGJs8zYJ9i/bITZma/y2gnm1N2oNCQF7l8114p8deOGJ3CImUZum6Pr4HvyEksq1rNUvoS4ZYIp9RJuUU6Ah0QIpS62plr7Ik61qZbRTHpoRxK/z08PeDHbrrP61/EKuq3Q4y63VUBMfVxuDP+8jTEjHOmM4XRYbIbwfZsKQkg8a/XhN+BDD07aoniE0b2oEUAe+baPHrXyET8N2ikO980QJLNZ7EE94M+AYTOMzI+zRvH3jPcj+p8zaHgASIbefYg1t2g5fDpAwvQk4KmeGgW9M7cLOB6vJAlPjfHN+jUTNPuBJGvwpj0i9xm4SIMIqdpi13uD0ObLTj0Xm3Uwnu1WshRlJ5d1eKxrvreNzh566o2IVh+pU+/NecARF+tAubPu9hx8TbKF/U/cRW4ngUPUV0zNB23sbdGzrsheyHN+70kav4NEWpC/vbNgIaPJG1ED9c3uAuqWbEUKO/lxY3UHe/BviRWqycLbszu7JtsSSo04LBP9MHJW7D/rfVaPvHYInwhRMu89nBgH8ULxoOB/YPkWnJ8GGKM3Ebj99Xjs8zsrVvB8YGQYlUCWyVYVV9TxbFdX+rpj21eWvfUNbWs+x/KGSpWr84HLIy0F60uV5HrLp40538VUz1qK2+Ay7kO57wwUJRPuMhsdorvW5JLm9s9dY8IHjz5vR6maJrykyPb5jOxnOUpo/VwaCOjpwOoU5T2ALZLzN12TlZUPtQJZajZ/eTcOM1C5ZZplJr6qGwgFLkqwI8t78IZ4wsVSegOtJAVo2Rhvh7EEbYSNxqfiT0PZlVXUVuVdlojSKXbcT54l3qPzOzeFWaFcL2Ls8xMj+u8NgXQoh9LJcaSE5CbkGyHi+qs7ojNRuBmzlh7fc+VaQrTHauwbY/G4uUjH5xNEz1C3f48tppn19P+SzOuXboFstKRf5awq1ydfYJzn4sIFJ3V2Jsft+dNd3saUsaZTtBlXlz9aZfV5O+9mTQgjHxAVHWp2GT5iafG2sj6Nih2KC5+awcNzo+fAryjwEMj8vlTxkbLtRDf/lCqbK8atPdK/sEfGmhuygH05AcfFLWQ9sAnVcPff9t/GdkGsLkpS+bEA/MLjk3CLG8QAQ6Vc+x/g1msmRv3CaL0y3fRy+UepR0DtXlLXKQaxutQUFyMe9ES4ZpaNobiwy+r1fnOOhp00e3TQv92jeeOLMuUkuf6HiWNTvwRFa4nV7pR2LS8HIoeVFDXYQe9sjbOw0l7Q7f8udZfcio2F5jLciKMky1uU0oqjal7bGrJZKml3mw8MQRIpYf4tG4lrsJ9ROHTVOul8rr5+8h/DrT+529INVqI4U6F9sBrRW7m4x+Q6G3AKcrgUckvjQNX6HdbgrAA4tgtq/whrIf3+LDMxdWvyryPAhUBOw1qOHalEGULW3j7eovnOAOA/bQdsprSpdpvQO6UT6+CN3dB2aHQ=="}}/*FIN*/; var CORR_ITER = 150000;
+function b64(x) { return Uint8Array.from(atob(x), function (c) { return c.charCodeAt(0); }); }
+async function dechiffrer(code, d) {
+  var base = await crypto.subtle.importKey("raw", new TextEncoder().encode(code.trim().toUpperCase()), "PBKDF2", false, ["deriveKey"]);
+  var cle = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(d.s), iterations: CORR_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  var clair = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(d.i) }, cle, b64(d.c));
+  return new TextDecoder().decode(clair);
+}
+async function ouvrirCorrige(zone, code, silencieux) {
+  var k = zone.getAttribute("data-corr"), msg = zone.querySelector(".corr-msg");
+  try {
+    zone.querySelector(".corr-corps").innerHTML = await dechiffrer(code, CORRIGES[k]);
+    zone.classList.add("ouvert"); msg.textContent = "";
+    try { localStorage.setItem("eval-corr-" + k, code.trim().toUpperCase()); } catch (e) {}
+  } catch (e) { if (!silencieux) msg.textContent = (window.crypto && crypto.subtle) ? "Code incorrect." : "Votre navigateur ne permet pas d'afficher le corrigé."; }
+}
+document.querySelectorAll(".corrige").forEach(function (zone) {
+  zone.querySelector("form").addEventListener("submit", function (e) { e.preventDefault(); ouvrirCorrige(zone, zone.querySelector("input").value); });
+  try { var deja = localStorage.getItem("eval-corr-" + zone.getAttribute("data-corr")); if (deja) ouvrirCorrige(zone, deja, true); } catch (e) {}
+});
+
+/* ===== Hors ligne ===== */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+function etatReseau() { $("horsligne").classList.toggle("vu", !navigator.onLine); }
+window.addEventListener("online", etatReseau); window.addEventListener("offline", etatReseau); etatReseau();
+</script>
+</body>
+</html>

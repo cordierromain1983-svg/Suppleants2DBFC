@@ -3,6 +3,8 @@
 Site des journées de formation des suppléants du 2nd degré (Bourgogne-Franche-Comté).
 
 - `index.html` : journée J3 « Construire son enseignement »
+- `evaluation.html` : visio « Évaluer pour faire progresser » (2 h, cas commun de Noé, 5 activités, corrigés chiffrés) ; date, heure et lien du bilan dans le bloc `VISIO` en bas du fichier
+- `projection-evaluation.html` : mode formateur de la visio (minuteur, touche C pour copier le lien de la phase dans la conversation, V pour le vrai ou faux) ; réglages `JOUR` et `DEBUT`, ou `?jour=AAAA-MM-JJ&debut=HH:MM` dans l'adresse
 - `outil.html` : L'atelier du suppléant, générateur de programmation annuelle, de séquence et de fiche séance (calendrier 2026-2027, zone A)
 - Liens Google Drive : bloc `LIENS` en bas de `index.html` (2 liens : dossiers fil rouge, bilan)
 

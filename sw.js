@@ -1,6 +1,6 @@
 /* Mode hors ligne : réseau d'abord (pour recevoir les mises à jour), cache en secours. */
-var VERSION = "atelier-v23";
-var FICHIERS = ["./", "./index.html", "./outil.html", "./projection.html", "./manifest.webmanifest", "./icone.svg", "./icone-192.png", "./icone-512.png"];
+var VERSION = "atelier-v24";
+var FICHIERS = ["./", "./index.html", "./outil.html", "./projection.html", "./evaluation.html", "./projection-evaluation.html", "./manifest.webmanifest", "./icone.svg", "./icone-192.png", "./icone-512.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(FICHIERS); }).then(function () { return self.skipWaiting(); }));
 });
