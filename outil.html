@@ -181,11 +181,28 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
   .doc{overflow:visible}
   @page{size:landscape;margin:10mm}
 }
+.site{background:#131d33}
+.site .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+.site a{flex:0 0 auto;color:#dfe5f0;text-decoration:none;padding:6px 12px;border-radius:999px;font-size:.9rem;white-space:nowrap}
+.site a:hover{background:rgba(255,255,255,.1)}
+.site a.actif{background:#fff;color:#1d2a44;font-weight:600}
+.site a.logo{font-weight:700;color:#fff;padding-left:0;margin-right:6px}
+.site .court{display:none}
+@media (max-width:600px){.site .long{display:none}.site .court{display:inline}.site a{padding:6px 9px;font-size:.86rem}}
+@media print{.site{display:none}}
 </style>
 </head>
 <body>
 
 <div class="horsligne" id="horsligne">Hors connexion : l'outil fonctionne normalement et votre travail est enregistré sur cet appareil. Les liens vers Éduscol reviendront avec le réseau.</div>
+<nav class="site" aria-label="Le site">
+  <div class="wrap">
+    <a class="logo" href="./"><span class="long">Suppléants 2D BFC</span><span class="court">🏠 Accueil</span></a>
+    <a href="construire.html">📘 <span class="long">Construire son enseignement</span><span class="court">Construire</span></a>
+    <a href="evaluation.html">📏 Évaluer</a>
+    <a href="outil.html" class="actif" aria-current="page">🛠 <span class="long">L'outil</span><span class="court">Outil</span></a>
+  </div>
+</nav>
 <header class="haut">
   <div class="wrap">
     <div class="ligne">
@@ -193,7 +210,6 @@ input:focus,textarea:focus,select:focus{outline:2px solid var(--bleu-clair);bord
         <h1>L'atelier du suppléant</h1>
         <p>Programmation annuelle, séquence et séance : du cadre institutionnel à la classe.</p>
       </div>
-      <a class="retour" href="index.html">← Retour à la journée J3</a>
     </div>
     <nav class="onglets" role="tablist">
       <button class="actif" data-onglet="prog">① Programmation annuelle</button>

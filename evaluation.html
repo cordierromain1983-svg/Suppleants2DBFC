@@ -121,11 +121,28 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
   table.grille th,table.grille td{padding:5px 6px}
 }
 @media print{nav.menu,.boutons,.corrige:not(.ouvert),.enreg{display:none}header.hero{background:none;color:#000}.carte{break-inside:avoid}}
+.site{background:#131d33}
+.site .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+.site a{flex:0 0 auto;color:#dfe5f0;text-decoration:none;padding:6px 12px;border-radius:999px;font-size:.9rem;white-space:nowrap}
+.site a:hover{background:rgba(255,255,255,.1)}
+.site a.actif{background:#fff;color:#1d2a44;font-weight:600}
+.site a.logo{font-weight:700;color:#fff;padding-left:0;margin-right:6px}
+.site .court{display:none}
+@media (max-width:600px){.site .long{display:none}.site .court{display:inline}.site a{padding:6px 9px;font-size:.86rem}}
+@media print{.site{display:none}}
 </style>
 </head>
 <body>
 
 <div class="horsligne" id="horsligne">Hors connexion : la page reste utilisable et vos réponses sont gardées dans ce navigateur.</div>
+<nav class="site" aria-label="Le site">
+  <div class="wrap">
+    <a class="logo" href="./"><span class="long">Suppléants 2D BFC</span><span class="court">🏠 Accueil</span></a>
+    <a href="construire.html">📘 <span class="long">Construire son enseignement</span><span class="court">Construire</span></a>
+    <a href="evaluation.html" class="actif" aria-current="page">📏 Évaluer</a>
+    <a href="outil.html">🛠 <span class="long">L'outil</span><span class="court">Outil</span></a>
+  </div>
+</nav>
 <header class="hero">
   <div class="wrap">
     <p class="sur">Suppléants 2nd degré · BFC · Visio</p>
@@ -471,7 +488,7 @@ footer{margin-top:48px;padding:28px 0 40px;color:var(--doux);font-size:.88rem;bo
 </main>
 
 <footer>
-  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Visio « Évaluer pour faire progresser ». · <a href="index.html" style="color:inherit">Journée 3</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSf2QlkYvI1uYPUnhjJ-M2-qsCxh2k3akLkf0GZLVTyxSgvHwA/viewform?usp=pp_url&amp;entry.2143209314=Visio+%C3%A9valuation" target="_blank" rel="noopener" style="color:inherit">🐞 Signaler un problème</a> · <a href="projection-evaluation.html" style="color:inherit">Mode formateur</a></div>
+  <div class="wrap">Formation des suppléants du 2nd degré · Bourgogne-Franche-Comté · Visio « Évaluer pour faire progresser ». · <a href="./" style="color:inherit">Accueil</a> · <a href="construire.html" style="color:inherit">Journée 3</a> · <a href="https://docs.google.com/forms/d/e/1FAIpQLSf2QlkYvI1uYPUnhjJ-M2-qsCxh2k3akLkf0GZLVTyxSgvHwA/viewform?usp=pp_url&amp;entry.2143209314=Visio+%C3%A9valuation" target="_blank" rel="noopener" style="color:inherit">🐞 Signaler un problème</a> · <a href="projection-evaluation.html" style="color:inherit">Mode formateur</a></div>
 </footer>
 
 <script>
